@@ -4,10 +4,12 @@
 // However, files listed here are ALL re-compiled if any one of them is updated between builds.
 // Do not add files here that you will be updating frequently as this negates the performance advantage.
 
+// NOTE: All paths used to include header files are relative to: "inc" folder. 
+
 #ifndef PCH_H
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include "framework.h"
+#include "inc/framework.h"
 
 #endif //PCH_H

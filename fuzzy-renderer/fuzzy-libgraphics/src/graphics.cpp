@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "graphics.h"
+#include "../inc/graphics.h"
 
 #include <iostream>
 
