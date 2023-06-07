@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef FUZZYLIBGRAPHICS_EXPORTS
-#define LIBGRAPHICS_API __declspec(dllexport)
-#else
-#define LIBGRAPHICS_API __declspec(dllimport)
-#endif
+#include "framework.h"
 
 namespace libgraphics
 {

@@ -1,5 +1,3 @@
-#include "pch.h"
-
 #include "../inc/graphics.h"
 
 #include <iostream>
