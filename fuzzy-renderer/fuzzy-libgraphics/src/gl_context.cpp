@@ -5,12 +5,12 @@
 
 namespace libgraphics
 {
-	auto FramebufferSizeCallback(GLFWwindow* window, int width, int height) -> void
+	auto FramebufferSizeCallback(GLFWwindow* window, const int width, const int height) -> void
 	{
 		auto& windowPtr = *static_cast<GLContext*>(glfwGetWindowUserPointer(window));
-		windowPtr.ContextData.Width = width;
-		windowPtr.ContextData.Height = height;
-		glViewport(0, 0, windowPtr.ContextData.Width, windowPtr.ContextData.Height);
+		windowPtr.Data().width = width;
+		windowPtr.Data().height = height;
+		glViewport(0, 0, width, height);
 	}
 
 	auto GLContext::Init(const int width, const int height, const std::string_view title) -> void
@@ -39,7 +39,7 @@ namespace libgraphics
 		glfwSetWindowUserPointer(_glfwNativeWindowHandle, this);
 		glfwSetFramebufferSizeCallback(_glfwNativeWindowHandle, FramebufferSizeCallback);
 
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 		{
 			//todo: gestione errore
 			return;
@@ -50,6 +50,6 @@ namespace libgraphics
 
 	auto GLContext::Shutdown() -> void
 	{
-		
+		// todo: implement shutdown
 	}
 }

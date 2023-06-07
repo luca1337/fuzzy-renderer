@@ -6,10 +6,8 @@ namespace libgraphics
 {
 	struct LIBGRAPHICS_API ContextData
 	{
-		int Width = {};
-		int Height = {};
-		std::string_view Title = {};
-		void* NativeHandle = {};
+		int width = {};
+		int height = {};
 	};
 
 	class LIBGRAPHICS_API IGraphicsContext
@@ -19,6 +17,9 @@ namespace libgraphics
 
 		virtual auto Init(const int width, const int height, const std::string_view title) -> void = 0;
 		virtual auto Shutdown() -> void = 0;
+		[[nodiscard]] virtual auto GetNativeHandle() const -> const void* = 0;
+		virtual auto Data() const -> const ContextData& = 0;
+		virtual auto Data() -> ContextData& = 0;
 	};
 
 }

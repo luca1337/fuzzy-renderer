@@ -146,15 +146,16 @@
     <ClInclude Include="inc\bytecode.h" />
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\gl_context.h" />
-    <ClInclude Include="inc\graphics.h" />
+    <ClInclude Include="inc\gl_window.h" />
     <ClInclude Include="inc\igraphics_context.h" />
+    <ClInclude Include="inc\igraphics_window.h" />
     <ClInclude Include="inc\logger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\gl_context.cpp" />
-    <ClCompile Include="src\graphics.cpp" />
+    <ClCompile Include="src\gl_window.cpp" />
     <ClCompile Include="src\logger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
