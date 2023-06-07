@@ -1,5 +1,5 @@
-#include <gl_window.h>
-#include <gl_context.h>
+#include <opengl/gl_window.h>
+#include <opengl/gl_context.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

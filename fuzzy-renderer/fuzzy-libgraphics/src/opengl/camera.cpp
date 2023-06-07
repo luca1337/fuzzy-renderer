@@ -1,7 +1,6 @@
-#include <camera.h>
-
-#include <gl_window.h>
-#include <gl_context.h>
+#include <opengl/camera.h>
+#include <opengl/gl_window.h>
+#include <opengl/gl_context.h>
 
 #include <GLFW/glfw3.h>
 
@@ -36,7 +35,6 @@ namespace libgraphics
 	{
 		return glm::perspective(glm::radians(fov), width / height, zNear, zFar);
 	}
-
 
 	auto Camera::GetWorldPosition() const -> glm::dvec3
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "igraphics_window.h"
+#include "interfaces/igraphics_window.h"
 
 namespace libgraphics
 {

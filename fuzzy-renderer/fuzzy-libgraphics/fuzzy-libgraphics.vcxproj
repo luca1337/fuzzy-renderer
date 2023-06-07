@@ -143,26 +143,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="inc\bytecode.h" />
-    <ClInclude Include="inc\camera.h" />
     <ClInclude Include="inc\color.h" />
     <ClInclude Include="inc\core.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
-    <ClInclude Include="inc\gl_context.h" />
-    <ClInclude Include="inc\gl_window.h" />
-    <ClInclude Include="inc\igraphics_context.h" />
-    <ClInclude Include="inc\igraphics_window.h" />
+    <ClInclude Include="inc\interfaces\igraphics_context.h" />
+    <ClInclude Include="inc\interfaces\igraphics_window.h" />
     <ClInclude Include="inc\logger.h" />
+    <ClInclude Include="inc\opengl\camera.h" />
+    <ClInclude Include="inc\opengl\gl_context.h" />
+    <ClInclude Include="inc\opengl\gl_window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\glad.c" />
-    <ClCompile Include="src\gl_context.cpp" />
-    <ClCompile Include="src\gl_window.cpp" />
     <ClCompile Include="src\logger.cpp" />
+    <ClCompile Include="src\opengl\camera.cpp" />
+    <ClCompile Include="src\opengl\gl_context.cpp" />
+    <ClCompile Include="src\opengl\gl_window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

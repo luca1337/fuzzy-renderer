@@ -1,5 +1,5 @@
-#include "gl_context.h"
-#include "logger.h"
+#include <opengl/gl_context.h>
+#include <logger.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

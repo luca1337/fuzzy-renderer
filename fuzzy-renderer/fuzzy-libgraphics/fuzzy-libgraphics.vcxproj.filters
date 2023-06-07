@@ -18,22 +18,7 @@
     <ClInclude Include="inc\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\bytecode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\gl_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\igraphics_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\gl_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\igraphics_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\core.h">
@@ -45,7 +30,19 @@
     <ClInclude Include="inc\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\camera.h">
+    <ClInclude Include="inc\interfaces\igraphics_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\interfaces\igraphics_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,22 +50,22 @@
     <ClCompile Include="src\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\logger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\camera.cpp">
+    <ClCompile Include="src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\gl_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\gl_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

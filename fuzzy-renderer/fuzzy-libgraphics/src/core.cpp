@@ -1,7 +1,7 @@
 #include <core.h>
 #include <enums.h>
-#include <gl_context.h>
-#include <gl_window.h>
+#include <opengl/gl_context.h>
+#include <opengl/gl_window.h>
 #include <logger.h>
 
 #include <GLFW/glfw3.h>
