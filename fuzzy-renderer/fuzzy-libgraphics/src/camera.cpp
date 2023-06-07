@@ -10,17 +10,6 @@
 
 namespace libgraphics
 {
-	auto GetViewMatrix(const CameraProps& cameraProps) -> glm::mat4
-	{
-		const auto [front, right, up] = CalculateDirectionVectors(cameraProps);
-		return glm::lookAt(cameraProps.worldPosition, cameraProps.worldPosition + front, up);
-	}
-
-	auto ComputeCameraProjection(const double fov, const double width, const double height, const double zNear, const double zFar) -> glm::mat4
-	{
-		return glm::perspective(glm::radians(fov), width / height, zNear, zFar);
-	}
-
 	auto CalculateDirectionVectors(const CameraProps& camera_props) -> std::tuple<glm::dvec3, glm::dvec3, glm::dvec3>
 	{
 		glm::dvec3 direction = {};
@@ -36,6 +25,18 @@ namespace libgraphics
 
 		return { front, right, up };
 	}
+
+	auto GetViewMatrix(const CameraProps& cameraProps) -> glm::mat4
+	{
+		const auto [front, right, up] = CalculateDirectionVectors(cameraProps);
+		return glm::lookAt(cameraProps.worldPosition, cameraProps.worldPosition + front, up);
+	}
+
+	auto ComputeCameraProjection(const double fov, const double width, const double height, const double zNear, const double zFar) -> glm::mat4
+	{
+		return glm::perspective(glm::radians(fov), width / height, zNear, zFar);
+	}
+
 
 	auto Camera::GetWorldPosition() const -> glm::dvec3
 	{
