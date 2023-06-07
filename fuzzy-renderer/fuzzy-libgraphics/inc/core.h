@@ -7,6 +7,8 @@ namespace libgraphics
 	class IGraphicsWindow;
 	enum class GraphicsAPI;
 
+	using RenderFunction = std::function<void(float)>;
+
 	class LIBGRAPHICS_API Core final
 	{
 	public:
@@ -16,7 +18,7 @@ namespace libgraphics
 		Core& operator=(Core&&) = delete;
 
 		auto Init(const GraphicsAPI api, int contextWidth, int contextHeight, std::string_view contextTitle) -> void;
-		auto Update() -> void;
+		auto Update(const RenderFunction&) -> void;
 		static auto GetInstance() -> Core&;
 
 	private:

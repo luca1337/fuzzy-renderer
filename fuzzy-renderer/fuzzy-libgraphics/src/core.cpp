@@ -26,15 +26,24 @@ namespace libgraphics
 		}
 	}
 
-	auto Core::Update() -> void
+	auto Core::Update(const RenderFunction& renderFunction) -> void
 	{
 		const auto glfwWindow = reinterpret_cast<GLFWwindow*>(_graphicsWindow->GetNativeHandle()->GetNativeHandle());
 
+		auto previousTime = glfwGetTime();
+
 		while (!glfwWindowShouldClose(glfwWindow))
 		{
+			auto currentTime = glfwGetTime();
+			auto deltaTime = static_cast<float>(currentTime - previousTime);
+			previousTime = currentTime;
+
 			_graphicsWindow->Clear();
 
-			// render stuff here...
+			if (renderFunction)
+			{
+				renderFunction(deltaTime);
+			}
 
 			_graphicsWindow->SwapBuffers();
 		}
