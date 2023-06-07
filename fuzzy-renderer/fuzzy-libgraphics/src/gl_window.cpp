@@ -1,6 +1,7 @@
-#include "gl_window.h"
-#include "gl_context.h"
+#include <gl_window.h>
+#include <gl_context.h>
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 namespace libgraphics
@@ -16,7 +17,7 @@ namespace libgraphics
 		_graphicsContext->Shutdown();
 	}
 
-	auto GLWindow::ClearBuffer() -> void
+	auto GLWindow::Clear() -> void
 	{
 		glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -25,6 +26,8 @@ namespace libgraphics
 	auto GLWindow::SwapBuffers() -> void
 	{
 		const auto glfwNativeWindowHandle = reinterpret_cast<GLFWwindow*>(_graphicsContext->GetNativeHandle());
+
 		glfwSwapBuffers(glfwNativeWindowHandle);
+		glfwPollEvents();
 	}
 }

@@ -26,6 +26,10 @@ namespace libgraphics
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MinorVersion);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+#ifdef __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
 		_glfwNativeWindowHandle = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
 		if (!_glfwNativeWindowHandle) 
 		{
@@ -48,6 +52,9 @@ namespace libgraphics
 		}
 
 		glViewport(0, 0, width, height);
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
 
 		CX_CORE_INFO("OpenGL Context initialized!");
 	}
