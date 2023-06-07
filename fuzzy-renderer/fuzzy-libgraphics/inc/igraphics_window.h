@@ -4,6 +4,8 @@
 
 namespace libgraphics
 {
+	class IGraphicsContext;
+
 	/// <summary>
 	/// Base Interface for all graphics windows (OpenGL, DirectX, Vulkan..)
 	/// </summary>
@@ -14,6 +16,6 @@ namespace libgraphics
 
 		virtual auto Create() -> void = 0;
 		virtual auto Destroy() -> void = 0;
-		[[nodiscard]]  virtual auto GetNativeHandle() const -> void* = 0;
+		[[nodiscard]]  virtual auto GetNativeHandle() const -> const std::shared_ptr<IGraphicsContext>& = 0;
 	};
 }
