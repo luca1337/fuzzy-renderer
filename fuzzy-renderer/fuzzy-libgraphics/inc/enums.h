@@ -2,7 +2,7 @@
 
 namespace libgraphics
 {
-	enum class GraphicsAPIType
+	enum class GraphicsAPI
 	{
 		OpenGL,
 		DirectX

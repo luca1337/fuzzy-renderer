@@ -144,6 +144,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="inc\bytecode.h" />
+    <ClInclude Include="inc\core.h" />
+    <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\gl_context.h" />
     <ClInclude Include="inc\gl_window.h" />
@@ -152,6 +154,7 @@
     <ClInclude Include="inc\logger.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\gl_context.cpp" />

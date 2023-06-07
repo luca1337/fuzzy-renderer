@@ -36,6 +36,12 @@
     <ClInclude Include="inc\igraphics_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -51,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,5 @@
 #include "gl_context.h"
+#include "logger.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +18,7 @@ namespace libgraphics
 	{
 		if (!glfwInit())
 		{
-			//todo: gestione errore
+			CX_CORE_ERROR("Unable to initialize glfw3");
 			return;
 		}
 
@@ -25,11 +26,10 @@ namespace libgraphics
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MinorVersion);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		// Crea la finestra GLFW
 		_glfwNativeWindowHandle = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
 		if (!_glfwNativeWindowHandle) 
 		{
-			//todo: gestione errore
+			CX_CORE_ERROR("Unable to create glfw3 Window");
 			glfwTerminate();
 			return;
 		}
@@ -41,15 +41,22 @@ namespace libgraphics
 
 		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 		{
-			//todo: gestione errore
+			CX_CORE_ERROR("Unable to load opengl/glad symbols gladLoadGLLoader()");
+			glfwDestroyWindow(_glfwNativeWindowHandle);
+			glfwTerminate();
 			return;
 		}
 
 		glViewport(0, 0, width, height);
+
+		CX_CORE_INFO("OpenGL Context initialized!");
 	}
 
 	auto GLContext::Shutdown() -> void
 	{
-		// todo: implement shutdown
+		CX_CORE_TRACE("Shutting down GL Context");
+
+		glfwDestroyWindow(_glfwNativeWindowHandle);
+		glfwTerminate();
 	}
 }

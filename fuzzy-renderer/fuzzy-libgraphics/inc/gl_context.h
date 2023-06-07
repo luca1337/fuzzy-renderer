@@ -18,7 +18,7 @@ namespace libgraphics
 		auto Shutdown() -> void override;
 		auto Data() const -> const ContextData& override { return _contextData; }
 		auto Data() -> ContextData& override { return _contextData; }
-		[[nodiscard]] auto GetNativeHandle() const -> const void* override { return reinterpret_cast<GLFWwindow*>(_glfwNativeWindowHandle); }
+		[[nodiscard]] auto GetNativeHandle() const -> void* override { return reinterpret_cast<GLFWwindow*>(_glfwNativeWindowHandle); }
 
 	private:
 
