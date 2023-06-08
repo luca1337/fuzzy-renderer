@@ -37,6 +37,8 @@ namespace libgraphics
 	private:
 		Core() = default;
 
+		std::shared_ptr<class IMesh> m_test_cube = {};
+
 		CoreImpl* m_p_impl = nullptr;
 	};
 }

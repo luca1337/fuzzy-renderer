@@ -10,12 +10,12 @@ namespace libgraphics
     class Transform;
     class IShader;
 
-    class IMesh
+    class LIBGRAPHICS_API IMesh
     {
     public:
-        virtual ~IMesh();
+        virtual ~IMesh() = default;
 
-        virtual auto UpdateMatrix(const std::shared_ptr<Transform>& transform) -> void = 0;
+        virtual auto UpdateMatrix(const Transform& transform) -> void = 0;
         virtual auto Draw() -> void = 0;
         virtual auto SetShader(const std::shared_ptr<IShader>& shader) -> void = 0;
         virtual auto GetShader() const -> const IShader& = 0;

@@ -1,10 +1,11 @@
 #include <core.h>
 #include <enums.h>
-#include <iostream>
+
+#include <logger.h>
 #include <opengl/gl_context.h>
 #include <opengl/gl_window.h>
-#include <logger.h>
 #include <opengl/gl_shader.h>
+#include <opengl/gl_mesh.h>
 
 #include <GLFW/glfw3.h>
 
@@ -26,9 +27,153 @@ namespace libgraphics
 			m_p_impl->m_graphics_window->Create(contextWidth, contextHeight, contextTitle);
 
 			// compile shaders
-			auto basic_shader = libgraphics::GLShader("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
+			auto basic_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
 
 			m_p_impl->m_main_camera = {};
+
+			std::vector<glm::vec3> vertices =
+			{
+				// first facet front
+				{-1, 1, -1},
+				{-1, -1, -1},
+				{1, -1, -1},
+				{-1, 1, -1},
+				{1, 1, -1},
+				{1, -1, -1},
+
+				// second facet back
+				{-1, 1, 1},
+				{-1, -1, 1},
+				{1, -1, 1},
+				{-1, 1, 1},
+				{1, 1, 1},
+				{1, -1, 1},
+
+				// third facet left
+				{-1, 1, 1},
+				{-1, -1, 1},
+				{-1, -1, -1},
+				{-1, 1, 1},
+				{-1, 1, -1},
+				{-1, -1, -1},
+
+				// fourth facet right
+				{1, 1, 1},
+				{1, -1, 1},
+				{1, -1, -1},
+				{1, 1, 1},
+				{1, 1, -1},
+				{1, -1, -1},
+
+				// fifth facet up
+				{-1, 1, 1},
+				{-1, 1, -1},
+				{1, 1, -1},
+				{-1, 1, 1},
+				{1, 1, 1},
+				{1, 1, -1},
+
+				// sixth facet down
+				{-1, -1, 1},
+				{-1, -1, -1},
+				{1, -1, -1},
+				{-1, -1, 1},
+				{1, -1, 1},
+				{1, -1, -1}
+			};
+
+			std::vector<glm::vec2> uvs =
+			{
+				{0, 1},
+				{0, 0},
+				{1, 0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+
+				{0, 1},
+				{0, 0},
+				{1, 0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+
+				{0, 1},
+				{0, 0},
+				{1, 0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+
+				{0, 1},
+				{0, 0},
+				{1, 0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+
+				{0, 1},
+				{0, 0},
+				{1, 0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+
+				{0, 1},
+				{0, 0},
+				{1, 0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+			};
+
+			std::vector<glm::vec3> normals =
+			{
+				{0, 0, -1},
+				{0, 0, -1},
+				{0, 0, -1},
+				{0, 0, -1},
+				{0, 0, -1},
+				{0, 0, -1},
+
+				{0, 0, 1},
+				{0, 0, 1},
+				{0, 0, 1},
+				{0, 0, 1},
+				{0, 0, 1},
+				{0, 0, 1},
+
+				{-1, 0, 0},
+				{-1, 0, 0},
+				{-1, 0, 0},
+				{-1, 0, 0},
+				{-1, 0, 0},
+				{-1, 0, 0},
+
+				{1, 0, 0},
+				{1, 0, 0},
+				{1, 0, 0},
+				{1, 0, 0},
+				{1, 0, 0},
+				{1, 0, 0},
+
+				{0, 1, 0},
+				{0, 1, 0},
+				{0, 1, 0},
+				{0, 1, 0},
+				{0, 1, 0},
+				{0, 1, 0},
+
+				{0, -1, 0},
+				{0, -1, 0},
+				{0, -1, 0},
+				{0, -1, 0},
+				{0, -1, 0},
+				{0, -1, 0},
+			};
+
+			m_test_cube = std::make_shared<GLMesh>(vertices, normals, uvs);
+			m_test_cube->SetShader(basic_shader);
 		}
 		break;
 		case GraphicsAPI::DirectX: break;
@@ -59,6 +204,15 @@ namespace libgraphics
 				m_p_impl->m_main_camera.Reset();
 			}
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
+
+			m_test_cube->Draw();
+
+			auto transform = Transform{};
+			transform.m_translation = {};
+			transform.m_scale = { 1.0f, 1.0f, 1.0f };
+			transform.m_rotation = {};
+
+			m_test_cube->UpdateMatrix(transform);
 
 			if (renderFunction)
 			{

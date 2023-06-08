@@ -5,7 +5,7 @@
 
 namespace libgraphics
 {
-	class GLShader final : public IShader
+	class LIBGRAPHICS_API GLShader final : public IShader
 	{
 	public:
 		GLShader() = default;

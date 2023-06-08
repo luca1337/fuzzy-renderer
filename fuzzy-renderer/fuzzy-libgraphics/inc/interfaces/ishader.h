@@ -6,7 +6,7 @@
 
 namespace libgraphics
 {
-    class IShader
+    class LIBGRAPHICS_API IShader
     {
     public:
 	    virtual ~IShader() = default;

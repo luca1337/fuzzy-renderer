@@ -56,6 +56,8 @@ namespace libgraphics
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
+		m_context_data = { width, height };
+
 		CX_CORE_INFO("OpenGL Context initialized!");
 	}
 

@@ -36,7 +36,7 @@ namespace libgraphics
         // Compile shader
         auto CompileShader = [&](const std::span<const char> shader_source, const GLenum shader_type) -> GLuint {
 	        const auto shader = glCreateShader(shader_type);
-            const char* shader_source_ptr = shader_source.data();
+            const auto shader_source_ptr = shader_source.data();
             glShaderSource(shader, 1, &shader_source_ptr, nullptr);
             glCompileShader(shader);
 
@@ -79,6 +79,6 @@ namespace libgraphics
         glDeleteShader(vertex_id);
         glDeleteShader(fragment_id);
 
-        CX_CORE_INFO("Shaders successfully compiled!");
+        CX_CORE_INFO("GLSL Shaders successfully compiled!");
     }
 }

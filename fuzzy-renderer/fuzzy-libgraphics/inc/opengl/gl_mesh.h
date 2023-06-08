@@ -6,17 +6,17 @@
 
 namespace libgraphics
 {
-	class GLMesh final : public IMesh
+	class LIBGRAPHICS_API GLMesh final : public IMesh
 	{
 	public:
 		GLMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs);
 		explicit GLMesh(const std::string_view file_name);
 
-		auto UpdateMatrix(const std::shared_ptr<Transform>& transform) -> void override;
+		auto UpdateMatrix(const Transform& transform) -> void override;
 		auto Draw() -> void override;
 
 		auto SetShader(const std::shared_ptr<IShader>& shader) -> void override;
-		auto GetShader() const -> const IShader & override { return m_shader; }
+		auto GetShader() const -> const IShader & override { return *m_shader; }
 
 		[[nodiscard]] auto GetVertices() const -> std::vector<glm::vec3> override { return m_vertices; }
 		[[nodiscard]] auto GetVertexNormals() const -> std::vector<glm::vec3> override { return m_normals; }
@@ -27,7 +27,7 @@ namespace libgraphics
 		auto SetUvs(const std::vector<glm::vec2>& uvs) -> void override { m_uvs = uvs; }
 
 	private:
-		GLShader m_shader = {};
+		std::shared_ptr<IShader> m_shader = {};
 
 		Transform m_transform = {};
 

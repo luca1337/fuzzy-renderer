@@ -21,7 +21,7 @@ void main()
 
 	float lambert_effect = max(dot(normalized_world_normal, light_direction), 0.0);
 
-	vec3 final_color = texel * lambert_effect;
+	vec3 final_color = vec3(1.0, 1.0, 1.0) * lambert_effect;
 
 	FragColog = vec4(final_color, 1);
 }
