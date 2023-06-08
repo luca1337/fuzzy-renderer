@@ -8,13 +8,13 @@ namespace libgraphics
 {
 	auto GLWindow::Create(const int width, const int height, const std::string_view title) -> void
 	{
-		_graphicsContext = std::make_shared<GLContext>();
-		_graphicsContext->Init(width, height, title);
+		m_graphics_context = std::make_shared<GLContext>();
+		m_graphics_context->Init(width, height, title);
 	}
 
 	auto GLWindow::Destroy() -> void
 	{
-		_graphicsContext->Shutdown();
+		m_graphics_context->Shutdown();
 	}
 
 	auto GLWindow::Clear() -> void
@@ -25,7 +25,7 @@ namespace libgraphics
 
 	auto GLWindow::SwapBuffers() -> void
 	{
-		const auto glfwNativeWindowHandle = reinterpret_cast<GLFWwindow*>(_graphicsContext->GetNativeHandle());
+		const auto glfwNativeWindowHandle = reinterpret_cast<GLFWwindow*>(m_graphics_context->GetNativeHandle());
 
 		glfwSwapBuffers(glfwNativeWindowHandle);
 		glfwPollEvents();

@@ -12,9 +12,9 @@ namespace libgraphics
 	auto CalculateDirectionVectors(const CameraProps& camera_props) -> std::tuple<glm::dvec3, glm::dvec3, glm::dvec3>
 	{
 		glm::dvec3 direction = {};
-		direction.x = cos(glm::radians(camera_props.yaw)) * cos(glm::radians(camera_props.pitch));
-		direction.y = -sin(glm::radians(camera_props.pitch));
-		direction.z = sin(glm::radians(camera_props.yaw)) * cos(glm::radians(camera_props.pitch));
+		direction.x = cos(glm::radians(camera_props.m_yaw)) * cos(glm::radians(camera_props.m_pitch));
+		direction.y = -sin(glm::radians(camera_props.m_pitch));
+		direction.z = sin(glm::radians(camera_props.m_yaw)) * cos(glm::radians(camera_props.m_pitch));
 		const auto front = glm::normalize(direction);
 
 		constexpr glm::dvec3 world_up = { 0.0, 1.0, 0.0 };
@@ -28,81 +28,81 @@ namespace libgraphics
 	auto GetViewMatrix(const CameraProps& cameraProps) -> glm::mat4
 	{
 		const auto [front, right, up] = CalculateDirectionVectors(cameraProps);
-		return glm::lookAt(cameraProps.worldPosition, cameraProps.worldPosition + front, up);
+		return glm::lookAt(cameraProps.m_world_position, cameraProps.m_world_position + front, up);
 	}
 
-	auto ComputeCameraProjection(const double fov, const double width, const double height, const double zNear, const double zFar) -> glm::mat4
+	auto ComputeCameraProjection(const double fov, const double width, const double height, const double z_near, const double z_far) -> glm::mat4
 	{
-		return glm::perspective(glm::radians(fov), width / height, zNear, zFar);
+		return glm::perspective(glm::radians(fov), width / height, z_near, z_far);
 	}
 
 	auto Camera::GetWorldPosition() const -> glm::dvec3
 	{
-		return glm::dvec3();
+		return m_camera_props.m_world_position;
 	}
 
 	bool first_mouse = true;
-	double lastX = {}, lastY = {};
-	double xPos = {}, yPos = {};
-	auto Camera::RotateByMouse(std::shared_ptr<GLWindow>& window) -> void
+	double last_x = {}, last_y = {};
+	double x_pos = {}, y_pos = {};
+	auto Camera::RotateByMouse(const std::shared_ptr<IGraphicsWindow>& window) -> void
 	{
-		const auto glfwNativeWindowHandle = reinterpret_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
+		const auto glfwNativeWindowHandle = static_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
 
-		glfwGetCursorPos(glfwNativeWindowHandle, &xPos, &yPos);
+		glfwGetCursorPos(glfwNativeWindowHandle, &x_pos, &y_pos);
 
-		const auto delta = (glm::dvec2(xPos, yPos) - _previousPosition.value_or(glm::dvec2(xPos, yPos))) * 0.1;
-		_previousPosition = glm::dvec2(xPos, yPos);
+		const auto delta = (glm::dvec2(x_pos, y_pos) - m_previous_position.value_or(glm::dvec2(x_pos, y_pos))) * 0.1;
+		m_previous_position = glm::dvec2(x_pos, y_pos);
 
-		CameraProps.yaw += delta.x;
-		CameraProps.pitch += delta.y;
+		m_camera_props.m_yaw += delta.x;
+		m_camera_props.m_pitch += delta.y;
 
-		// make sure that when pitch is out of bounds, screen doesn't get flipped.
-		constexpr auto max_pitch = 89.9f;
-		if (CameraProps.pitch >= max_pitch)	CameraProps.pitch = max_pitch;
-		if (CameraProps.pitch <= -max_pitch) CameraProps.pitch = -max_pitch;
+		// make sure that when m_pitch is out of bounds, screen doesn't get flipped.
+		constexpr auto max_pitch = 89.9;
+		if (m_camera_props.m_pitch >= max_pitch)	m_camera_props.m_pitch = max_pitch;
+		if (m_camera_props.m_pitch <= -max_pitch) m_camera_props.m_pitch = -max_pitch;
 	}
 
-	auto Camera::Animate(std::shared_ptr<GLWindow>& window, const double deltaTime) -> void
+	auto Camera::Animate(const std::shared_ptr<IGraphicsWindow>& window, const double delta_time) -> void
 	{
-		const auto glfwNativeWindowHandle = reinterpret_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
+		const auto glfwNativeWindowHandle = static_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
 
 		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_W))
 		{
-			Translate(CameraDirection::Front, deltaTime);
+			Translate(CameraDirection::front, delta_time);
 		}
 		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_S))
 		{
-			Translate(CameraDirection::Back, deltaTime);
+			Translate(CameraDirection::back, delta_time);
 		}
 		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_A))
 		{
-			Translate(CameraDirection::Left, deltaTime);
+			Translate(CameraDirection::left, delta_time);
 		}
 		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_D))
 		{
-			Translate(CameraDirection::Right, deltaTime);
+			Translate(CameraDirection::right, delta_time);
 		}
 		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_E))
 		{
-			Translate(CameraDirection::Up, deltaTime);
+			Translate(CameraDirection::up, delta_time);
 		}
 		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_Q))
 		{
-			Translate(CameraDirection::Down, deltaTime);
+			Translate(CameraDirection::down, delta_time);
 		}
 	}
 
-	auto Camera::Translate(const CameraDirection direction, const double deltaTime) -> void
+	auto Camera::Translate(const CameraDirection direction, const double delta_time) -> void
 	{
-		const auto [front, right, up] = CalculateDirectionVectors(CameraProps);
+		const auto [front, right, up] = CalculateDirectionVectors(m_camera_props);
 		switch (direction)
 		{
-		case (CameraDirection::Front):	CameraProps.worldPosition += front * 15.0 * deltaTime; break;
-		case (CameraDirection::Back):	CameraProps.worldPosition -= front * 15.0 * deltaTime; break;
-		case (CameraDirection::Left):	CameraProps.worldPosition -= right * 15.0 * deltaTime; break;
-		case (CameraDirection::Right):	CameraProps.worldPosition += right * 15.0 * deltaTime; break;
-		case (CameraDirection::Up):		CameraProps.worldPosition += up * 15.0 * deltaTime; break;
-		case (CameraDirection::Down):	CameraProps.worldPosition -= up * 15.0 * deltaTime; break;
+		case (CameraDirection::front):	m_camera_props.m_world_position += front * 15.0 * delta_time; break;
+		case (CameraDirection::back):	m_camera_props.m_world_position -= front * 15.0 * delta_time; break;
+		case (CameraDirection::left):	m_camera_props.m_world_position -= right * 15.0 * delta_time; break;
+		case (CameraDirection::right):	m_camera_props.m_world_position += right * 15.0 * delta_time; break;
+		case (CameraDirection::up):		m_camera_props.m_world_position += up * 15.0 * delta_time; break;
+		case (CameraDirection::down):	m_camera_props.m_world_position -= up * 15.0 * delta_time; break;
 		default:break;
 		}
 	}

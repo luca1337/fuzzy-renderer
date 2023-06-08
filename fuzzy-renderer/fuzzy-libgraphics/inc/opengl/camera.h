@@ -3,46 +3,45 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <tuple>
 #include <optional>
 #include <memory>
 
 namespace libgraphics
 {
-	class GLWindow;
+	class IGraphicsWindow;
 
 	enum class CameraDirection
 	{
-		Front,
-		Back,
-		Left,
-		Right,
-		Up,
-		Down
+		front,
+		back,
+		left,
+		right,
+		up,
+		down
 	};
 
 	struct CameraProps
 	{
-		glm::dvec3 worldPosition = { 0.0f, 0.0f, 5.0f };
-		glm::mat4 projection = glm::identity<glm::mat4>();
-		double yaw = { -90.0 };
-		double pitch = { 0.0 };
-		double fov = { 65.0 };
+		glm::dvec3 m_world_position = { 0.0f, 0.0f, 5.0f };
+		glm::mat4 m_projection = glm::identity<glm::mat4>();
+		double m_yaw = { -90.0 };
+		double m_pitch = { 0.0 };
+		double m_fov = { 65.0 };
 	};
 
 	auto GetViewMatrix(const CameraProps&) -> glm::mat4;
-	auto ComputeCameraProjection(const double fov, const double width, const double height, const double zNear, const double zFar) -> glm::mat4;
+	auto ComputeCameraProjection(const double fov, const double width, const double height, const double z_near, const double z_far) -> glm::mat4;
 
 	class Camera
 	{
 	public:
 		auto GetWorldPosition() const->glm::dvec3;
-		auto RotateByMouse(std::shared_ptr<GLWindow>& window) -> void;
-		auto Animate(std::shared_ptr<GLWindow>& window, const double deltaTime) -> void;
-		void Reset() { _previousPosition.reset(); }
-		CameraProps CameraProps = {};
+		auto RotateByMouse(const std::shared_ptr<IGraphicsWindow>& window) -> void;
+		auto Animate(const std::shared_ptr<IGraphicsWindow>& window, const double delta_time) -> void;
+		void Reset() { m_previous_position.reset(); }
+		CameraProps m_camera_props = {};
 	private:
-		auto Translate(const CameraDirection, const double deltaTime) -> void;
-		std::optional<glm::dvec2> _previousPosition;
+		auto Translate(const CameraDirection, const double delta_time) -> void;
+		std::optional<glm::dvec2> m_previous_position;
 	};
 }

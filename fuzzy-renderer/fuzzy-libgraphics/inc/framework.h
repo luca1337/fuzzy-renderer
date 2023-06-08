@@ -2,6 +2,7 @@
 
 #include <string_view>
 #include <functional>
+#include <vector>
 #include <memory>
 
 #ifdef FUZZYLIBGRAPHICS_EXPORTS

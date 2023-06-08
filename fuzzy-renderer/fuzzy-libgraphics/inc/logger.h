@@ -12,12 +12,12 @@ namespace libgraphics_logger
 	public:
 		LIBGRAPHICS_API static void Init();
 
-		LIBGRAPHICS_API inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return _coreLogger; }
-		LIBGRAPHICS_API inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return _clientLogger; }
+		LIBGRAPHICS_API inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return m_core_logger; }
+		LIBGRAPHICS_API inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return m_client_logger; }
 
 	private:
-		LIBGRAPHICS_API static std::shared_ptr<spdlog::logger> _coreLogger;
-		LIBGRAPHICS_API static std::shared_ptr<spdlog::logger> _clientLogger;
+		LIBGRAPHICS_API static std::shared_ptr<spdlog::logger> m_core_logger;
+		LIBGRAPHICS_API static std::shared_ptr<spdlog::logger> m_client_logger;
 	};
 }
 

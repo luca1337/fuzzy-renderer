@@ -9,8 +9,8 @@ namespace libgraphics
 	auto FramebufferSizeCallback(GLFWwindow* window, const int width, const int height) -> void
 	{
 		auto& windowPtr = *static_cast<GLContext*>(glfwGetWindowUserPointer(window));
-		windowPtr.Data().width = width;
-		windowPtr.Data().height = height;
+		windowPtr.Data().m_width = width;
+		windowPtr.Data().m_height = height;
 		glViewport(0, 0, width, height);
 	}
 
@@ -30,8 +30,8 @@ namespace libgraphics
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-		_glfwNativeWindowHandle = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
-		if (!_glfwNativeWindowHandle) 
+		m_glfw_native_window_handle = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+		if (!m_glfw_native_window_handle) 
 		{
 			CX_CORE_ERROR("Unable to create glfw3 Window");
 			glfwTerminate();
@@ -39,14 +39,14 @@ namespace libgraphics
 		}
 
 		// Imposta il contesto OpenGL sulla finestra
-		glfwMakeContextCurrent(_glfwNativeWindowHandle);
-		glfwSetWindowUserPointer(_glfwNativeWindowHandle, this);
-		glfwSetFramebufferSizeCallback(_glfwNativeWindowHandle, FramebufferSizeCallback);
+		glfwMakeContextCurrent(m_glfw_native_window_handle);
+		glfwSetWindowUserPointer(m_glfw_native_window_handle, this);
+		glfwSetFramebufferSizeCallback(m_glfw_native_window_handle, FramebufferSizeCallback);
 
 		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 		{
 			CX_CORE_ERROR("Unable to load opengl/glad symbols gladLoadGLLoader()");
-			glfwDestroyWindow(_glfwNativeWindowHandle);
+			glfwDestroyWindow(m_glfw_native_window_handle);
 			glfwTerminate();
 			return;
 		}
@@ -63,7 +63,7 @@ namespace libgraphics
 	{
 		CX_CORE_TRACE("Shutting down GL Context");
 
-		glfwDestroyWindow(_glfwNativeWindowHandle);
+		glfwDestroyWindow(m_glfw_native_window_handle);
 		glfwTerminate();
 	}
 }

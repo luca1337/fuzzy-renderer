@@ -149,12 +149,15 @@
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
     <ClInclude Include="inc\interfaces\igraphics_window.h" />
+    <ClInclude Include="inc\interfaces\imesh.h" />
     <ClInclude Include="inc\interfaces\ishader.h" />
     <ClInclude Include="inc\logger.h" />
     <ClInclude Include="inc\opengl\camera.h" />
     <ClInclude Include="inc\opengl\gl_context.h" />
+    <ClInclude Include="inc\opengl\gl_mesh.h" />
     <ClInclude Include="inc\opengl\gl_shader.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
+    <ClInclude Include="inc\transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core.cpp" />
@@ -163,8 +166,15 @@
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\opengl\camera.cpp" />
     <ClCompile Include="src\opengl\gl_context.cpp" />
+    <ClCompile Include="src\opengl\gl_mesh.cpp" />
     <ClCompile Include="src\opengl\gl_shader.cpp" />
     <ClCompile Include="src\opengl\gl_window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\glsl\fragment.glsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="shaders\glsl\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

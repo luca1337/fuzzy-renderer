@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{a2117124-1d6c-4e8a-922b-2830bf44d6f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\OpenGL">
+      <UniqueIdentifier>{1007c3df-612b-4d93-827a-6f17db2d080a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\framework.h">
@@ -51,6 +57,15 @@
     <ClInclude Include="inc\opengl\gl_shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\interfaces\imesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -77,5 +92,16 @@
     <ClCompile Include="src\opengl\gl_shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\opengl\gl_mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\glsl\vertex.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\glsl\fragment.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -13,10 +13,10 @@ namespace libgraphics
 		auto Destroy() -> void override;
 		auto Clear() -> void override;
 		auto SwapBuffers() -> void override;
-		[[nodiscard]] auto GetNativeHandle() const -> const std::shared_ptr<IGraphicsContext> & override { return _graphicsContext; }
+		[[nodiscard]] auto GetNativeHandle() const -> const std::shared_ptr<IGraphicsContext> & override { return m_graphics_context; }
 
 	private:
 
-		std::shared_ptr<IGraphicsContext> _graphicsContext;
+		std::shared_ptr<IGraphicsContext> m_graphics_context;
 	};
 }

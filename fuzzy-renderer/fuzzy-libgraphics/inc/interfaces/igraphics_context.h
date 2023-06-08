@@ -6,8 +6,8 @@ namespace libgraphics
 {
 	struct LIBGRAPHICS_API ContextData
 	{
-		int width = {};
-		int height = {};
+		int m_width = {};
+		int m_height = {};
 	};
 
 	class LIBGRAPHICS_API IGraphicsContext
