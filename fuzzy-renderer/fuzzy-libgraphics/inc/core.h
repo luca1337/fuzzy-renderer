@@ -9,6 +9,13 @@ namespace libgraphics
 
 	using RenderFunction = std::function<void(float)>;
 
+	class CoreImpl
+	{
+	public:
+		GraphicsAPI _graphicsApi;
+		std::unique_ptr<IGraphicsWindow> _graphicsWindow;
+	};
+
 	class LIBGRAPHICS_API Core final
 	{
 	public:
@@ -24,7 +31,6 @@ namespace libgraphics
 	private:
 		Core() = default;
 
-		GraphicsAPI _graphicsApi = {};
-		std::shared_ptr<IGraphicsWindow> _graphicsWindow = {};
+		CoreImpl* _pImpl = nullptr;
 	};
 }

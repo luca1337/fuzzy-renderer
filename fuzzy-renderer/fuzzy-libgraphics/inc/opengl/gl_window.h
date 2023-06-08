@@ -6,7 +6,7 @@ namespace libgraphics
 {
 	class IGraphicsContext;
 
-	class LIBGRAPHICS_API GLWindow : public IGraphicsWindow
+	class GLWindow : public IGraphicsWindow
 	{
 	public:
 		auto Create(const int width, const int height, const std::string_view title) -> void override;

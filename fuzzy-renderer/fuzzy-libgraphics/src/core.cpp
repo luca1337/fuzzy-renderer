@@ -10,6 +10,9 @@ namespace libgraphics
 {
 	auto Core::Init(const GraphicsAPI api, int contextWidth, int contextHeight, std::string_view contextTitle) -> void
 	{
+		_pImpl = new CoreImpl();
+		_pImpl->_graphicsApi = api;
+
 		// Init logger
 		libgraphics_logger::Logger::Init();
 
@@ -17,8 +20,8 @@ namespace libgraphics
 		{
 		case GraphicsAPI::OpenGL:
 		{
-			_graphicsWindow = std::make_shared<GLWindow>();
-			_graphicsWindow->Create(contextWidth, contextHeight, contextTitle);
+			_pImpl->_graphicsWindow = std::make_unique<GLWindow>();
+			_pImpl->_graphicsWindow->Create(contextWidth, contextHeight, contextTitle);
 		}
 		break;
 		case GraphicsAPI::DirectX: /* .. .  .   .    .     .     .    .   .  . .. */ break;
@@ -28,7 +31,7 @@ namespace libgraphics
 
 	auto Core::Update(const RenderFunction& renderFunction) -> void
 	{
-		const auto glfwWindow = reinterpret_cast<GLFWwindow*>(_graphicsWindow->GetNativeHandle()->GetNativeHandle());
+		const auto glfwWindow = reinterpret_cast<GLFWwindow*>(_pImpl->_graphicsWindow->GetNativeHandle()->GetNativeHandle());
 
 		auto previousTime = glfwGetTime();
 
@@ -38,14 +41,14 @@ namespace libgraphics
 			auto deltaTime = static_cast<float>(currentTime - previousTime);
 			previousTime = currentTime;
 
-			_graphicsWindow->Clear();
+			_pImpl->_graphicsWindow->Clear();
 
 			if (renderFunction)
 			{
 				renderFunction(deltaTime);
 			}
 
-			_graphicsWindow->SwapBuffers();
+			_pImpl->_graphicsWindow->SwapBuffers();
 		}
 	}
 
