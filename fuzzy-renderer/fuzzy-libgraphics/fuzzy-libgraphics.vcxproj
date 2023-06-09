@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)fuzzy-libgraphics\vendor\glm;$(SolutionDir)fuzzy-libgraphics\vendor\glad\include;$(SolutionDir)fuzzy-libgraphics\vendor\glfw\include;$(SolutionDir)fuzzy-libgraphics\inc;$(SolutionDir)fuzzy-libgraphics\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)fuzzy-libgraphics\vendor\glm;$(SolutionDir)fuzzy-libgraphics\vendor\glad\include;$(SolutionDir)fuzzy-libgraphics\vendor\glfw\include;$(SolutionDir)fuzzy-libgraphics\vendor\spdlog\include;$(SolutionDir)fuzzy-libgraphics\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -162,13 +162,13 @@
   <ItemGroup>
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
-    <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\opengl\camera.cpp" />
     <ClCompile Include="src\opengl\gl_context.cpp" />
     <ClCompile Include="src\opengl\gl_mesh.cpp" />
     <ClCompile Include="src\opengl\gl_shader.cpp" />
     <ClCompile Include="src\opengl\gl_window.cpp" />
+    <ClCompile Include="vendor\glad\src\gl.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\glsl\fragment.glsl">

@@ -12,42 +12,6 @@ namespace libgraphics
 {
 	GLMesh::GLMesh(const std::string_view file_name)
 	{
-		m_transform.m_scale = { 1.0f, 1.0f, 1.0f };
-	}
-
-	auto GLMesh::UpdateMatrix(const Transform& transform) -> void
-	{
-		auto& core = Core::GetInstance();
-		const auto gl_context = ::std::dynamic_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
-
-		const auto translation_mat = glm::translate(transform.m_translation);
-		const auto scale_mat = glm::scale(transform.m_scale);
-		const auto rotation_mat = glm::mat4_cast(transform.m_rotation);
-
-		const auto model = translation_mat * rotation_mat * scale_mat;
-		const auto view = GetViewMatrix(core.GetMainCamera().m_camera_props);
-		const auto projection = ComputeCameraProjection(60.0f, gl_context->Data().m_width, gl_context->Data().m_height, 0.01f, 1000.0f);
-		const auto eye = core.GetMainCamera().GetWorldPosition();
-
-		m_shader->SetMatrix4x4("model", model);
-		m_shader->SetMatrix4x4("view", view);
-		m_shader->SetMatrix4x4("projection", projection);
-		m_shader->SetVec3("eye", eye);
-	}
-
-	auto GLMesh::Draw() -> void
-	{
-		m_shader->Bind();
-
-		// draw textures here: glBindTexture(GL_TEXTURE_2D, texture);
-
-		glBindVertexArray(m_vao);
-		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_vertices.size()));
-	}
-
-	auto GLMesh::SetShader(const std::shared_ptr<IShader>& shader) -> void
-	{
-		m_shader = shader;
 	}
 
 	GLMesh::GLMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs)
@@ -63,8 +27,21 @@ namespace libgraphics
 		SetUvs(uvs);
 	}
 
+	auto GLMesh::Draw(const std::shared_ptr<IShader>& shader) -> void
+	{
+		shader->Bind();
+
+		// draw textures here: glBindTexture(GL_TEXTURE_2D, texture);
+
+		glBindVertexArray(m_vao);
+
+		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_vertices.size()));
+
+		UpdateMatrix(shader, {});
+	}
+
 	auto GLMesh::SendGPUData(const void* data, const int data_size, const size_t vbo_index, const unsigned slot,
-	                         const int slot_size, const size_t stride, const unsigned attrib_array_index) -> void
+	                         const int slot_size, const size_t stride, const unsigned attrib_array_index) const -> void
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_vbos[vbo_index]);
 		glBufferData(GL_ARRAY_BUFFER, data_size, data, GL_STATIC_DRAW);
@@ -77,5 +54,25 @@ namespace libgraphics
 		glGenVertexArrays(vao_size, vao_array);
 		glBindVertexArray(*vao_array);
 		glGenBuffers(vbo_size, vbo_array);
+	}
+
+	auto GLMesh::UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void
+	{
+		const auto& core = Core::GetInstance();
+		const auto gl_context = ::std::static_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
+
+		const auto translation_mat = glm::translate(transform.m_translation);
+		const auto scale_mat = glm::scale(transform.m_scale);
+		const auto rotation_mat = glm::mat4_cast(transform.m_rotation);
+
+		const auto model = translation_mat * rotation_mat * scale_mat;
+		const auto view = GetViewMatrix(core.GetMainCamera().m_camera_props);
+		const auto projection = ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0);
+		const auto eye = core.GetMainCamera().GetWorldPosition();
+
+		shader->SetMatrix4x4("model", model);
+		shader->SetMatrix4x4("view", view);
+		shader->SetMatrix4x4("projection", projection);
+		shader->SetVec3("eye", eye);
 	}
 }

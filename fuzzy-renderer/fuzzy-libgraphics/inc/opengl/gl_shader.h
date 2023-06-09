@@ -1,11 +1,11 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <interfaces/ishader.h>
 
 namespace libgraphics
 {
-	class LIBGRAPHICS_API GLShader final : public IShader
+	class GLShader final : public IShader
 	{
 	public:
 		GLShader() = default;

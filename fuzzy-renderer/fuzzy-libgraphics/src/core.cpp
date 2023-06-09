@@ -11,23 +11,23 @@
 
 namespace libgraphics
 {
-	auto Core::Init(const GraphicsAPI api, int contextWidth, int contextHeight, std::string_view contextTitle) -> void
+	auto Core::Init(const GraphicsAPI api_type, int context_width, int context_height, const std::string_view context_title) -> void
 	{
 		m_p_impl = new CoreImpl();
-		m_p_impl->m_graphics_api = api;
+		m_p_impl->m_graphics_api = api_type;
 
 		// Init logger
 		libgraphics_logger::Logger::Init();
 
-		switch (api)
+		switch (api_type)
 		{
 		case GraphicsAPI::OpenGL:
 		{
 			m_p_impl->m_graphics_window = std::make_shared<GLWindow>();
-			m_p_impl->m_graphics_window->Create(contextWidth, contextHeight, contextTitle);
+			m_p_impl->m_graphics_window->Create(context_width, context_height, context_title);
 
 			// compile shaders
-			auto basic_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
+			const auto basic_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
 
 			m_p_impl->m_main_camera = {};
 
@@ -173,7 +173,6 @@ namespace libgraphics
 			};
 
 			m_test_cube = std::make_shared<GLMesh>(vertices, normals, uvs);
-			m_test_cube->SetShader(basic_shader);
 		}
 		break;
 		case GraphicsAPI::DirectX: break;
@@ -181,13 +180,13 @@ namespace libgraphics
 		}
 	}
 
-	auto Core::Update(const RenderFunction& renderFunction) const -> void
+	auto Core::Update(const RenderFunction& render_function) const -> void
 	{
-		const auto glfwWindow = static_cast<GLFWwindow*>(m_p_impl->m_graphics_window->GetNativeHandle()->GetNativeHandle());
+		const auto glfw_window = static_cast<GLFWwindow*>(m_p_impl->m_graphics_window->GetNativeHandle()->GetNativeHandle());
 
 		auto previous_time = glfwGetTime();
 
-		while (!glfwWindowShouldClose(glfwWindow))
+		while (!glfwWindowShouldClose(glfw_window))
 		{
 			const auto current_time = glfwGetTime();
 			const auto delta_time = current_time - previous_time;
@@ -195,7 +194,7 @@ namespace libgraphics
 
 			m_p_impl->m_graphics_window->Clear();
 
-			if (glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_2))
+			if (glfwGetMouseButton(glfw_window, GLFW_MOUSE_BUTTON_2))
 			{
 				m_p_impl->m_main_camera.RotateByMouse(m_p_impl->m_graphics_window);
 			}
@@ -205,18 +204,11 @@ namespace libgraphics
 			}
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
 
-			m_test_cube->Draw();
+			//m_test_cube->Draw(nullptr);
 
-			auto transform = Transform{};
-			transform.m_translation = {};
-			transform.m_scale = { 1.0f, 1.0f, 1.0f };
-			transform.m_rotation = {};
-
-			m_test_cube->UpdateMatrix(transform);
-
-			if (renderFunction)
+			if (render_function)
 			{
-				renderFunction(delta_time);
+				render_function(delta_time);
 			}
 
 			m_p_impl->m_graphics_window->SwapBuffers();

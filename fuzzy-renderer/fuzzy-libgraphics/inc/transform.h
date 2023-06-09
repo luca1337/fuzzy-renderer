@@ -7,7 +7,7 @@
 
 namespace libgraphics
 {
-	class LIBGRAPHICS_API Transform
+	class Transform
 	{
 	public:
 		glm::vec3 m_translation = {};

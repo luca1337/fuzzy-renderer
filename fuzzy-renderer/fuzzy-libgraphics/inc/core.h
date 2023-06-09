@@ -18,7 +18,7 @@ namespace libgraphics
 		std::shared_ptr<IGraphicsWindow> m_graphics_window = {};
 	};
 
-	class LIBGRAPHICS_API Core final
+	class Core final
 	{
 	public:
 		~Core() { delete m_p_impl; }
@@ -27,12 +27,12 @@ namespace libgraphics
 		Core& operator=(const Core&) = delete;
 		Core& operator=(Core&&) = delete;
 
-		auto Init(const GraphicsAPI api, int contextWidth, int contextHeight, std::string_view contextTitle) -> void;
-		auto Update(const RenderFunction&) const -> void;
-		static auto GetInstance() -> Core&;
+		LIBGRAPHICS_API auto Init(const GraphicsAPI api_type, int context_width, int context_height, const std::string_view context_title) -> void;
+		LIBGRAPHICS_API auto Update(const RenderFunction&) const -> void;
+		LIBGRAPHICS_API static auto GetInstance() -> Core&;
 
-		[[nodiscard]] auto GetMainCamera() const -> Camera& { return m_p_impl->m_main_camera; }
-		[[nodiscard]] auto GetGraphicsWindow() const -> std::shared_ptr<IGraphicsWindow>& { return m_p_impl->m_graphics_window; }
+		LIBGRAPHICS_API [[nodiscard]] auto GetMainCamera() const -> Camera& { return m_p_impl->m_main_camera; }
+		LIBGRAPHICS_API [[nodiscard]] auto GetGraphicsWindow() const -> std::shared_ptr<IGraphicsWindow>& { return m_p_impl->m_graphics_window; }
 
 	private:
 		Core() = default;

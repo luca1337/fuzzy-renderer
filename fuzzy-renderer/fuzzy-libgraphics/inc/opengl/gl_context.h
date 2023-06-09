@@ -6,7 +6,7 @@ struct GLFWwindow;
 
 namespace libgraphics
 {
-	class LIBGRAPHICS_API GLContext : public IGraphicsContext
+	class GLContext : public IGraphicsContext
 	{
 	public:
 		GLContext() = default;

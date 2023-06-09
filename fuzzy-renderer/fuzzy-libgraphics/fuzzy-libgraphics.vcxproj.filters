@@ -19,6 +19,15 @@
     <Filter Include="Shaders\OpenGL">
       <UniqueIdentifier>{1007c3df-612b-4d93-827a-6f17db2d080a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\OpenGL">
+      <UniqueIdentifier>{6f4fd0c8-673c-417e-8e05-acfca45587da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interfaces">
+      <UniqueIdentifier>{ca2dca23-cab1-4392-b8d9-c2b668b40e40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenGL">
+      <UniqueIdentifier>{30bf6b0a-c42d-4efb-8872-032abddfc491}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\framework.h">
@@ -36,35 +45,35 @@
     <ClInclude Include="inc\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\interfaces\igraphics_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\interfaces\igraphics_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\opengl\camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\opengl\gl_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\opengl\gl_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\interfaces\ishader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\opengl\gl_shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\interfaces\imesh.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="inc\opengl\camera.h">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_context.h">
+      <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="inc\opengl\gl_mesh.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_shader.h">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_window.h">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\interfaces\igraphics_window.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\interfaces\igraphics_context.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\interfaces\imesh.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\interfaces\ishader.h">
+      <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,22 +86,22 @@
     <ClCompile Include="src\core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\opengl\camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\opengl\gl_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\opengl\gl_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\opengl\gl_shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\opengl\gl_mesh.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\gl_shader.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\gl_window.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\camera.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\glad\src\gl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

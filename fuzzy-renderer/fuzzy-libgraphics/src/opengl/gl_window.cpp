@@ -1,7 +1,7 @@
 #include <opengl/gl_window.h>
 #include <opengl/gl_context.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 namespace libgraphics

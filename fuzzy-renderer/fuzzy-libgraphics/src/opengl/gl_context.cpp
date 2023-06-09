@@ -1,7 +1,7 @@
 #include <opengl/gl_context.h>
 #include <logger.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 namespace libgraphics
@@ -43,9 +43,9 @@ namespace libgraphics
 		glfwSetWindowUserPointer(m_glfw_native_window_handle, this);
 		glfwSetFramebufferSizeCallback(m_glfw_native_window_handle, FramebufferSizeCallback);
 
-		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+		if (!gladLoadGL(glfwGetProcAddress))
 		{
-			CX_CORE_ERROR("Unable to load opengl/glad symbols gladLoadGLLoader()");
+			CX_CORE_ERROR("Unable to load opengl/glad symbols gladLoadGL()");
 			glfwDestroyWindow(m_glfw_native_window_handle);
 			glfwTerminate();
 			return;

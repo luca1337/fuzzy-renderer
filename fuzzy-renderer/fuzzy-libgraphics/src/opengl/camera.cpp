@@ -46,9 +46,9 @@ namespace libgraphics
 	double x_pos = {}, y_pos = {};
 	auto Camera::RotateByMouse(const std::shared_ptr<IGraphicsWindow>& window) -> void
 	{
-		const auto glfwNativeWindowHandle = static_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
+		const auto glfw_native_window_handle = static_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
 
-		glfwGetCursorPos(glfwNativeWindowHandle, &x_pos, &y_pos);
+		glfwGetCursorPos(glfw_native_window_handle, &x_pos, &y_pos);
 
 		const auto delta = (glm::dvec2(x_pos, y_pos) - m_previous_position.value_or(glm::dvec2(x_pos, y_pos))) * 0.1;
 		m_previous_position = glm::dvec2(x_pos, y_pos);
@@ -64,29 +64,29 @@ namespace libgraphics
 
 	auto Camera::Animate(const std::shared_ptr<IGraphicsWindow>& window, const double delta_time) -> void
 	{
-		const auto glfwNativeWindowHandle = static_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
+		const auto glfw_native_window_handle = static_cast<GLFWwindow*>(window->GetNativeHandle()->GetNativeHandle());
 
-		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_W))
+		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_W))
 		{
 			Translate(CameraDirection::front, delta_time);
 		}
-		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_S))
+		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_S))
 		{
 			Translate(CameraDirection::back, delta_time);
 		}
-		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_A))
+		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_A))
 		{
 			Translate(CameraDirection::left, delta_time);
 		}
-		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_D))
+		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_D))
 		{
 			Translate(CameraDirection::right, delta_time);
 		}
-		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_E))
+		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_E))
 		{
 			Translate(CameraDirection::up, delta_time);
 		}
-		if (glfwGetKey(glfwNativeWindowHandle, GLFW_KEY_Q))
+		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_Q))
 		{
 			Translate(CameraDirection::down, delta_time);
 		}
