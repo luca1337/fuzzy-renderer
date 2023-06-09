@@ -17,7 +17,7 @@ namespace libgraphics
 		m_p_impl->m_graphics_api = api_type;
 
 		// Init logger
-		libgraphics_logger::Logger::Init();
+		libgraphics::logger::Logger::Init();
 
 		switch (api_type)
 		{
@@ -25,158 +25,18 @@ namespace libgraphics
 		{
 			m_p_impl->m_graphics_window = std::make_shared<GLWindow>();
 			m_p_impl->m_graphics_window->Create(context_width, context_height, context_title);
+			m_p_impl->m_graphics_window->SetClearColor({ 0.0f, 0.0f, 0.0f });
 
 			// compile shaders
-			const auto basic_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
+			default_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
 
 			m_p_impl->m_main_camera = {};
 
-			std::vector<glm::vec3> vertices =
-			{
-				// first facet front
-				{-1, 1, -1},
-				{-1, -1, -1},
-				{1, -1, -1},
-				{-1, 1, -1},
-				{1, 1, -1},
-				{1, -1, -1},
-
-				// second facet back
-				{-1, 1, 1},
-				{-1, -1, 1},
-				{1, -1, 1},
-				{-1, 1, 1},
-				{1, 1, 1},
-				{1, -1, 1},
-
-				// third facet left
-				{-1, 1, 1},
-				{-1, -1, 1},
-				{-1, -1, -1},
-				{-1, 1, 1},
-				{-1, 1, -1},
-				{-1, -1, -1},
-
-				// fourth facet right
-				{1, 1, 1},
-				{1, -1, 1},
-				{1, -1, -1},
-				{1, 1, 1},
-				{1, 1, -1},
-				{1, -1, -1},
-
-				// fifth facet up
-				{-1, 1, 1},
-				{-1, 1, -1},
-				{1, 1, -1},
-				{-1, 1, 1},
-				{1, 1, 1},
-				{1, 1, -1},
-
-				// sixth facet down
-				{-1, -1, 1},
-				{-1, -1, -1},
-				{1, -1, -1},
-				{-1, -1, 1},
-				{1, -1, 1},
-				{1, -1, -1}
-			};
-
-			std::vector<glm::vec2> uvs =
-			{
-				{0, 1},
-				{0, 0},
-				{1, 0},
-				{0, 1},
-				{1, 1},
-				{1, 0},
-
-				{0, 1},
-				{0, 0},
-				{1, 0},
-				{0, 1},
-				{1, 1},
-				{1, 0},
-
-				{0, 1},
-				{0, 0},
-				{1, 0},
-				{0, 1},
-				{1, 1},
-				{1, 0},
-
-				{0, 1},
-				{0, 0},
-				{1, 0},
-				{0, 1},
-				{1, 1},
-				{1, 0},
-
-				{0, 1},
-				{0, 0},
-				{1, 0},
-				{0, 1},
-				{1, 1},
-				{1, 0},
-
-				{0, 1},
-				{0, 0},
-				{1, 0},
-				{0, 1},
-				{1, 1},
-				{1, 0},
-			};
-
-			std::vector<glm::vec3> normals =
-			{
-				{0, 0, -1},
-				{0, 0, -1},
-				{0, 0, -1},
-				{0, 0, -1},
-				{0, 0, -1},
-				{0, 0, -1},
-
-				{0, 0, 1},
-				{0, 0, 1},
-				{0, 0, 1},
-				{0, 0, 1},
-				{0, 0, 1},
-				{0, 0, 1},
-
-				{-1, 0, 0},
-				{-1, 0, 0},
-				{-1, 0, 0},
-				{-1, 0, 0},
-				{-1, 0, 0},
-				{-1, 0, 0},
-
-				{1, 0, 0},
-				{1, 0, 0},
-				{1, 0, 0},
-				{1, 0, 0},
-				{1, 0, 0},
-				{1, 0, 0},
-
-				{0, 1, 0},
-				{0, 1, 0},
-				{0, 1, 0},
-				{0, 1, 0},
-				{0, 1, 0},
-				{0, 1, 0},
-
-				{0, -1, 0},
-				{0, -1, 0},
-				{0, -1, 0},
-				{0, -1, 0},
-				{0, -1, 0},
-				{0, -1, 0},
-			};
-
-			m_test_cube = std::make_shared<GLMesh>(vertices, normals, uvs);
+			m_test_cube = std::make_shared<GLMesh>("../assets/suzanne.obj");
 		}
 		break;
-		case GraphicsAPI::DirectX: break;
-		default: break;
+		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)
+		default: break;  // NOLINT(clang-diagnostic-covered-switch-default)
 		}
 	}
 
@@ -204,7 +64,7 @@ namespace libgraphics
 			}
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
 
-			//m_test_cube->Draw(nullptr);
+			m_test_cube->Draw(default_shader);
 
 			if (render_function)
 			{

@@ -6,6 +6,7 @@
 namespace libgraphics
 {
 	class IGraphicsWindow;
+	class IShader;
 	enum class GraphicsAPI;
 
 	using RenderFunction = std::function<void(double)>;
@@ -38,6 +39,7 @@ namespace libgraphics
 		Core() = default;
 
 		std::shared_ptr<class IMesh> m_test_cube = {};
+		std::shared_ptr<IShader> default_shader = {};
 
 		CoreImpl* m_p_impl = nullptr;
 	};

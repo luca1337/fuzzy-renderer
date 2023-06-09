@@ -1,6 +1,6 @@
 #include <logger.h>
 
-namespace libgraphics_logger
+namespace libgraphics::logger
 {
 	std::shared_ptr<spdlog::logger> Logger::m_core_logger;
 	std::shared_ptr<spdlog::logger> Logger::m_client_logger;

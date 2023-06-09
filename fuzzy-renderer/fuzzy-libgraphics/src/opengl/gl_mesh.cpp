@@ -3,24 +3,31 @@
 #include <core.h>
 #include <opengl/camera.h>
 #include <opengl/gl_context.h>
+#include <loaders.h>
 
 #include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
 namespace libgraphics
 {
 	GLMesh::GLMesh(const std::string_view file_name)
 	{
+		auto vertices = std::vector<glm::vec3>{};
+		auto normals = std::vector<glm::vec3>{};
+		auto uvs = std::vector<glm::vec2>{};
+
+		loaders::load_obj(file_name.data(), vertices, uvs, normals);
+
+		GenerateMeshDataAndSendToGPU(vertices, normals, uvs);
+
+		SetVertices(vertices);
+		SetNormals(normals);
+		SetUvs(uvs);
 	}
 
 	GLMesh::GLMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs)
 	{
-		GenerateVaoAndVbo(1, &m_vao, 3, m_vbos);
-
-		SendGPUData(vertices.data(), static_cast<int>(sizeof(vertices[0]) * vertices.size()), 0, 0, 3, sizeof(float) * 3, 0);
-		SendGPUData(normals.data(), static_cast<int>(sizeof(normals[0]) * normals.size()), 1, 1, 3, sizeof(float) * 3, 1);
-		SendGPUData(uvs.data(), static_cast<int>(sizeof(uvs[0]) * uvs.size()), 2, 2, 2, sizeof(float) * 2, 2);
+		GenerateMeshDataAndSendToGPU(vertices, normals, uvs);
 
 		SetVertices(vertices);
 		SetNormals(normals);
@@ -37,7 +44,10 @@ namespace libgraphics
 
 		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_vertices.size()));
 
-		UpdateMatrix(shader, {});
+		auto transform = Transform{};
+		transform.m_scale = { 1, 1, 1 };
+
+		UpdateMatrix(shader, transform);
 	}
 
 	auto GLMesh::SendGPUData(const void* data, const int data_size, const size_t vbo_index, const unsigned slot,
@@ -54,6 +64,15 @@ namespace libgraphics
 		glGenVertexArrays(vao_size, vao_array);
 		glBindVertexArray(*vao_array);
 		glGenBuffers(vbo_size, vbo_array);
+	}
+
+	auto GLMesh::GenerateMeshDataAndSendToGPU(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs) -> void
+	{
+		GenerateVaoAndVbo(1, &m_vao, 3, m_vbos);
+
+		SendGPUData(vertices.data(), static_cast<int>(sizeof vertices[0] * vertices.size()), 0, 0, 3, sizeof(float) * 3, 0);
+		SendGPUData(normals.data(), static_cast<int>(sizeof normals[0] * normals.size()), 1, 1, 3, sizeof(float) * 3, 1);
+		SendGPUData(uvs.data(), static_cast<int>(sizeof uvs[0] * uvs.size()), 2, 2, 2, sizeof(float) * 2, 2);
 	}
 
 	auto GLMesh::UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void

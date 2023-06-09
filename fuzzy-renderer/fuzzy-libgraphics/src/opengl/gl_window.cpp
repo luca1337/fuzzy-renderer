@@ -19,15 +19,20 @@ namespace libgraphics
 
 	auto GLWindow::Clear() -> void
 	{
-		glClearColor(0.4f, 0.4f, 0.9f, 1.0f);
+		glClearColor(m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	auto GLWindow::SwapBuffers() -> void
 	{
-		const auto glfwNativeWindowHandle = reinterpret_cast<GLFWwindow*>(m_graphics_context->GetNativeHandle());
+		const auto glfw_native_window_handle = static_cast<GLFWwindow*>(m_graphics_context->GetNativeHandle());
 
-		glfwSwapBuffers(glfwNativeWindowHandle);
+		glfwSwapBuffers(glfw_native_window_handle);
 		glfwPollEvents();
+	}
+
+	auto GLWindow::SetClearColor(const Color& color) -> void
+	{
+		m_clear_color = color;
 	}
 }

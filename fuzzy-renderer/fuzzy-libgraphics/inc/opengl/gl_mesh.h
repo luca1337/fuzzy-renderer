@@ -48,8 +48,22 @@ namespace libgraphics
 		 */
 		LIBGRAPHICS_API  [[nodiscard]] auto GetUvs() const -> std::vector<glm::vec2> override { return m_uvs; }
 
+		/**
+		 * \brief Set vertices of this mesh
+		 * \return 
+		 */
 		LIBGRAPHICS_API auto SetVertices(const std::vector<glm::vec3>& vertices) -> void override { m_vertices = vertices; }
+
+		/**
+		 * \brief Set normals of this mesh
+		 * \return 
+		 */
 		LIBGRAPHICS_API auto SetNormals(const std::vector<glm::vec3>& normals) -> void override { m_normals = normals; }
+
+		/**
+		 * \brief Set uvs of this mesh
+		 * \return 
+		 */
 		LIBGRAPHICS_API auto SetUvs(const std::vector<glm::vec2>& uvs) -> void override { m_uvs = uvs; }
 
 	protected:
@@ -65,5 +79,7 @@ namespace libgraphics
 
 		auto SendGPUData(const void* data, const int data_size, const size_t vbo_index, const unsigned slot, const int slot_size, const size_t stride, const unsigned attrib_array_index) const -> void;
 		static auto GenerateVaoAndVbo(const int vao_size, unsigned int* vao_array, const int vbo_size, unsigned int* vbo_array) -> void;
+		auto GenerateMeshDataAndSendToGPU(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs) -> void;
+
 	};
 }

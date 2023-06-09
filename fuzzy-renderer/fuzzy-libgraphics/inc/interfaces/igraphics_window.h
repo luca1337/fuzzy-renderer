@@ -5,16 +5,15 @@
 namespace libgraphics
 {
 	class IGraphicsContext;
+	struct Color;
 
-	/// <summary>
-	/// Base Interface for all graphics windows (OpenGL, DirectX, Vulkan..)
-	/// </summary>
 	class LIBGRAPHICS_API IGraphicsWindow
 	{
 	public:
 		virtual ~IGraphicsWindow() = default;
 
 		virtual auto Create(const int width, const int height, const std::string_view title) -> void = 0;
+		virtual auto SetClearColor(const Color&) -> void = 0;
 		virtual auto Destroy() -> void = 0; 
 		virtual auto Clear() -> void = 0;
 		virtual auto SwapBuffers() -> void = 0;
