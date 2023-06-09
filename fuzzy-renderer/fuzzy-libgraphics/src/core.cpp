@@ -11,7 +11,7 @@
 
 namespace libgraphics
 {
-	auto Core::Init(const GraphicsAPI api_type, int context_width, int context_height, const std::string_view context_title) -> void
+	auto Core::Init(const GraphicsAPI api_type, const int context_width, const int context_height, const std::string_view context_title) -> void
 	{
 		m_p_impl = new CoreImpl();
 		m_p_impl->m_graphics_api = api_type;
@@ -25,7 +25,7 @@ namespace libgraphics
 		{
 			m_p_impl->m_graphics_window = std::make_shared<GLWindow>();
 			m_p_impl->m_graphics_window->Create(context_width, context_height, context_title);
-			m_p_impl->m_graphics_window->SetClearColor({ 0.0f, 0.0f, 0.0f });
+			m_p_impl->m_graphics_window->SetClearColor({ 0.3f, 0.4f, 0.5f });
 
 			// compile shaders
 			default_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");

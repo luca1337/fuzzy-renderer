@@ -28,7 +28,7 @@ namespace libgraphics
 		Core& operator=(const Core&) = delete;
 		Core& operator=(Core&&) = delete;
 
-		LIBGRAPHICS_API auto Init(const GraphicsAPI api_type, int context_width, int context_height, const std::string_view context_title) -> void;
+		LIBGRAPHICS_API auto Init(const GraphicsAPI api_type, const int context_width, const int context_height, const std::string_view context_title) -> void;
 		LIBGRAPHICS_API auto Update(const RenderFunction&) const -> void;
 		LIBGRAPHICS_API static auto GetInstance() -> Core&;
 
