@@ -1,5 +1,12 @@
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files
-#include <windows.h>
+#include <string_view>
+#include <functional>
+#include <vector>
+#include <memory>
+
+#ifdef FUZZYLIBGRAPHICS_EXPORTS
+#define LIBGRAPHICS_API __declspec(dllexport)
+#else
+#define LIBGRAPHICS_API __declspec(dllimport)
+#endif

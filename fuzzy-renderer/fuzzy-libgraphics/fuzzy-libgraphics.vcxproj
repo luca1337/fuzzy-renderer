@@ -110,14 +110,17 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;FUZZYLIBGRAPHICS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)fuzzy-libgraphics\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)fuzzy-libgraphics\vendor\glad\include;$(SolutionDir)fuzzy-libgraphics\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,19 +143,39 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="inc\color.h" />
+    <ClInclude Include="inc\core.h" />
+    <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
-    <ClInclude Include="inc\graphics.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="inc\interfaces\igraphics_context.h" />
+    <ClInclude Include="inc\interfaces\igraphics_window.h" />
+    <ClInclude Include="inc\interfaces\imesh.h" />
+    <ClInclude Include="inc\interfaces\ishader.h" />
+    <ClInclude Include="inc\loaders.h" />
+    <ClInclude Include="inc\logger.h" />
+    <ClInclude Include="inc\opengl\camera.h" />
+    <ClInclude Include="inc\opengl\gl_context.h" />
+    <ClInclude Include="inc\opengl\gl_mesh.h" />
+    <ClInclude Include="inc\opengl\gl_shader.h" />
+    <ClInclude Include="inc\opengl\gl_window.h" />
+    <ClInclude Include="inc\transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
-    <ClCompile Include="src\graphics.cpp" />
+    <ClCompile Include="src\logger.cpp" />
+    <ClCompile Include="src\opengl\camera.cpp" />
+    <ClCompile Include="src\opengl\gl_context.cpp" />
+    <ClCompile Include="src\opengl\gl_mesh.cpp" />
+    <ClCompile Include="src\opengl\gl_shader.cpp" />
+    <ClCompile Include="src\opengl\gl_window.cpp" />
+    <ClCompile Include="vendor\glad\src\gl.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\glsl\fragment.glsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="shaders\glsl\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
