@@ -6,7 +6,7 @@
 
 namespace libgraphics
 {
-	auto FramebufferSizeCallback(GLFWwindow* window, const int width, const int height) -> void
+	auto framebuffer_size_callback(GLFWwindow* window, const int width, const int height) -> void
 	{
 		auto& windowPtr = *static_cast<GLContext*>(glfwGetWindowUserPointer(window));
 		windowPtr.Data().m_width = width;
@@ -41,7 +41,7 @@ namespace libgraphics
 		// Imposta il contesto OpenGL sulla finestra
 		glfwMakeContextCurrent(m_glfw_native_window_handle);
 		glfwSetWindowUserPointer(m_glfw_native_window_handle, this);
-		glfwSetFramebufferSizeCallback(m_glfw_native_window_handle, FramebufferSizeCallback);
+		glfwSetFramebufferSizeCallback(m_glfw_native_window_handle, framebuffer_size_callback);
 
 		if (!gladLoadGL(glfwGetProcAddress))
 		{
