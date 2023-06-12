@@ -158,6 +158,7 @@
     <ClInclude Include="inc\opengl\gl_mesh.h" />
     <ClInclude Include="inc\opengl\gl_shader.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
+    <ClInclude Include="inc\opengl\model.h" />
     <ClInclude Include="inc\transform.h" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,7 @@
     <ClCompile Include="src\opengl\gl_mesh.cpp" />
     <ClCompile Include="src\opengl\gl_shader.cpp" />
     <ClCompile Include="src\opengl\gl_window.cpp" />
+    <ClCompile Include="src\opengl\model.cpp" />
     <ClCompile Include="vendor\glad\src\gl.c" />
   </ItemGroup>
   <ItemGroup>

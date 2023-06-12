@@ -10,28 +10,16 @@
 
 namespace libgraphics
 {
-	GLMesh::GLMesh(const std::string_view file_name)
+	/**
+	 * \brief Create a raw mesh
+	 * \param vertices  
+	 * \param indices  
+	 * \param textures  
+	 */
+	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures)
+		: m_vertices{std::move(vertices)}, m_indices{std::move(indices)}, m_textures{std::move(textures)}
 	{
-		auto vertices = std::vector<glm::vec3>{};
-		auto normals = std::vector<glm::vec3>{};
-		auto uvs = std::vector<glm::vec2>{};
-
-		loaders::load_obj(file_name.data(), vertices, uvs, normals);
-
-		GenerateMeshDataAndSendToGPU(vertices, normals, uvs);
-
-		SetVertices(vertices);
-		SetNormals(normals);
-		SetUvs(uvs);
-	}
-
-	GLMesh::GLMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs)
-	{
-		GenerateMeshDataAndSendToGPU(vertices, normals, uvs);
-
-		SetVertices(vertices);
-		SetNormals(normals);
-		SetUvs(uvs);
+		GenerateMeshDataAndSendToGPU();
 	}
 
 	auto GLMesh::Draw(const std::shared_ptr<IShader>& shader) -> void
@@ -42,37 +30,49 @@ namespace libgraphics
 
 		glBindVertexArray(m_vao);
 
-		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_vertices.size()));
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
+
+		glBindVertexArray(0);
 
 		auto transform = Transform{};
-		transform.m_scale = { 1, 1, 1 };
+		transform.m_scale = { 100, 100, 100 };
 
 		UpdateMatrix(shader, transform);
 	}
 
-	auto GLMesh::SendGPUData(const void* data, const int data_size, const size_t vbo_index, const unsigned slot,
-	                         const int slot_size, const size_t stride, const unsigned attrib_array_index) const -> void
+	auto GLMesh::SendGPUData(const unsigned slot, const int slot_size, const unsigned attrib_array_index, const void* ptr) -> void
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, m_vbos[vbo_index]);
-		glBufferData(GL_ARRAY_BUFFER, data_size, data, GL_STATIC_DRAW);
-		glVertexAttribPointer(slot, slot_size, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), nullptr);
+		glVertexAttribPointer(slot, slot_size, GL_FLOAT, GL_FALSE, sizeof Vertex, ptr);
 		glEnableVertexAttribArray(attrib_array_index);
 	}
 
-	auto GLMesh::GenerateVaoAndVbo(const int vao_size, unsigned int* vao_array, const int vbo_size, unsigned int* vbo_array) -> void
+	auto GLMesh::GenerateVaoVboEbo() -> void
 	{
-		glGenVertexArrays(vao_size, vao_array);
-		glBindVertexArray(*vao_array);
-		glGenBuffers(vbo_size, vbo_array);
+		glGenVertexArrays(1, &m_vao);
+		glGenBuffers(1, &m_vbo);
+		glGenBuffers(1, &m_ebo);
+
+		glBindVertexArray(m_vao);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+
+		glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
 	}
 
-	auto GLMesh::GenerateMeshDataAndSendToGPU(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs) -> void
+	auto GLMesh::GenerateIndexBuffer() const -> void
 	{
-		GenerateVaoAndVbo(1, &m_vao, 3, m_vbos);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), m_indices.data(), GL_STATIC_DRAW);
+	}
 
-		SendGPUData(vertices.data(), static_cast<int>(sizeof vertices[0] * vertices.size()), 0, 0, 3, sizeof(float) * 3, 0);
-		SendGPUData(normals.data(), static_cast<int>(sizeof normals[0] * normals.size()), 1, 1, 3, sizeof(float) * 3, 1);
-		SendGPUData(uvs.data(), static_cast<int>(sizeof uvs[0] * uvs.size()), 2, 2, 2, sizeof(float) * 2, 2);
+	auto GLMesh::GenerateMeshDataAndSendToGPU() -> void
+	{
+		GenerateVaoVboEbo();
+
+		GenerateIndexBuffer();
+
+		SendGPUData(0, 3, 0, nullptr);
+		SendGPUData(1, 3, 1, reinterpret_cast<void*>(offsetof(Vertex, m_normal)));  // NOLINT(performance-no-int-to-ptr)
+		SendGPUData(2, 2, 2, reinterpret_cast<void*>(offsetof(Vertex, m_tex_coords)));  // NOLINT(performance-no-int-to-ptr)
 	}
 
 	auto GLMesh::UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void

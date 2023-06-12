@@ -78,6 +78,9 @@
     <ClInclude Include="inc\loaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\opengl\model.h">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -106,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="vendor\glad\src\gl.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\model.cpp">
+      <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

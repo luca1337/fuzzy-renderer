@@ -38,7 +38,7 @@ namespace libgraphics
 	private:
 		Core() = default;
 
-		std::shared_ptr<class IMesh> m_test_cube = {};
+		std::shared_ptr<class Model> m_test_cube = {};
 		std::shared_ptr<IShader> default_shader = {};
 
 		CoreImpl* m_p_impl = nullptr;

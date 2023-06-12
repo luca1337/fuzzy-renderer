@@ -13,16 +13,11 @@ namespace libgraphics
 		/**
 		 * \brief Creates raw mesh
 		 * \param vertices vertices of mesh
-		 * \param normals normals of mesh
-		 * \param uvs uvs of mesh
+		 * \param indices indices of mesh
+		 * \param textures textures of mesh (albedo, metallic, roughness etc..)
 		 */
-		LIBGRAPHICS_API GLMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs);
-
-		/**
-		 * \brief Loads obj mesh from file
-		 * \param file_name Path to obj file
-		 */
-		LIBGRAPHICS_API explicit GLMesh(const std::string_view file_name);
+		LIBGRAPHICS_API GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices,
+		                       std::vector<Texture> textures);
 
 		/**
 		 * \brief Standard Draw for a mesh 
@@ -31,55 +26,42 @@ namespace libgraphics
 		LIBGRAPHICS_API auto Draw(const std::shared_ptr<IShader>& shader) -> void override;
 
 		/**
-		 * \brief Get all vertices of this mesh
+		 * \brief Get this mesh vertex buffer
 		 * \return Value reference vector containing all mesh vertices
 		 */
-		LIBGRAPHICS_API  [[nodiscard]] auto GetVertices() const -> std::vector<glm::vec3> override { return m_vertices; }
+		LIBGRAPHICS_API  [[nodiscard]] auto GetVertexBuffer() const -> std::vector<Vertex> override { return m_vertices; }
 
 		/**
-		 * \brief Get all normals of this mesh
+		 * \brief Get this mesh index buffer
 		 * \return Value reference vector containing all mesh normals
 		 */
-		LIBGRAPHICS_API  [[nodiscard]] auto GetVertexNormals() const -> std::vector<glm::vec3> override { return m_normals; }
+		LIBGRAPHICS_API  [[nodiscard]] auto GetIndexBuffer() const -> std::vector<uint32_t> override { return m_indices; }
 
 		/**
-		 * \brief Get all uvs of this mesh
-		 * \return Value reference vector containing all mesh uvs
+		 * \brief Set this mesh vertex buffer
 		 */
-		LIBGRAPHICS_API  [[nodiscard]] auto GetUvs() const -> std::vector<glm::vec2> override { return m_uvs; }
+		LIBGRAPHICS_API auto SetVertexBuffer(const std::vector<Vertex>& vertices) -> void override { m_vertices = vertices; }
 
 		/**
-		 * \brief Set vertices of this mesh
-		 * \return 
+		 * \brief Set this mesh index buffer
 		 */
-		LIBGRAPHICS_API auto SetVertices(const std::vector<glm::vec3>& vertices) -> void override { m_vertices = vertices; }
-
-		/**
-		 * \brief Set normals of this mesh
-		 * \return 
-		 */
-		LIBGRAPHICS_API auto SetNormals(const std::vector<glm::vec3>& normals) -> void override { m_normals = normals; }
-
-		/**
-		 * \brief Set uvs of this mesh
-		 * \return 
-		 */
-		LIBGRAPHICS_API auto SetUvs(const std::vector<glm::vec2>& uvs) -> void override { m_uvs = uvs; }
+		LIBGRAPHICS_API auto SetIndexBuffer(const std::vector<uint32_t>& indices) -> void override { m_indices = indices; }
 
 	protected:
 		auto UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void override;
 
 	private:
-		std::vector<glm::vec3> m_vertices = {};
-		std::vector<glm::vec3> m_normals = {};
-		std::vector<glm::vec2> m_uvs = {};
+		std::vector<Vertex> m_vertices = {};
+		std::vector<uint32_t> m_indices = {};
+		std::vector<Texture> m_textures = {};
 
 		unsigned int m_vao = {};
-		unsigned int m_vbos[3] = {};
+		unsigned int m_vbo = {};
+		unsigned int m_ebo = {};
 
-		auto SendGPUData(const void* data, const int data_size, const size_t vbo_index, const unsigned slot, const int slot_size, const size_t stride, const unsigned attrib_array_index) const -> void;
-		static auto GenerateVaoAndVbo(const int vao_size, unsigned int* vao_array, const int vbo_size, unsigned int* vbo_array) -> void;
-		auto GenerateMeshDataAndSendToGPU(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& uvs) -> void;
-
+		static auto SendGPUData(const unsigned slot, const int slot_size, const unsigned attrib_array_index, const void* ptr) -> void;
+		auto GenerateVaoVboEbo() -> void;
+		auto GenerateMeshDataAndSendToGPU() -> void;
+		auto GenerateIndexBuffer() const -> void;
 	};
 }
