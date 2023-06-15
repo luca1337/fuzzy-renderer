@@ -6,6 +6,7 @@
 #include <opengl/gl_window.h>
 #include <opengl/gl_shader.h>
 #include <opengl/model.h>
+#include <opengl/gl_skybox.h>
 
 #include <GLFW/glfw3.h>
 
@@ -29,6 +30,9 @@ namespace libgraphics
 
 			// compile shaders
 			default_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl");
+			skybox_shader = std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl");
+
+			m_sky_box = std::make_shared<GLSkybox>();
 
 			m_p_impl->m_main_camera = {};
 
@@ -63,6 +67,8 @@ namespace libgraphics
 				m_p_impl->m_main_camera.Reset();
 			}
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
+
+			m_sky_box->Render(skybox_shader);
 
 			m_test_cube->Draw(default_shader);
 

@@ -81,6 +81,12 @@
     <ClInclude Include="inc\opengl\model.h">
       <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="inc\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\opengl\gl_skybox.h">
+      <Filter>Header Files\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -113,12 +119,24 @@
     <ClCompile Include="src\opengl\model.cpp">
       <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opengl\gl_skybox.cpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\glsl\vertex.glsl">
       <Filter>Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\glsl\fragment.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\glsl\skybox_frag.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\glsl\skybox_vert.glsl">
       <Filter>Shaders\OpenGL</Filter>
     </None>
   </ItemGroup>
