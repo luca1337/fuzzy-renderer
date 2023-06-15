@@ -61,7 +61,7 @@ namespace libgraphics
 		glActiveTexture(GL_TEXTURE0);
 
 		auto transform = Transform{};
-		transform.m_scale = { 1, 1, 1 };
+		transform.m_scale = { 0.3, 0.3, 0.3 };
 
 		UpdateMatrix(shader, transform);
 	}

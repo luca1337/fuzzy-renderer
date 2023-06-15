@@ -29,7 +29,19 @@ namespace libgraphics
 		double m_fov = { 65.0 };
 	};
 
+	/**
+	 * \brief Use this if you want the classic view matrix of the camera.
+	 * \return return a 4x4 view matrix with all components TRS.
+	 */
 	auto GetViewMatrix(const CameraProps&) -> glm::mat4;
+
+	/**
+	 * \brief Use this if you want to remove the translation section of transformation matrices by taking the upper-left 3x3 matrix of the 4x4 matrix.
+	 * \return return a 3x3 matrix without translation.
+	 */
+	auto GetViewMatrix3(const CameraProps&) -> glm::mat3;
+
+
 	auto ComputeCameraProjection(const double fov, const double width, const double height, const double z_near, const double z_far) -> glm::mat4;
 
 	class Camera

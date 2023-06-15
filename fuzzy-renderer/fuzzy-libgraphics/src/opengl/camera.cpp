@@ -25,10 +25,16 @@ namespace libgraphics
 		return { front, right, up };
 	}
 
-	auto GetViewMatrix(const CameraProps& cameraProps) -> glm::mat4
+	auto GetViewMatrix(const CameraProps& camera_props) -> glm::mat4
 	{
-		const auto [front, right, up] = CalculateDirectionVectors(cameraProps);
-		return glm::lookAt(cameraProps.m_world_position, cameraProps.m_world_position + front, up);
+		const auto [front, right, up] = CalculateDirectionVectors(camera_props);
+		return glm::lookAt(camera_props.m_world_position, camera_props.m_world_position + front, up);
+	}
+
+	auto GetViewMatrix3(const CameraProps& camera_props) -> glm::mat3
+	{
+		const auto [front, right, up] = CalculateDirectionVectors(camera_props);
+		return glm::mat3{glm::lookAt(camera_props.m_world_position, camera_props.m_world_position + front, up)};
 	}
 
 	auto ComputeCameraProjection(const double fov, const double width, const double height, const double z_near, const double z_far) -> glm::mat4
