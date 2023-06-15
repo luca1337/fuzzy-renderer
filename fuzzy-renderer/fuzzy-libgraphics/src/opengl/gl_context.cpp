@@ -53,8 +53,14 @@ namespace libgraphics
 
 		glViewport(0, 0, width, height);
 
+		// Enable depth testing and pixel discard function
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+
+		// Enable face culling so that we save at least 50% of performances while rendering
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glFrontFace(GL_CW);
 
 		m_context_data = { width, height };
 
