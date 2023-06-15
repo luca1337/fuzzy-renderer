@@ -32,7 +32,7 @@ namespace libgraphics
 
 			m_p_impl->m_main_camera = {};
 
-			m_test_cube = std::make_shared<Model>("../assets/Car_cartoon.gltf");
+			m_test_cube = std::make_shared<Model>("../assets/astronaut_pose.glb");
 		}
 		break;
 		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)

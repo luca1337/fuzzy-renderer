@@ -5,8 +5,6 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#define MAX_BONE_INFLUENCE 4
-
 namespace libgraphics
 {
     class Transform;
@@ -19,16 +17,12 @@ namespace libgraphics
         glm::vec2 m_tex_coords = {};
         glm::vec3 m_tangent = {};
         glm::vec3 m_bitangent = {};
-        //bone indexes which will influence this vertex
-        int m_BoneIDs[MAX_BONE_INFLUENCE];
-        //weights from each bone
-        float m_Weights[MAX_BONE_INFLUENCE];
     };
 
     struct Texture
     {
         uint32_t m_id = {};
-        std::string_view m_type = {};
+        std::string m_type = {};
         std::string m_path = {};
     };
 

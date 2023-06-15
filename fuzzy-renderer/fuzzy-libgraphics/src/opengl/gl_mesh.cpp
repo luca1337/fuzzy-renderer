@@ -26,16 +26,42 @@ namespace libgraphics
 	{
 		shader->Bind();
 
-		// draw textures here: glBindTexture(GL_TEXTURE_2D, texture);
+		auto diffuse_nr		= uint32_t{};
+		auto specular_nr	= uint32_t{};
+		auto normal_nr		= uint32_t{};
+		auto height_nr		= uint32_t{};
+
+		for (uint32_t texture_idx = 0; texture_idx < m_textures.size(); ++texture_idx)
+		{
+			glActiveTexture(GL_TEXTURE0 + texture_idx);
+
+			auto& [m_id, m_type, m_path] = m_textures[texture_idx];
+
+			auto number = std::string{};
+			if (m_type == "texture_diffuse")
+				number = std::to_string(diffuse_nr++);
+			else if (m_type == "texture_specular")
+				number = std::to_string(specular_nr++);
+			else if (m_type == "texture_normal")
+				number = std::to_string(normal_nr++);
+			else if (m_type == "texture_height")
+				number = std::to_string(height_nr++);
+
+			const std::string& uniform_name = m_type + number;
+			shader->SetInt(uniform_name, texture_idx);
+
+			glBindTexture(GL_TEXTURE_2D, m_id);
+		}
 
 		glBindVertexArray(m_vao);
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
 
 		glBindVertexArray(0);
+		glActiveTexture(GL_TEXTURE0);
 
 		auto transform = Transform{};
-		transform.m_scale = { 100, 100, 100 };
+		transform.m_scale = { 1, 1, 1 };
 
 		UpdateMatrix(shader, transform);
 	}
@@ -71,8 +97,10 @@ namespace libgraphics
 		GenerateIndexBuffer();
 
 		SendGPUData(0, 3, 0, nullptr);
-		SendGPUData(1, 3, 1, reinterpret_cast<void*>(offsetof(Vertex, m_normal)));  // NOLINT(performance-no-int-to-ptr)
-		SendGPUData(2, 2, 2, reinterpret_cast<void*>(offsetof(Vertex, m_tex_coords)));  // NOLINT(performance-no-int-to-ptr)
+		SendGPUData(1, 3, 1, reinterpret_cast<void*>(offsetof(Vertex, m_normal)));
+		SendGPUData(2, 2, 2, reinterpret_cast<void*>(offsetof(Vertex, m_tex_coords)));
+		SendGPUData(3, 3, 3, reinterpret_cast<void*>(offsetof(Vertex, m_tangent)));
+		SendGPUData(4, 3, 4, reinterpret_cast<void*>(offsetof(Vertex, m_bitangent)));
 	}
 
 	auto GLMesh::UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void

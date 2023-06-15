@@ -26,6 +26,6 @@ namespace libgraphics
 		auto LoadModel(const std::string_view path) -> void;
 		auto ProcessNode(const aiNode* node, const aiScene* scene) -> void;
 		auto ProcessMesh(const aiMesh* mesh, const aiScene* scene) -> GLMesh;
-		auto LoadMaterialTextures(const aiMaterial* material, const aiTextureType type, const std::string_view type_name) -> std::vector<Texture>&;
+		auto LoadMaterialTextures(const aiScene* scene, const aiMaterial* material, const aiTextureType type, const std::string_view type_name) -> std::vector<Texture>;
 	};
 }

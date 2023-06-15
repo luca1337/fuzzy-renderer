@@ -18,7 +18,7 @@ namespace libgraphics
 		glGenTextures(1, &texture_id);
 
 		int width, height, nr_components;
-		if (unsigned char* data = stbi_load(file_name.c_str(), &width, &height, &nr_components, 0))
+		if (const auto data = stbi_load(file_name.c_str(), &width, &height, &nr_components, 0))
 		{
 			GLenum format = {};
 			if (nr_components == 1)
@@ -41,7 +41,8 @@ namespace libgraphics
 		}
 		else
 		{
-			//std::cout << "Texture failed to load at path: " << path << std::endl;
+			const auto error_message = std::format("Texture failed to load at path: {}", path);
+			CX_CORE_ERROR(error_message);
 			stbi_image_free(data);
 		}
 
@@ -64,7 +65,7 @@ namespace libgraphics
 	auto Model::LoadModel(const std::string_view path) -> void
 	{
 		auto import = Assimp::Importer{};
-		const auto scene = import.ReadFile(path.data(), aiProcess_Triangulate | aiProcess_FlipUVs);
+		const auto scene = import.ReadFile(path.data(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -121,9 +122,10 @@ namespace libgraphics
 			}
 
 			// texture coordinates
-			if (false) // does the mesh contain texture coordinates?
+			if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 			{
-				glm::vec2 vec;
+				glm::vec2 vec = {};
+
 				// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 				// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 				vec.x = mesh->mTextureCoords[0][i].x;
@@ -142,10 +144,10 @@ namespace libgraphics
 				vector.z = mesh->mBitangents[i].z;
 				vertex.m_bitangent = vector;
 			}
-			/*else
+			else
 			{
-				vertex.m_tex_coords = glm::vec2(0.0f, 0.0f);
-			}*/
+				vertex.m_tex_coords = glm::vec2{};
+			}
 
 			vertices.push_back(vertex);
 		}
@@ -173,26 +175,87 @@ namespace libgraphics
 		// normal: texture_normalN
 
 		// 1. diffuse maps
-		std::vector<Texture>& diffuse_maps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		auto diffuse_maps = LoadMaterialTextures(scene, material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
+
 		// 2. specular maps
-		std::vector<Texture>& specular_maps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		auto specular_maps = LoadMaterialTextures(scene, material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
+
 		// 3. normal maps
-		std::vector<Texture> normal_maps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+		auto normal_maps = LoadMaterialTextures(scene, material, aiTextureType_NORMALS, "texture_normal");
 		textures.insert(textures.end(), normal_maps.begin(), normal_maps.end());
+
 		// 4. height maps
-		std::vector<Texture> height_maps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+		auto height_maps = LoadMaterialTextures(scene, material, aiTextureType_HEIGHT, "texture_height");
 		textures.insert(textures.end(), height_maps.begin(), height_maps.end());
 
 		// return a mesh object created from the extracted mesh data
 		return { vertices, indices, textures };
 	}
 
-	auto Model::LoadMaterialTextures(const aiMaterial* material, const aiTextureType type, const std::string_view type_name) -> std::vector<Texture>&
+	auto LoadTextureFromEmbeddedData(const aiTexture* ai_texture)
+	{
+		// Assuming the embedded texture data is in RGB format
+		GLenum format = GL_RGB;
+		if (ai_texture->mHeight == 0)
+		{
+			// If the texture has no height, it is a 1D texture
+			format = GL_RGB;
+		}
+		else if (ai_texture->mHeight > 0)
+		{
+			// If the texture has height, it is a 2D texture
+			format = GL_RGBA;
+		}
+
+		int width, height, channels;
+		stbi_uc* image_data = {};
+
+		uint32_t texture_id = 0;
+		if (ai_texture->mHeight == 0)
+		{
+			// Load and decode the compressed image data
+			image_data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(ai_texture->pcData), static_cast<int>(ai_texture->mWidth), &width, &height, &channels, STBI_rgb_alpha);
+		}
+		else
+		{
+			// Use the raw image data directly
+			width = static_cast<int>(ai_texture->mWidth);
+			height = static_cast<int>(ai_texture->mHeight);
+			image_data = reinterpret_cast<stbi_uc*>(ai_texture->pcData);
+		}
+
+		if (image_data)
+		{
+			// Create texture using the imageData (RGB or RGBA values)
+			glGenTextures(1, &texture_id);
+			glBindTexture(GL_TEXTURE_2D, texture_id);
+			glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(format), width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			// Set texture parameters and options as needed
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// If the image_data was loaded using stbi_load_from_memory, free the decoded image data
+			if (ai_texture->mHeight == 0)
+			{
+				stbi_image_free(image_data);
+			}
+		}
+
+		return texture_id;
+	}
+
+	auto Model::LoadMaterialTextures(const aiScene* scene, const aiMaterial* material, const aiTextureType type, const std::string_view type_name) -> std::vector<Texture>
 	{
 		auto textures = std::vector<Texture>{};
-		for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
+
+		const auto texture_count = material->GetTextureCount(type);
+		for (unsigned int i = 0; i < texture_count; i++)
 		{
 			aiString str;
 			material->GetTexture(type, i, &str);
@@ -210,15 +273,29 @@ namespace libgraphics
 			}
 
 			if (!skip)
-			{   // if texture hasn't been loaded already, load it
-				Texture texture;
-				texture.m_id = TextureFromFile(str.C_Str(), m_directory.data(), true);
+			{
+				// if texture hasn't been loaded already, load it
+				Texture texture = {};
+				// Assuming you have an Assimp `aiScene` object named `scene` that represents the loaded `.glb` file
+				if (const aiTexture* ai_texture = scene->GetEmbeddedTexture(str.C_Str()))
+				{
+					// Here, you can access the embedded texture data from `aiTexture` and load it into your OpenGL texture
+					// For example, you can generate a texture ID, set texture parameters, and load the texture data using `glTexImage2D`
+					texture.m_id = LoadTextureFromEmbeddedData(ai_texture);
+				}
+				else
+				{
+					// The texture is not an embedded texture, you can load it from a file using your existing code
+					texture.m_id = TextureFromFile(str.C_Str(), m_directory.data(), true);
+				}
+
 				texture.m_type = type_name;
 				texture.m_path = str.C_Str();
 				textures.push_back(texture);
-				textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecessary load duplicate textures.
+				textures_loaded.push_back(texture);  // store it as texture loaded for the entire model, to ensure we won't unnecessarily load duplicate textures.
 			}
 		}
 		return textures;
 	}
+
 }
