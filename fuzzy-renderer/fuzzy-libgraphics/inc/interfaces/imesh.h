@@ -10,6 +10,22 @@ namespace libgraphics
     class Transform;
     class IShader;
 
+    struct Vertex
+    {
+        glm::vec3 m_position = {};
+        glm::vec3 m_normal = {};
+        glm::vec2 m_tex_coords = {};
+        glm::vec3 m_tangent = {};
+        glm::vec3 m_bitangent = {};
+    };
+
+    struct Texture
+    {
+        uint32_t m_id = {};
+        std::string m_type = {};
+        std::string m_path = {};
+    };
+
     class LIBGRAPHICS_API IMesh
     {
     public:
@@ -17,13 +33,11 @@ namespace libgraphics
 
         virtual auto Draw(const std::shared_ptr<IShader>& shader) -> void = 0;
 
-        [[nodiscard]] virtual auto GetVertices() const -> std::vector<glm::vec3> = 0;
-        [[nodiscard]] virtual auto GetVertexNormals() const -> std::vector<glm::vec3> = 0;
-        [[nodiscard]] virtual auto GetUvs() const -> std::vector<glm::vec2> = 0;
+        [[nodiscard]] virtual auto GetVertexBuffer() const->std::vector<Vertex> = 0;
+        [[nodiscard]] virtual auto GetIndexBuffer() const -> std::vector<uint32_t> = 0;
 
-        virtual auto SetVertices(const std::vector<glm::vec3>& vertices) -> void = 0;
-        virtual auto SetNormals(const std::vector<glm::vec3>& normals) -> void = 0;
-        virtual auto SetUvs(const std::vector<glm::vec2>& uvs) -> void = 0;
+        virtual auto SetVertexBuffer(const std::vector<Vertex>& vertex_buffer) -> void = 0;
+        virtual auto SetIndexBuffer(const std::vector<uint32_t>& index_buffer) -> void = 0;
 
     protected:
         virtual auto UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void = 0;

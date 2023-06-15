@@ -14,5 +14,8 @@ namespace libgraphics
         virtual auto SetMatrix4x4(const std::string_view name, const glm::mat4& m) -> void = 0;
         virtual auto SetFloat(const std::string_view name, const float value) -> void = 0;
         virtual auto SetVec3(const std::string_view name, const glm::vec3& value) -> void = 0;
+        virtual auto SetInt(const std::string_view name, const int value) -> void = 0;
+        virtual auto SetUint(const std::string_view name, const uint32_t value) -> void = 0;
+        virtual auto GetID() const -> unsigned int = 0;
     };
 }

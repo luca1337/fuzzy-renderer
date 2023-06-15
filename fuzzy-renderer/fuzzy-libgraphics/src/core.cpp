@@ -5,7 +5,7 @@
 #include <opengl/gl_context.h>
 #include <opengl/gl_window.h>
 #include <opengl/gl_shader.h>
-#include <opengl/gl_mesh.h>
+#include <opengl/model.h>
 
 #include <GLFW/glfw3.h>
 
@@ -32,7 +32,7 @@ namespace libgraphics
 
 			m_p_impl->m_main_camera = {};
 
-			m_test_cube = std::make_shared<GLMesh>("../assets/suzanne.obj");
+			m_test_cube = std::make_shared<Model>("../assets/astronaut_pose.glb");
 		}
 		break;
 		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)
