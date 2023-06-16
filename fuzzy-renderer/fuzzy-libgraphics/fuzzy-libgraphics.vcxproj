@@ -147,6 +147,7 @@
     <ClInclude Include="inc\core.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
+    <ClInclude Include="inc\gui_utils.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
     <ClInclude Include="inc\interfaces\igraphics_window.h" />
     <ClInclude Include="inc\interfaces\imesh.h" />
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\gui_utils.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\opengl\camera.cpp" />
     <ClCompile Include="src\opengl\gl_context.cpp" />

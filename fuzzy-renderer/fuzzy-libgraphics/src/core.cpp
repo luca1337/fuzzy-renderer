@@ -8,6 +8,12 @@
 #include <opengl/model.h>
 #include <opengl/gl_skybox.h>
 
+#include <gui_utils.h>
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 #include <GLFW/glfw3.h>
 
 namespace libgraphics
@@ -52,9 +58,17 @@ namespace libgraphics
 
 		while (!glfwWindowShouldClose(glfw_window))
 		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			ImGui::ShowDemoWindow();
+			libgraphics::utils::gui::ShowEngineStatsOverlay();
+
 			const auto current_time = glfwGetTime();
 			const auto delta_time = current_time - previous_time;
 			previous_time = current_time;
+
 
 			m_p_impl->m_graphics_window->Clear();
 
@@ -77,6 +91,9 @@ namespace libgraphics
 				render_function(delta_time);
 			}
 
+			ImGui::Render();
+
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			m_p_impl->m_graphics_window->SwapBuffers();
 		}
 
