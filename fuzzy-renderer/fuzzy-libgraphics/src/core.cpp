@@ -1,5 +1,6 @@
 #include <core.h>
 #include <enums.h>
+#include <filesystem>
 
 #include <logger.h>
 #include <opengl/gl_context.h>
@@ -26,6 +27,8 @@ namespace libgraphics
 		// Init logger
 		libgraphics::logger::Logger::Init();
 
+		
+
 		switch (api_type)
 		{
 		case GraphicsAPI::OpenGL:
@@ -42,7 +45,7 @@ namespace libgraphics
 
 			m_p_impl->m_main_camera = {};
 
-			m_test_cube = std::make_shared<Model>("../assets/astronaut_pose.glb");
+			m_test_cube = std::make_shared<Model>("../resources/astronaut_pose.glb");
 		}
 		break;
 		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)
@@ -68,7 +71,6 @@ namespace libgraphics
 			const auto current_time = glfwGetTime();
 			const auto delta_time = current_time - previous_time;
 			previous_time = current_time;
-
 
 			m_p_impl->m_graphics_window->Clear();
 

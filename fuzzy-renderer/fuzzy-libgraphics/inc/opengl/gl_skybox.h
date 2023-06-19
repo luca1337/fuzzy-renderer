@@ -16,8 +16,8 @@ namespace libgraphics
 
 		auto Setup() -> void;
 
-		uint32_t m_cube_vao, m_cube_vbo = {};
-		uint32_t m_sky_vao, m_sky_vbo = {};
+		uint32_t m_cube_vao = {}, m_cube_vbo = {};
+		uint32_t m_sky_vao = {}, m_sky_vbo = {};
 		uint32_t m_cubemap_tex_id = {};
 	};
 }

@@ -161,6 +161,8 @@
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
     <ClInclude Include="inc\opengl\model.h" />
+    <ClInclude Include="inc\render_profiler.h" />
+    <ClInclude Include="inc\resource_manager.h" />
     <ClInclude Include="inc\transform.h" />
     <ClInclude Include="inc\utils.h" />
   </ItemGroup>
@@ -176,6 +178,8 @@
     <ClCompile Include="src\opengl\gl_skybox.cpp" />
     <ClCompile Include="src\opengl\gl_window.cpp" />
     <ClCompile Include="src\opengl\model.cpp" />
+    <ClCompile Include="src\render_profiler.cpp" />
+    <ClCompile Include="src\resource_manager.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="vendor\glad\src\gl.c" />
   </ItemGroup>

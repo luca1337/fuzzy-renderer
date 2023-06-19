@@ -4,6 +4,7 @@
 #include <opengl/camera.h>
 #include <opengl/gl_context.h>
 #include <loaders.h>
+#include <map>
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
@@ -26,28 +27,28 @@ namespace libgraphics
 	{
 		shader->Bind();
 
-		auto diffuse_nr		= uint32_t{};
-		auto specular_nr	= uint32_t{};
-		auto normal_nr		= uint32_t{};
-		auto height_nr		= uint32_t{};
+		auto texture_map = std::map<std::string, uint32_t>
+		{
+			{"texture_diffuse", 0},
+			{"texture_specular", 0},
+			{"texture_normal", 0},
+			{"texture_height", 0},
+		};
 
-		for (uint32_t texture_idx = 0; texture_idx < m_textures.size(); ++texture_idx)
+		for (auto texture_idx = 0ul; texture_idx != m_textures.size(); ++texture_idx)
 		{
 			glActiveTexture(GL_TEXTURE0 + texture_idx);
 
-			auto& [m_id, m_type, m_path] = m_textures[texture_idx];
+			const auto& [m_id, m_type, m_path] = m_textures[texture_idx];
 
-			auto number = std::string{};
-			if (m_type == "texture_diffuse")
-				number = std::to_string(diffuse_nr++);
-			else if (m_type == "texture_specular")
-				number = std::to_string(specular_nr++);
-			else if (m_type == "texture_normal")
-				number = std::to_string(normal_nr++);
-			else if (m_type == "texture_height")
-				number = std::to_string(height_nr++);
+			auto number_to_str = std::string{};
+			if (texture_map.contains(m_type))
+			{
+				auto& idx = texture_map[m_type];
+				number_to_str = std::to_string(idx++);
+			}
 
-			const std::string& uniform_name = m_type + number;
+			const auto& uniform_name = (m_type + number_to_str);
 			shader->SetInt(uniform_name, texture_idx);
 
 			glBindTexture(GL_TEXTURE_2D, m_id);
@@ -81,13 +82,13 @@ namespace libgraphics
 		glBindVertexArray(m_vao);
 		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-		glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(m_vertices.size() * sizeof(Vertex)), m_vertices.data(), GL_STATIC_DRAW);
 	}
 
 	auto GLMesh::GenerateIndexBuffer() const -> void
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), m_indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizei>(m_indices.size() * sizeof(uint32_t)), m_indices.data(), GL_STATIC_DRAW);
 	}
 
 	auto GLMesh::GenerateMeshDataAndSendToGPU() -> void

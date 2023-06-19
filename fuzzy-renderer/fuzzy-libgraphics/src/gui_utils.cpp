@@ -5,7 +5,6 @@
 
 #include <imgui.h>
 
-
 namespace libgraphics::utils::gui
 {
     auto IsMouseInsideWindow()
@@ -63,6 +62,9 @@ namespace libgraphics::utils::gui
 
             const auto& mouse_position_text = IsMouseInsideWindow() ? std::format("Mouse: [X: {:.1f} | Y: {:.1f}]", mouse_position.x, mouse_position.y) : "Mouse is out of window!";
             ImGui::Text(mouse_position_text.c_str());
+
+            // Objects in the world
+
         }
 
         ImGui::End();
