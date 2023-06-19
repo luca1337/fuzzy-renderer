@@ -2,37 +2,42 @@
 
 #include <logger.h>
 
-#include <memory>
 #include <map>
+#include <memory>
 #include <optional>
-
-namespace libgraphics
-{
-	class IShader;
-}
 
 namespace libgraphics::resources
 {
+	class IShader;
+
 	enum class ResourceType
 	{
 		shader,
 		texture
 	};
 
-	template <typename Resource>
-	concept resource_concept = std::is_base_of_v<libgraphics::IShader, Resource>;
+	template <std::derived_from<libgraphics::IShader> Resource>
+	struct ResourceParams
+	{
+		ResourceType m_resource_type = {};
+		std::string m_name = {};
+		std::shared_ptr<Resource> m_resource = {};
+	};
+
+	template <std::derived_from<libgraphics::IShader> Resource>
+	using Resources = std::vector<ResourceParams<Resource>>;
 
 	class ResourceManager
 	{
 	public:
-		template <resource_concept Resource>
-		static auto RegisterResource(const ResourceType type, const std::string& resource_name, const std::shared_ptr<Resource>& resource) -> void
+		template <std::derived_from<libgraphics::IShader> Resource>
+		static void RegisterResource(const ResourceParams<Resource>& params)
 		{
-			auto& resource_map = GetResourceMap<Resource>();
+			auto& resource_vec = GetResourceVec<Resource>();
 
-			if (!find<Resource>(type, resource_name))
+			if (!find<Resource>(params))
 			{
-				GetResourceMap<Resource>()[type][resource_name] = resource;
+				resource_vec.push_back(params);
 			}
 			else
 			{
@@ -40,12 +45,14 @@ namespace libgraphics::resources
 			}
 		}
 
-		template <resource_concept Resource>
-		static auto GetFromCache(const ResourceType type, const std::string& resource_name) -> std::optional<std::shared_ptr<Resource>>
+		template <std::derived_from<libgraphics::IShader> Resource>
+		static std::optional<ResourceParams<Resource>> GetFromCache(const ResourceParams<Resource>& params)
 		{
-			if (const auto& resource = find<Resource>(type, resource_name))
+			auto& resource_vec = GetResourceVec<Resource>();
+
+			if (const auto& param = find<Resource>(params))
 			{
-				return resource;
+				return param;
 			}
 
 			CX_CORE_ERROR("This resource doesn't exist, please use Register() to add it first");
@@ -53,27 +60,28 @@ namespace libgraphics::resources
 		}
 
 	private:
-		template <resource_concept Resource>
-		static auto GetResourceMap() -> std::map<ResourceType, std::map<std::string, std::shared_ptr<Resource>>>&
+		template <std::derived_from<libgraphics::IShader> Resource>
+		static auto& GetResourceVec()
 		{
-			static auto resource_map = std::map<ResourceType, std::map<std::string, std::shared_ptr<Resource>>>{};
-			return resource_map;
+			static auto resource_vec = Resources<Resource>{};
+			return resource_vec;
 		}
 
-		template <resource_concept Resource>
-		static auto find(const ResourceType type, const std::string& resource_name) -> std::optional<std::shared_ptr<Resource>>
+		template <std::derived_from<libgraphics::IShader> Resource>
+		static auto find(const ResourceParams<Resource>& params) -> std::optional<ResourceParams<Resource>>
 		{
-			auto& resource_map = GetResourceMap<Resource>();
+			auto& resource_vec = GetResourceVec<Resource>();
 
-			if (const auto it = std::ranges::find_if(resource_map, [&](const auto& p) {
-				return p.first == type && p.second.find(resource_name) != p.second.end();
-				}); it != resource_map.end())
-			{
-				const auto& second_elem = it->second[resource_name];
-				return { second_elem };
+			const auto& find_element = [&](const auto& rp) { return rp.m_resource_type == params.m_resource_type && rp.m_name == params.m_name; };
+
+			auto it = std::find_if(resource_vec.begin(), resource_vec.end(), find_element);
+
+			if (it != resource_vec.end()) {
+				return *it;
 			}
 
-			return {};
+			return std::nullopt;
 		}
 	};
+
 }

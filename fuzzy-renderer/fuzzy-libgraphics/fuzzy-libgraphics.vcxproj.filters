@@ -28,6 +28,12 @@
     <Filter Include="Source Files\OpenGL">
       <UniqueIdentifier>{30bf6b0a-c42d-4efb-8872-032abddfc491}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUI">
+      <UniqueIdentifier>{6b770d15-12bc-4639-9baf-f30f8c1a9c4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{9bd5ac95-6a5f-4137-91d2-553fd507f9e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\framework.h">
@@ -96,6 +102,9 @@
     <ClInclude Include="inc\resource_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\gui\gui_object.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -139,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="src\render_profiler.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\gui_object.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

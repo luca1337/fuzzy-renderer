@@ -3,12 +3,12 @@
 #include <filesystem>
 
 #include <logger.h>
-#include <opengl/gl_context.h>
-#include <opengl/gl_window.h>
-#include <opengl/gl_shader.h>
-#include <opengl/model.h>
-#include <opengl/gl_skybox.h>
 #include <resource_manager.h>
+#include <opengl/gl_context.h>
+#include <opengl/gl_shader.h>
+#include <opengl/gl_skybox.h>
+#include <opengl/gl_window.h>
+#include <opengl/model.h>
 
 #include <gui_utils.h>
 
@@ -17,6 +17,8 @@
 #include <imgui_impl_opengl3.h>
 
 #include <GLFW/glfw3.h>
+
+#include "gui/gui_object.h"
 
 namespace libgraphics
 {
@@ -37,10 +39,10 @@ namespace libgraphics
 			m_p_impl->m_graphics_window->SetClearColor({ 0.3f, 0.4f, 0.5f });
 
 			// register and compile shaders
-			libgraphics::resources::ResourceManager::RegisterResource(libgraphics::resources::ResourceType::shader, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl"));
-			libgraphics::resources::ResourceManager::RegisterResource(libgraphics::resources::ResourceType::shader, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl"));
+			libgraphics::resources::ResourceManager::RegisterResource(resources::ResourceParams{ libgraphics::resources::ResourceType::shader, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl") });
+			libgraphics::resources::ResourceManager::RegisterResource(resources::ResourceParams{ libgraphics::resources::ResourceType::shader, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl") });
 
-			auto def_shad = resources::ResourceManager::GetFromCache<GLShader>(resources::ResourceType::shader, "default_shader");
+			auto def_shad = resources::ResourceManager::GetFromCache<GLShader>({ resources::ResourceType::shader, "default_shader" });
 
 			m_sky_box = std::make_shared<GLSkybox>();
 
@@ -60,8 +62,10 @@ namespace libgraphics
 
 		auto previous_time = glfwGetTime();
 
-		const auto& default_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>(libgraphics::resources::ResourceType::shader, "default_shader");
-		const auto& skybox_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>(libgraphics::resources::ResourceType::shader, "skybox_shader");
+		const auto& default_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "default_shader" });
+		const auto& skybox_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "skybox_shader" });
+
+		auto test_win = libgraphics::gui::GUIStats{};
 
 		while (!glfwWindowShouldClose(glfw_window))
 		{
@@ -70,7 +74,8 @@ namespace libgraphics
 			ImGui::NewFrame();
 
 			ImGui::ShowDemoWindow();
-			libgraphics::utils::gui::ShowEngineStatsOverlay();
+			test_win.Render();
+			//libgraphics::utils::gui::ShowEngineStatsOverlay();
 
 			const auto current_time = glfwGetTime();
 			const auto delta_time = current_time - previous_time;
@@ -88,8 +93,8 @@ namespace libgraphics
 			}
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
 
-			m_sky_box->Render(skybox_shader.value());
-			m_test_cube->Draw(default_shader.value());
+			m_sky_box->Render(skybox_shader.value().m_resource);
+			m_test_cube->Draw(default_shader.value().m_resource);
 
 			if (render_function)
 			{
