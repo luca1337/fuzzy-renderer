@@ -28,7 +28,9 @@ namespace libgraphics::resources
 		template <resource_concept Resource>
 		static auto RegisterResource(const ResourceType type, const std::string& resource_name, const std::shared_ptr<Resource>& resource) -> void
 		{
-			if (!Find<Resource>(type, resource_name))
+			auto& resource_map = GetResourceMap<Resource>();
+
+			if (!find<Resource>(type, resource_name))
 			{
 				GetResourceMap<Resource>()[type][resource_name] = resource;
 			}
@@ -41,7 +43,7 @@ namespace libgraphics::resources
 		template <resource_concept Resource>
 		static auto GetFromCache(const ResourceType type, const std::string& resource_name) -> std::optional<std::shared_ptr<Resource>>
 		{
-			if (const auto& resource = Find<Resource>(type, resource_name))
+			if (const auto& resource = find<Resource>(type, resource_name))
 			{
 				return resource;
 			}
@@ -54,21 +56,23 @@ namespace libgraphics::resources
 		template <resource_concept Resource>
 		static auto GetResourceMap() -> std::map<ResourceType, std::map<std::string, std::shared_ptr<Resource>>>&
 		{
-			static std::map<ResourceType, std::map<std::string, std::shared_ptr<Resource>>> resource_map;
+			static auto resource_map = std::map<ResourceType, std::map<std::string, std::shared_ptr<Resource>>>{};
 			return resource_map;
 		}
 
 		template <resource_concept Resource>
-		static auto Find(const ResourceType type, const std::string& resource_name) -> std::optional<std::shared_ptr<Resource>>
+		static auto find(const ResourceType type, const std::string& resource_name) -> std::optional<std::shared_ptr<Resource>>
 		{
-			const auto& resource_map = GetResourceMap<Resource>();
-			if (const auto type_iter = resource_map.find(type); type_iter != resource_map.end()) 
+			auto& resource_map = GetResourceMap<Resource>();
+
+			if (const auto it = std::ranges::find_if(resource_map, [&](const auto& p) {
+				return p.first == type && p.second.find(resource_name) != p.second.end();
+				}); it != resource_map.end())
 			{
-				if (const auto resource_iter = type_iter->second.find(resource_name); resource_iter != type_iter->second.end()) 
-				{
-					return { resource_iter->second };
-				}
+				const auto& second_elem = it->second[resource_name];
+				return { second_elem };
 			}
+
 			return {};
 		}
 	};
