@@ -40,8 +40,6 @@ namespace libgraphics
 		Core() = default;
 
 		std::shared_ptr<class Model> m_test_cube = {};
-		std::shared_ptr<IShader> default_shader = {};
-		std::shared_ptr<IShader> skybox_shader = {};
 		std::shared_ptr<GLSkybox> m_sky_box = {};
 
 		CoreImpl* m_p_impl = nullptr;

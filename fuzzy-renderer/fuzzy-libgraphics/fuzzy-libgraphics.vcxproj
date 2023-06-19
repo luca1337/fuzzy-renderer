@@ -179,7 +179,6 @@
     <ClCompile Include="src\opengl\gl_window.cpp" />
     <ClCompile Include="src\opengl\model.cpp" />
     <ClCompile Include="src\render_profiler.cpp" />
-    <ClCompile Include="src\resource_manager.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="vendor\glad\src\gl.c" />
   </ItemGroup>
