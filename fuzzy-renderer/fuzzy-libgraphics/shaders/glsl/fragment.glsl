@@ -20,6 +20,8 @@ struct Material {
     float shininess;
 };
 
+uniform Material material;
+
 void main()
 {
     vec3 normalized_world_normal = normalize(world_normal);
@@ -40,9 +42,9 @@ void main()
     float lambert_effect = max(dot(transformed_normal, light_direction), 0.0);
 
     vec3 view_direction = normalize(eye - world_vertex);
-    vec3 reflect_direction = reflect(-light_direction, transformed_normal);
+    vec3 half_vector = normalize(light_direction + view_direction);
 
-    float specular_effect = pow(max(dot(view_direction, reflect_direction), 0.0), shininess);
+    float specular_effect = pow(max(dot(transformed_normal, half_vector), 0.0), shininess);
 
     vec3 ambient = ambient_color * diffuse_color.rgb;
     vec3 diffuse = diffuse_color.rgb * lambert_effect;

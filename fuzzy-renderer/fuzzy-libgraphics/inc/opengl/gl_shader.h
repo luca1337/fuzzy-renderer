@@ -18,11 +18,7 @@ namespace libgraphics
 		auto SetVec3(const std::string_view name, const glm::vec3& value) -> void override { glUniform3fv(glGetUniformLocation(m_program_id, name.data()), 1, &value[0]); }
 		auto GetID() const -> GLuint override { return m_program_id; }
 		auto SetInt(const std::string_view name, const int value) -> void override { glUniform1i(glGetUniformLocation(m_program_id, name.data()), value); }
-		auto SetUint(const std::string_view name, const uint32_t value) -> void override
-		{
-			const auto uniform_location = glGetUniformLocation(m_program_id, name.data());
-			glUniform1ui(uniform_location, value);
-		}
+		auto SetUint(const std::string_view name, const uint32_t value) -> void override { glUniform1ui(glGetUniformLocation(m_program_id, name.data()), value); }
 
 	private:
 		unsigned int m_program_id = {};

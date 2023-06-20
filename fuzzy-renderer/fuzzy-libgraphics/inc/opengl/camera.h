@@ -36,7 +36,7 @@ namespace libgraphics
 	auto GetViewMatrix(const CameraProps&) -> glm::mat4;
 
 	/**
-	 * \brief Use this if you want to remove the translation section of transformation matrices by taking the upper-left 3x3 matrix of the 4x4 matrix.
+	 * \brief Use this if you want to remove the translation section of transformation matrix by taking the upper-left 3x3 matrix of the 4x4 matrix.
 	 * \return return a 3x3 matrix without translation.
 	 */
 	auto GetViewMatrix3(const CameraProps&) -> glm::mat3;
@@ -47,7 +47,7 @@ namespace libgraphics
 	class Camera
 	{
 	public:
-		auto GetWorldPosition() const->glm::dvec3;
+		auto GetWorldPosition() const -> glm::dvec3;
 		auto RotateByMouse(const std::shared_ptr<IGraphicsWindow>& window) -> void;
 		auto Animate(const std::shared_ptr<IGraphicsWindow>& window, const double delta_time) -> void;
 		void Reset() { m_previous_position.reset(); }

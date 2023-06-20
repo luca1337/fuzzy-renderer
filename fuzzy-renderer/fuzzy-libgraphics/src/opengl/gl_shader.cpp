@@ -3,17 +3,17 @@
 #include <logger.h>
 
 #include <fstream>
-#include <sstream>
 #include <source_location>
 #include <span>
+#include <sstream>
 
 #include <glad/gl.h>
 
 namespace libgraphics
 {
-	auto ReadShader(const std::string& path) -> std::string
+	auto read_shader(const std::string& path) -> std::string
 	{
-		std::ifstream shader_file(path);
+		auto shader_file = std::ifstream{ path };
 		if (!shader_file.is_open())
 		{
 			const auto location = std::source_location::current();
@@ -22,13 +22,13 @@ namespace libgraphics
 			throw std::runtime_error(error_message);
 		}
 
-		std::stringstream shader_stream;
+		std::stringstream shader_stream = {};
 		shader_stream << shader_file.rdbuf();
 		shader_file.close();
 		return shader_stream.str();
 	}
 
-	auto CompileShader(const std::span<const char> shader_source, const GLenum shader_type) -> GLuint
+	auto compile_shader(const std::span<const char> shader_source, const GLenum shader_type) -> GLuint
 	{
 		const auto shader = glCreateShader(shader_type);
 		const auto shader_source_ptr = shader_source.data();
@@ -37,7 +37,8 @@ namespace libgraphics
 
 		GLint success;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-		if (!success) {
+		if (!success) 
+		{
 			GLchar info_log[512];
 			glGetShaderInfoLog(shader, sizeof info_log, nullptr, info_log);
 
@@ -52,11 +53,11 @@ namespace libgraphics
 
 	GLShader::GLShader(const std::string_view vertex, const std::string_view fragment)
 	{
-		const auto vertex_shader_code = ReadShader(vertex.data());
-		const auto fragment_shader_code = ReadShader(fragment.data());
+		const auto vertex_shader_code = read_shader(vertex.data());
+		const auto fragment_shader_code = read_shader(fragment.data());
 
-		const auto vertex_id = CompileShader(std::span(vertex_shader_code.data(), vertex_shader_code.size()), GL_VERTEX_SHADER);
-		const auto fragment_id = CompileShader(std::span(fragment_shader_code.data(), fragment_shader_code.size()), GL_FRAGMENT_SHADER);
+		const auto vertex_id = compile_shader(std::span(vertex_shader_code.data(), vertex_shader_code.size()), GL_VERTEX_SHADER);
+		const auto fragment_id = compile_shader(std::span(fragment_shader_code.data(), fragment_shader_code.size()), GL_FRAGMENT_SHADER);
 
 		// Shader program
 		m_program_id = glCreateProgram();
@@ -64,10 +65,11 @@ namespace libgraphics
 		glAttachShader(m_program_id, fragment_id);
 		glLinkProgram(m_program_id);
 
-		GLint success;
+		GLint success = {};
 		glGetProgramiv(m_program_id, GL_LINK_STATUS, &success);
-		if (!success) {
-			GLchar info_log[512];
+		if (!success) 
+		{
+			GLchar info_log[512] = {};
 			glGetProgramInfoLog(m_program_id, sizeof info_log, nullptr, info_log);
 
 			const auto location = std::source_location::current();

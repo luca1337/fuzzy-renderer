@@ -26,5 +26,7 @@ namespace libgraphics
 
 		const int MajorVersion = 4;
 		const int MinorVersion = 6;
+
+		auto SetupImGui() const -> void;
 	};
 }

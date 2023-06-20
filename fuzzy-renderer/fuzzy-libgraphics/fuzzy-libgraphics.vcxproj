@@ -147,6 +147,8 @@
     <ClInclude Include="inc\core.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
+    <ClInclude Include="inc\gui\gui_object.h" />
+    <ClInclude Include="inc\gui_utils.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
     <ClInclude Include="inc\interfaces\igraphics_window.h" />
     <ClInclude Include="inc\interfaces\imesh.h" />
@@ -160,12 +162,16 @@
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
     <ClInclude Include="inc\opengl\model.h" />
+    <ClInclude Include="inc\render_profiler.h" />
+    <ClInclude Include="inc\resource_manager.h" />
     <ClInclude Include="inc\transform.h" />
     <ClInclude Include="inc\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\gui\gui_object.cpp" />
+    <ClCompile Include="src\gui_utils.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\opengl\camera.cpp" />
     <ClCompile Include="src\opengl\gl_context.cpp" />
@@ -174,6 +180,7 @@
     <ClCompile Include="src\opengl\gl_skybox.cpp" />
     <ClCompile Include="src\opengl\gl_window.cpp" />
     <ClCompile Include="src\opengl\model.cpp" />
+    <ClCompile Include="src\render_profiler.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="vendor\glad\src\gl.c" />
   </ItemGroup>

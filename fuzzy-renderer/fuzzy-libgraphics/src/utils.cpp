@@ -1,6 +1,9 @@
 #include <utils.h>
-#include <logger.h>
+
 #include <filesystem>
+#include <logger.h>
+#include <stb_image.h>
+#include <glad/gl.h>
 
 namespace utils::gl
 {
@@ -51,15 +54,13 @@ namespace utils::gl
 			if (entry.is_regular_file()) 
 			{
 				auto extension = entry.path().extension().string();
-				std::ranges::transform(extension, extension.begin(), [](const unsigned char c) { return std::tolower(c); });
+				std::ranges::transform(extension, extension.begin(), [](const auto& c) { return std::tolower(c); });
 
 				if (std::ranges::find(allowed_extensions, extension) != allowed_extensions.end()) 
 				{
 					auto file_path = entry.path().string();
 					std::ranges::replace(file_path, '\\', '/');
 					faces.push_back(file_path);
-
-					CX_CORE_DEBUG("found cubemap: " + entry.path().filename().string() + " under: " + file_path);
 				}
 			}
 		}
@@ -73,7 +74,7 @@ namespace utils::gl
 
 		int width = {}, height = {}, channels = {};
 
-		for (auto face_idx = 0ul; face_idx < faces.size(); ++face_idx)
+		for (auto face_idx = 0ul; face_idx != faces.size(); ++face_idx)
 		{
 			if (const auto data = stbi_load(faces[face_idx].c_str(), &width, &height, &channels, 0))
 			{
@@ -95,5 +96,4 @@ namespace utils::gl
 
 		return texture_id;
 	}
-
 }
