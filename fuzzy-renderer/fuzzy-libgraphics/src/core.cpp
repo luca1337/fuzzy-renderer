@@ -48,7 +48,7 @@ namespace libgraphics
 
 			m_p_impl->m_main_camera = {};
 
-			m_test_cube = std::make_shared<Model>("../resources/astronaut_pose.glb");
+			m_test_cube = std::make_shared<Model>("../resources/rock_fountain.glb");
 		}
 		break;
 		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)

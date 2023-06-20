@@ -21,11 +21,8 @@ namespace libgraphics
 
 	private:
 		std::vector<GLMesh> m_meshes = {};
-		std::vector<Texture> textures_loaded;
-		std::string_view m_directory = {};
 		auto LoadModel(const std::string_view path) -> void;
-		auto ProcessNode(const aiNode* node, const aiScene* scene) -> void;
-		auto ProcessMesh(const aiMesh* mesh, const aiScene* scene) -> GLMesh;
-		auto LoadMaterialTextures(const aiScene* scene, const aiMaterial* material, const aiTextureType type, const std::string_view type_name) -> std::vector<Texture>;
+		auto ProcessNode(const aiNode* node, const aiScene* scene, const std::string_view model_path) -> void;
+		static auto ProcessMesh(const aiMesh* mesh, const aiScene* scene, const std::string_view model_path) -> GLMesh;
 	};
 }
