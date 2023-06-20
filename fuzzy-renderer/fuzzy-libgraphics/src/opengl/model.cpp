@@ -1,26 +1,32 @@
 #include <opengl/model.h>
 
-#include <assimp/postprocess.h>
-
 #include <logger.h>
+#include <ranges>
+#include <assimp/postprocess.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace libgraphics
 {
+	struct TexturePair
+	{
+		aiTextureType m_type = {};
+		std::string m_path = {};
+	};
+
 	auto TextureFromFile(const char* path, const std::string& directory, bool gamma)
 	{
-		std::string file_name = std::string(path);
+		auto file_name = std::string(path);
 		file_name = directory + '/' + file_name;
 
-		uint32_t texture_id = { };
+		auto texture_id = uint32_t{ };
 		glGenTextures(1, &texture_id);
 
 		int width, height, nr_components;
 		if (const auto data = stbi_load(file_name.c_str(), &width, &height, &nr_components, 0))
 		{
-			GLenum format = {};
+			auto format = GLenum{};
 			if (nr_components == 1)
 				format = GL_RED;
 			else if (nr_components == 3)
@@ -165,32 +171,22 @@ namespace libgraphics
 		}
 
 		// process materials
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		const auto material = scene->mMaterials[mesh->mMaterialIndex];
 
-		// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-		// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-		// Same applies to other texture as the following list summarizes:
-		// diffuse: texture_diffuseN
-		// specular: texture_specularN
-		// normal: texture_normalN
+		const auto texture_pairs = std::vector<TexturePair>
+		{
+			{aiTextureType_DIFFUSE, "texture_diffuse"},
+			{aiTextureType_SPECULAR, "texture_specular"},
+			{aiTextureType_NORMALS, "texture_normal"},
+			{aiTextureType_HEIGHT, "texture_height"}
+		};
 
-		// 1. diffuse maps
-		auto diffuse_maps = LoadMaterialTextures(scene, material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
+		std::ranges::for_each(std::views::iota(0ul) | std::views::take(texture_pairs.size()), [&](const auto idx) {
+			const auto& [m_type, m_path] = texture_pairs[idx];
+			const auto& current_loaded_texture = LoadMaterialTextures(scene, material, m_type, m_path);
+			std::ranges::copy(current_loaded_texture, std::back_inserter(textures));
+		});
 
-		// 2. specular maps
-		auto specular_maps = LoadMaterialTextures(scene, material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
-
-		// 3. normal maps
-		auto normal_maps = LoadMaterialTextures(scene, material, aiTextureType_NORMALS, "texture_normal");
-		textures.insert(textures.end(), normal_maps.begin(), normal_maps.end());
-
-		// 4. height maps
-		auto height_maps = LoadMaterialTextures(scene, material, aiTextureType_HEIGHT, "texture_height");
-		textures.insert(textures.end(), height_maps.begin(), height_maps.end());
-
-		// return a mesh object created from the extracted mesh data
 		return { vertices, indices, textures };
 	}
 
@@ -254,48 +250,42 @@ namespace libgraphics
 	{
 		auto textures = std::vector<Texture>{};
 
-		const auto texture_count = material->GetTextureCount(type);
-		for (unsigned int i = 0; i < texture_count; i++)
-		{
-			aiString str;
-			material->GetTexture(type, i, &str);
+		const auto textures_count = std::views::iota(0ul) | std::views::take(material->GetTextureCount(type));
+		std::ranges::for_each(textures_count, [&](const auto texture_idx) {
+
+			auto texture_assimp_path = aiString{};
+			material->GetTexture(type, texture_idx, &texture_assimp_path);
 
 			// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
-			bool skip = false;
-			for (auto& j : textures_loaded)
+			auto skip = false;
+			auto found_texture = std::ranges::find_if(textures_loaded, [&](const auto& j) { return j.m_path.data() == texture_assimp_path.C_Str(); });
+			if (found_texture != textures_loaded.end())
 			{
-				if (std::strcmp(j.m_path.data(), str.C_Str()) == 0)
-				{
-					textures.push_back(j);
-					skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
-					break;
-				}
+				// a texture with the same filepath has already been loaded, continue to next one. (optimization)
+				textures.push_back(*found_texture);
+				skip = true;
 			}
 
 			if (!skip)
 			{
 				// if texture hasn't been loaded already, load it
-				Texture texture = {};
-				// Assuming you have an Assimp `aiScene` object named `scene` that represents the loaded `.glb` file
-				if (const aiTexture* ai_texture = scene->GetEmbeddedTexture(str.C_Str()))
+				auto texture = Texture{};
+				if (const auto ai_texture = scene->GetEmbeddedTexture(texture_assimp_path.C_Str()))
 				{
-					// Here, you can access the embedded texture data from `aiTexture` and load it into your OpenGL texture
-					// For example, you can generate a texture ID, set texture parameters, and load the texture data using `glTexImage2D`
 					texture.m_id = LoadTextureFromEmbeddedData(ai_texture);
 				}
 				else
 				{
-					// The texture is not an embedded texture, you can load it from a file using your existing code
-					texture.m_id = TextureFromFile(str.C_Str(), m_directory.data(), true);
+					texture.m_id = TextureFromFile(texture_assimp_path.C_Str(), m_directory.data(), true);
 				}
 
 				texture.m_type = type_name;
-				texture.m_path = str.C_Str();
+				texture.m_path = texture_assimp_path.C_Str();
 				textures.push_back(texture);
 				textures_loaded.push_back(texture);  // store it as texture loaded for the entire model, to ensure we won't unnecessarily load duplicate textures.
 			}
-		}
+		});
+
 		return textures;
 	}
-
 }

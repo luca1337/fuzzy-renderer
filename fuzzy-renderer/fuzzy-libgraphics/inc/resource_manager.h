@@ -21,7 +21,7 @@ namespace libgraphics::resources
 	{
 		ResourceType m_resource_type = {};
 		std::string m_name = {};
-		std::shared_ptr<Resource> m_resource = {};
+		std::shared_ptr<Resource> m_resource = {}; // this can even be removed and i can use an Object_Ref -> Resource& m_resource = {};
 	};
 
 	template <std::derived_from<libgraphics::IShader> Resource>
