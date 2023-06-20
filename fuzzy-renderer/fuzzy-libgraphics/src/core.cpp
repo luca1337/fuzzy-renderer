@@ -93,8 +93,8 @@ namespace libgraphics
 			}
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
 
-			m_sky_box->Render(skybox_shader.value().m_resource);
-			m_test_cube->Draw(default_shader.value().m_resource);
+			m_sky_box->Render(skybox_shader.value());
+			m_test_cube->Draw(default_shader.value());
 
 			if (render_function)
 			{

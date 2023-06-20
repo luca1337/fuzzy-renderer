@@ -2,9 +2,9 @@
 
 #include <logger.h>
 
-#include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 
 namespace libgraphics::resources
 {
@@ -33,55 +33,32 @@ namespace libgraphics::resources
 		template <std::derived_from<libgraphics::IShader> Resource>
 		static void RegisterResource(const ResourceParams<Resource>& params)
 		{
-			auto& resource_vec = GetResourceVec<Resource>();
-
-			if (!find<Resource>(params))
+			if (!find(params))
 			{
-				resource_vec.push_back(params);
+				ResourceVec<Resource>().push_back(params);
 			}
 			else
 			{
-				CX_CORE_ERROR("This resource is already registered, please use Get() to retrieve it.");
+				CX_CORE_ERROR("This resource will not be loaded as it's already registered, please use GetFromCache() to retrieve it.");
 			}
 		}
 
 		template <std::derived_from<libgraphics::IShader> Resource>
-		static std::optional<ResourceParams<Resource>> GetFromCache(const ResourceParams<Resource>& params)
-		{
-			auto& resource_vec = GetResourceVec<Resource>();
-
-			if (const auto& param = find<Resource>(params))
-			{
-				return param;
-			}
-
-			CX_CORE_ERROR("This resource doesn't exist, please use Register() to add it first");
-			return std::nullopt;
-		}
+		static auto GetFromCache(const ResourceParams<Resource>& params) -> std::optional<decltype(std::declval<ResourceParams<Resource>>().m_resource)> { return find(params).value().m_resource; }
 
 	private:
 		template <std::derived_from<libgraphics::IShader> Resource>
-		static auto& GetResourceVec()
+		static auto& ResourceVec()
 		{
 			static auto resource_vec = Resources<Resource>{};
 			return resource_vec;
 		}
 
-		template <std::derived_from<libgraphics::IShader> Resource>
-		static auto find(const ResourceParams<Resource>& params) -> std::optional<ResourceParams<Resource>>
+		template <std::derived_from<libgraphics::IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
+		static auto find(const ResourceParams<Resource>& params) -> std::optional<ReturnType>
 		{
-			auto& resource_vec = GetResourceVec<Resource>();
-
-			const auto& find_element = [&](const auto& rp) { return rp.m_resource_type == params.m_resource_type && rp.m_name == params.m_name; };
-
-			auto it = std::find_if(resource_vec.begin(), resource_vec.end(), find_element);
-
-			if (it != resource_vec.end()) {
-				return *it;
-			}
-
-			return std::nullopt;
+			auto it = std::ranges::find(ResourceVec<Resource>(), params.m_name, &ResourceParams<Resource>::m_name);
+			return it != ResourceVec<Resource>().end() ? *it : std::optional<ReturnType>{};
 		}
 	};
-
 }

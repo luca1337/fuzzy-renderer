@@ -5,6 +5,7 @@
 #include <opengl/gl_context.h>
 #include <loaders.h>
 #include <map>
+#include <ranges>
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
@@ -13,12 +14,12 @@ namespace libgraphics
 {
 	/**
 	 * \brief Create a raw mesh
-	 * \param vertices  
-	 * \param indices  
-	 * \param textures  
+	 * \param vertices
+	 * \param indices
+	 * \param textures
 	 */
 	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures)
-		: m_vertices{std::move(vertices)}, m_indices{std::move(indices)}, m_textures{std::move(textures)}
+		: m_vertices{ std::move(vertices) }, m_indices{ std::move(indices) }, m_textures{ std::move(textures) }
 	{
 		GenerateMeshDataAndSendToGPU();
 	}
@@ -35,8 +36,7 @@ namespace libgraphics
 			{"texture_height", 0},
 		};
 
-		for (auto texture_idx = 0ul; texture_idx != m_textures.size(); ++texture_idx)
-		{
+		std::ranges::for_each(std::views::iota(0ul) | std::views::take(m_textures.size()), [&](const auto texture_idx) {
 			glActiveTexture(GL_TEXTURE0 + texture_idx);
 
 			const auto& [m_id, m_type, m_path] = m_textures[texture_idx];
@@ -52,7 +52,7 @@ namespace libgraphics
 			shader->SetInt(uniform_name, texture_idx);
 
 			glBindTexture(GL_TEXTURE_2D, m_id);
-		}
+		});
 
 		glBindVertexArray(m_vao);
 
@@ -62,7 +62,7 @@ namespace libgraphics
 		glActiveTexture(GL_TEXTURE0);
 
 		auto transform = Transform{};
-		transform.m_scale = { 0.3, 0.3, 0.3 };
+		transform.m_scale = { 0.5, 0.5, 0.5 };
 
 		UpdateMatrix(shader, transform);
 	}
@@ -109,14 +109,14 @@ namespace libgraphics
 		const auto& core = Core::GetInstance();
 		const auto gl_context = ::std::static_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
 
-		const auto translation_mat = glm::translate(transform.m_translation);
-		const auto scale_mat = glm::scale(transform.m_scale);
-		const auto rotation_mat = glm::mat4_cast(transform.m_rotation);
+		const auto& translation_mat = glm::translate(transform.m_translation);
+		const auto& scale_mat = glm::scale(transform.m_scale);
+		const auto& rotation_mat = glm::mat4_cast(transform.m_rotation);
 
-		const auto model = translation_mat * rotation_mat * scale_mat;
-		const auto view = GetViewMatrix(core.GetMainCamera().m_camera_props);
-		const auto projection = ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0);
-		const auto eye = core.GetMainCamera().GetWorldPosition();
+		const auto& model = translation_mat * rotation_mat * scale_mat;
+		const auto& view = GetViewMatrix(core.GetMainCamera().m_camera_props);
+		const auto& projection = ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0);
+		const auto& eye = core.GetMainCamera().GetWorldPosition();
 
 		shader->SetMatrix4x4("model", model);
 		shader->SetMatrix4x4("view", view);
