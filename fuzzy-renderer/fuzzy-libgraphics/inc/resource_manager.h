@@ -33,32 +33,22 @@ namespace libgraphics::resources
 		template <std::derived_from<libgraphics::IShader> Resource>
 		static void RegisterResource(const ResourceParams<Resource>& params)
 		{
-			if (!find(params))
-			{
-				ResourceVec<Resource>().push_back(params);
-			}
-			else
-			{
-				CX_CORE_ERROR("This resource will not be loaded as it's already registered, please use GetFromCache() to retrieve it.");
-			}
+			if (!find_private(params)) m_resources<Resource>.push_back(params);
+			else CX_CORE_ERROR("This resource will not be loaded as it's already registered, please use GetFromCache() to retrieve it.");
 		}
 
 		template <std::derived_from<libgraphics::IShader> Resource>
-		static auto GetFromCache(const ResourceParams<Resource>& params) -> std::optional<decltype(std::declval<ResourceParams<Resource>>().m_resource)> { return find(params).value().m_resource; }
+		[[nodiscard]] static auto GetFromCache(const ResourceParams<Resource>& params) -> std::optional<decltype(std::declval<ResourceParams<Resource>>().m_resource)> { return find_private(params).value().m_resource; }
 
 	private:
 		template <std::derived_from<libgraphics::IShader> Resource>
-		static auto& ResourceVec()
-		{
-			static auto resource_vec = Resources<Resource>{};
-			return resource_vec;
-		}
+		inline static Resources<Resource> m_resources = {};
 
 		template <std::derived_from<libgraphics::IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
-		static auto find(const ResourceParams<Resource>& params) -> std::optional<ReturnType>
+		static auto find_private(const ResourceParams<Resource>& params) -> std::optional<ReturnType>
 		{
-			auto it = std::ranges::find(ResourceVec<Resource>(), params.m_name, &ResourceParams<Resource>::m_name);
-			return it != ResourceVec<Resource>().end() ? *it : std::optional<ReturnType>{};
+			auto it = std::ranges::find(m_resources<Resource>, params.m_name, &ResourceParams<Resource>::m_name);
+			return it != m_resources<Resource>.end() ? *it : std::optional<ReturnType>{};
 		}
 	};
 }
