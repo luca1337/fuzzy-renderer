@@ -7,7 +7,7 @@
 
 namespace libgraphics::utils::gui
 {
-    auto IsMouseInsideWindow()
+    auto IsMouseInsideWindow() -> bool
     {
         const auto& mouse_position = ImGui::GetMousePos();
         const auto& core = Core::GetInstance();
@@ -15,6 +15,30 @@ namespace libgraphics::utils::gui
 
         return (mouse_position.x * (static_cast<float>(1) / gl_context->Data().m_width) >= 0 && mouse_position.x <= gl_context->Data().m_width) && (
 	        mouse_position.y / gl_context->Data().m_height >= 0 && mouse_position.y <= gl_context->Data().m_height);
+    }
+
+    auto InterpolateColor(const ImVec4& color1, const ImVec4& color2, const float t) -> ImVec4
+    {
+        return {
+            color1.x + (color2.x - color1.x) * t,
+            color1.y + (color2.y - color1.y) * t,
+            color1.z + (color2.z - color1.z) * t,
+            color1.w + (color2.w - color1.w) * t
+        };
+    }
+
+    auto RenderWindowContent(const std::string& title, bool& is_open, const ImVec2& size, const ImVec2& position,
+	    const ImGuiWindowFlags flags, const float bg_alpha, const std::function<void()>& render_content) -> void
+    {
+        ImGui::SetNextWindowBgAlpha(bg_alpha);
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(position);
+
+        if (ImGui::Begin(title.c_str(), &is_open, flags)) {
+            render_content();
+        }
+
+        ImGui::End();
     }
 
     auto CenterGuiElement(const std::string& name) -> void
@@ -25,51 +49,10 @@ namespace libgraphics::utils::gui
         ImGui::SetCursorPosX(center_x);
     }
 
-    auto ShowEngineStatsOverlay() -> void
+    auto Separator(const ImVec4& color) -> void
     {
-        const auto& io = ImGui::GetIO();
-        constexpr auto window_flags =
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_AlwaysAutoResize |
-            ImGuiWindowFlags_NoSavedSettings |
-            ImGuiWindowFlags_NoFocusOnAppearing |
-            ImGuiWindowFlags_NoNav |
-            ImGuiWindowFlags_NoMove;
-
-        auto is_open = true;
-
-        ImGui::SetNextWindowBgAlpha(0.5f); // Transparent background
-        ImGui::SetNextWindowSize({230.0f, 0.0f});
-        ImGui::SetNextWindowPos({1.0f, 1.0f});
-
-        if (const auto& stats_text = "- Engine Stats -"; ImGui::Begin(stats_text, &is_open, window_flags))
-        {
-            CenterGuiElement(stats_text);
-            ImGui::Text(stats_text);
-            ImGui::Separator();
-
-            // Frames (Frame rate && Frame time)
-            ImGui::Text("FPS: %.1f/s", io.Framerate);
-            ImGui::Text("Frame Time: %.3f ms", 1000.0f / io.Framerate);
-
-            ImGui::PushStyleColor(ImGuiCol_Separator, { 1.0f, 0.0f, 0.0f, 1.0f });
-            ImGui::Separator();
-            ImGui::PopStyleColor();
-
-            // Mouse position
-            const auto& mouse_position = ImGui::GetMousePos();
-            ImGui::Text("Input/Output:");
-
-            const auto& mouse_position_text = IsMouseInsideWindow() ? std::format("Mouse: [X: {:.1f} | Y: {:.1f}]", mouse_position.x, mouse_position.y) : "Mouse is out of window!";
-            ImGui::Text(mouse_position_text.c_str());
-
-            // Objects in the world
-
-        }
-
-        ImGui::End();
+        ImGui::PushStyleColor(ImGuiCol_Separator, color);
+        ImGui::Separator();
+        ImGui::PopStyleColor();
     }
-
-
-
 }

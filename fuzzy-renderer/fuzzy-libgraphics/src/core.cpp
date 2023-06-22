@@ -18,7 +18,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "gui/gui_object.h"
+#include "gui/windows/gui_window_stats.h"
 
 namespace libgraphics
 {
@@ -65,7 +65,7 @@ namespace libgraphics
 		const auto& default_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "default_shader" });
 		const auto& skybox_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "skybox_shader" });
 
-		auto test_win = libgraphics::gui::GUIStats{};
+		auto test_win = libgraphics::gui::GUIWindowStats{};
 
 		while (!glfwWindowShouldClose(glfw_window))
 		{

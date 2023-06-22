@@ -147,7 +147,9 @@
     <ClInclude Include="inc\core.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
-    <ClInclude Include="inc\gui\gui_object.h" />
+    <ClInclude Include="inc\gui\base\gui_object_base.h" />
+    <ClInclude Include="inc\gui\base\gui_window_base.h" />
+    <ClInclude Include="inc\gui\windows\gui_window_stats.h" />
     <ClInclude Include="inc\gui_utils.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
     <ClInclude Include="inc\interfaces\igraphics_window.h" />
@@ -170,7 +172,9 @@
   <ItemGroup>
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
-    <ClCompile Include="src\gui\gui_object.cpp" />
+    <ClCompile Include="src\gui\base\gui_object_base.cpp" />
+    <ClCompile Include="src\gui\base\gui_window_base.cpp" />
+    <ClCompile Include="src\gui\windows\gui_window_stats.cpp" />
     <ClCompile Include="src\gui_utils.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\opengl\camera.cpp" />

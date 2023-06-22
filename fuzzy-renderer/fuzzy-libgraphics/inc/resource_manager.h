@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <logger.h>
 
 #include <memory>
@@ -39,6 +40,13 @@ namespace libgraphics::resources
 
 		template <std::derived_from<libgraphics::IShader> Resource>
 		[[nodiscard]] static auto GetFromCache(const ResourceParams<Resource>& params) -> std::optional<decltype(std::declval<ResourceParams<Resource>>().m_resource)> { return find_private(params).value().m_resource; }
+
+		template <typename Resource>
+		std::vector<ResourceParams<Resource>> GetAllResources()
+		{
+			return ResourceManager::template m_resources<Resource>;
+		}
+
 
 	private:
 		template <std::derived_from<libgraphics::IShader> Resource>
