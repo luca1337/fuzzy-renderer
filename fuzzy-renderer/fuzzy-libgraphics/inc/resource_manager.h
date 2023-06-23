@@ -29,7 +29,7 @@ namespace libgraphics
 		template <std::derived_from<IShader> Resource>
 		static void RegisterResource(const ResourceParams<Resource>& params)
 		{
-			if (!find_private(params)) m_resources<Resource>.push_back(params);
+		  if (!find_private(params)) m_resources<Resource>.push_back(params);
 			else CX_CORE_ERROR("This resource will not be loaded as it's already registered, please use GetFromCache() to retrieve it.");
 		}
 
@@ -37,16 +37,19 @@ namespace libgraphics
 		[[nodiscard]] static auto GetFromCache(const ResourceParams<Resource>& params) -> std::optional<decltype(std::declval<ResourceParams<Resource>>().m_resource)> { return find_private(params).value().m_resource; }
 
 		template <std::derived_from<IShader> Resource>
-		static auto GetAllFromCache()
-		{
-			return m_resources<Resource>;
-		}
+		static auto GetAllFromCache() { return m_resources<Resource>; }
 
 	private:
 		template <std::derived_from<IShader> Resource>
 		inline static Resources<Resource> m_resources = {};
 
 		template <std::derived_from<IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
+
+	private:
+		template <std::derived_from<libgraphics::IShader> Resource>
+		inline static Resources<Resource> m_resources = {};
+
+		template <std::derived_from<libgraphics::IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
 		static auto find_private(const ResourceParams<Resource>& params) -> std::optional<ReturnType>
 		{
 			auto it = std::ranges::find(m_resources<Resource>, params.m_name, &ResourceParams<Resource>::m_name);
