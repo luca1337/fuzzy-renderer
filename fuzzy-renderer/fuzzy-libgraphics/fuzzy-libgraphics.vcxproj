@@ -164,6 +164,8 @@
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
     <ClInclude Include="inc\opengl\model.h" />
+    <ClInclude Include="inc\rendering\directional_light.h" />
+    <ClInclude Include="inc\rendering\material.h" />
     <ClInclude Include="inc\render_profiler.h" />
     <ClInclude Include="inc\resource_manager.h" />
     <ClInclude Include="inc\transform.h" />

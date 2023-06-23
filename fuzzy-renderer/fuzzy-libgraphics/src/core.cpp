@@ -39,10 +39,8 @@ namespace libgraphics
 			m_p_impl->m_graphics_window->SetClearColor({ 0.3f, 0.4f, 0.5f });
 
 			// register and compile shaders
-			libgraphics::resources::ResourceManager::RegisterResource(resources::ResourceParams{ libgraphics::resources::ResourceType::shader, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl") });
-			libgraphics::resources::ResourceManager::RegisterResource(resources::ResourceParams{ libgraphics::resources::ResourceType::shader, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl") });
-
-			auto def_shad = resources::ResourceManager::GetFromCache<GLShader>({ resources::ResourceType::shader, "default_shader" });
+			libgraphics::ResourceManager::RegisterResource(ResourceParams{ libgraphics::ResourceType::shaders, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl") });
+			libgraphics::ResourceManager::RegisterResource(ResourceParams{ libgraphics::ResourceType::shaders, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl") });
 
 			m_sky_box = std::make_shared<GLSkybox>();
 
@@ -62,8 +60,8 @@ namespace libgraphics
 
 		auto previous_time = glfwGetTime();
 
-		const auto& default_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "default_shader" });
-		const auto& skybox_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "skybox_shader" });
+		const auto& default_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "default_shader" });
+		const auto& skybox_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "skybox_shader" });
 
 		auto test_win = libgraphics::gui::GUIWindowStats{};
 
@@ -94,7 +92,7 @@ namespace libgraphics
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
 
 			m_sky_box->Render(skybox_shader.value());
-			m_test_cube->Draw(default_shader.value());
+			m_test_cube->Render(default_shader.value());
 
 			if (render_function)
 			{

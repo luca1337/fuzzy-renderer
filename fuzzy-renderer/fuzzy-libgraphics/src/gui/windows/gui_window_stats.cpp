@@ -1,12 +1,8 @@
-#include <gui/windows/gui_window_stats.h>
-
 #include <gui_utils.h>
-
 #include <logger.h>
-
 #include <resource_manager.h>
-
-#include "opengl/gl_shader.h"
+#include <gui/windows/gui_window_stats.h>
+#include <opengl/gl_shader.h>
 
 namespace libgraphics::gui
 {
@@ -14,7 +10,7 @@ namespace libgraphics::gui
 	{
 		m_title = "Stats Window";
 		m_bg_alpha = 0.75f;
-		m_size = { 230.0f, 130.0f };
+		m_size = { 230.0f, 0.0f };
 		m_position = { 1.0f, 1.0f };
 		m_flags = ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_AlwaysAutoResize |
@@ -34,6 +30,7 @@ namespace libgraphics::gui
 			utils::gui::CenterGuiElement(m_title);
 			ImGui::Text(m_title.c_str());
 			ImGui::Separator();
+			ImGui::Spacing();
 
 			// Frames (Frame rate && Frame time)
 			ImGui::Text("FPS: %.1f", io.Framerate);
@@ -44,15 +41,42 @@ namespace libgraphics::gui
 			// Mouse position
 			const auto& mouse_position = ImGui::GetMousePos();
 			ImGui::Text("Input/Output:");
+			ImGui::Spacing();
 
 			const auto& mouse_position_text = utils::gui::IsMouseInsideWindow() ? std::format("Mouse: [X: {:.1f} | Y: {:.1f}]", mouse_position.x, mouse_position.y) : "Mouse is out of window!";
 			ImGui::Text(mouse_position_text.c_str());
 
 			utils::gui::Separator(utils::gui::ColorRed);
-			ImGui::Text("System Cache:");
+			ImGui::Text("Engine Cache:");
+			ImGui::Spacing();
 
-			auto resources = libgraphics::resources::ResourceManager::GetAllResources<GLShader*>();
-			ImGui::Text("Cache size: %i", resources.size());
+			for (auto resource_type_idx = 0; resource_type_idx != static_cast<int>(ResourceType::max_enum); resource_type_idx++)
+			{
+				const auto& resource_enum_type_name = ResourceTypeToString(static_cast<ResourceType>(resource_type_idx));
+
+				if (ImGui::TreeNode(resource_enum_type_name.c_str()))
+				{
+					const auto& resources = ResourceManager::GetAllFromCache<libgraphics::GLShader>();
+					const auto& shaders_count = std::views::iota(0) | std::views::take(resources.size());
+
+					std::ranges::for_each(shaders_count, [&](const auto shader_idx)
+					{
+						if (resources[shader_idx].m_resource_type == static_cast<ResourceType>(resource_type_idx))
+						{
+							ImGui::MenuItem(resources[shader_idx].m_name.c_str());
+						}
+					});
+
+					ImGui::TreePop();
+				}
+			}
+
+			utils::gui::Separator(utils::gui::ColorRed);
+			ImGui::Text("Rendering:");
+			ImGui::Spacing();
+
+			// number of meshes in the scene
+			
 		});
 	}
 

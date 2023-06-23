@@ -1,23 +1,38 @@
 #pragma once
 
-#include <any>
 #include <logger.h>
 
 #include <memory>
 #include <optional>
 #include <ranges>
 
-namespace libgraphics::resources
+namespace libgraphics
 {
 	class IShader;
 
 	enum class ResourceType
 	{
-		shader,
-		texture
+		shaders,
+		textures,
+		materials,
+
+		max_enum
 	};
 
-	template <std::derived_from<libgraphics::IShader> Resource>
+	inline auto ResourceTypeToString(const ResourceType type) -> std::string
+	{
+		switch (type)
+		{
+		case ResourceType::shaders: return "Shaders";
+		case ResourceType::textures: return "Textures";
+		case ResourceType::materials: return "Materials";
+		case ResourceType::max_enum: return "Invalid";
+		default: break;
+		}
+		return {};
+	}
+
+	template <std::derived_from<IShader> Resource>
 	struct ResourceParams
 	{
 		ResourceType m_resource_type = {};
@@ -25,34 +40,33 @@ namespace libgraphics::resources
 		std::shared_ptr<Resource> m_resource = {}; // this can even be removed and i can use an Object_Ref -> Resource& m_resource = {};
 	};
 
-	template <std::derived_from<libgraphics::IShader> Resource>
+	template <std::derived_from<IShader> Resource>
 	using Resources = std::vector<ResourceParams<Resource>>;
 
 	class ResourceManager
 	{
 	public:
-		template <std::derived_from<libgraphics::IShader> Resource>
+		template <std::derived_from<IShader> Resource>
 		static void RegisterResource(const ResourceParams<Resource>& params)
 		{
 			if (!find_private(params)) m_resources<Resource>.push_back(params);
 			else CX_CORE_ERROR("This resource will not be loaded as it's already registered, please use GetFromCache() to retrieve it.");
 		}
 
-		template <std::derived_from<libgraphics::IShader> Resource>
+		template <std::derived_from<IShader> Resource>
 		[[nodiscard]] static auto GetFromCache(const ResourceParams<Resource>& params) -> std::optional<decltype(std::declval<ResourceParams<Resource>>().m_resource)> { return find_private(params).value().m_resource; }
 
-		template <typename Resource>
-		std::vector<ResourceParams<Resource>> GetAllResources()
+		template <std::derived_from<IShader> Resource>
+		static auto GetAllFromCache()
 		{
-			return ResourceManager::template m_resources<Resource>;
+			return m_resources<Resource>;
 		}
 
-
 	private:
-		template <std::derived_from<libgraphics::IShader> Resource>
+		template <std::derived_from<IShader> Resource>
 		inline static Resources<Resource> m_resources = {};
 
-		template <std::derived_from<libgraphics::IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
+		template <std::derived_from<IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
 		static auto find_private(const ResourceParams<Resource>& params) -> std::optional<ReturnType>
 		{
 			auto it = std::ranges::find(m_resources<Resource>, params.m_name, &ResourceParams<Resource>::m_name);

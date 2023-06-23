@@ -2,7 +2,9 @@
 
 #include <logger.h>
 #include <ranges>
+#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -18,16 +20,16 @@ namespace libgraphics
 
 #pragma region FREE FUNCTIONS
 
-	auto LoadTextureFromEmbeddedData(const aiTexture* ai_texture)
+	auto LoadTextureFromEmbeddedData(const aiTexture& ai_texture)
 	{
 		// Assuming the embedded texture data is in RGB format
 		GLenum format = GL_RGB;
-		if (ai_texture->mHeight == 0)
+		if (ai_texture.mHeight == 0)
 		{
 			// If the texture has no height, it is a 1D texture
 			format = GL_RGB;
 		}
-		else if (ai_texture->mHeight > 0)
+		else if (ai_texture.mHeight > 0)
 		{
 			// If the texture has height, it is a 2D texture
 			format = GL_RGBA;
@@ -37,17 +39,17 @@ namespace libgraphics
 		stbi_uc* image_data = {};
 
 		uint32_t texture_id = 0;
-		if (ai_texture->mHeight == 0)
+		if (ai_texture.mHeight == 0)
 		{
 			// Load and decode the compressed image data
-			image_data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(ai_texture->pcData), static_cast<int>(ai_texture->mWidth), &width, &height, &channels, STBI_rgb_alpha);
+			image_data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(ai_texture.pcData), static_cast<int>(ai_texture.mWidth), &width, &height, &channels, STBI_rgb_alpha);
 		}
 		else
 		{
 			// Use the raw image data directly
-			width = static_cast<int>(ai_texture->mWidth);
-			height = static_cast<int>(ai_texture->mHeight);
-			image_data = reinterpret_cast<stbi_uc*>(ai_texture->pcData);
+			width = static_cast<int>(ai_texture.mWidth);
+			height = static_cast<int>(ai_texture.mHeight);
+			image_data = reinterpret_cast<stbi_uc*>(ai_texture.pcData);
 		}
 
 		if (image_data)
@@ -65,7 +67,7 @@ namespace libgraphics
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			// If the image_data was loaded using stbi_load_from_memory, free the decoded image data
-			if (ai_texture->mHeight == 0)
+			if (ai_texture.mHeight == 0)
 			{
 				stbi_image_free(image_data);
 			}
@@ -138,7 +140,7 @@ namespace libgraphics
 				auto texture = Texture{};
 				if (const auto ai_texture = scene.GetEmbeddedTexture(texture_assimp_path.C_Str()))
 				{
-					texture.m_id = LoadTextureFromEmbeddedData(ai_texture);
+					texture.m_id = LoadTextureFromEmbeddedData(*ai_texture);
 				}
 				else
 				{
@@ -165,7 +167,12 @@ namespace libgraphics
 			{aiTextureType_DIFFUSE, "texture_diffuse"},
 			{aiTextureType_SPECULAR, "texture_specular"},
 			{aiTextureType_NORMALS, "texture_normal"},
-			{aiTextureType_HEIGHT, "texture_height"}
+			{aiTextureType_HEIGHT, "texture_height"},
+			{aiTextureType_AMBIENT, "texture_ambient"},
+			{aiTextureType_EMISSIVE, "texture_emissive"},
+			{aiTextureType_OPACITY, "texture_opacity"},
+			{aiTextureType_DISPLACEMENT, "texture_displacement"},
+			{aiTextureType_REFLECTION, "texture_reflection"}
 		};
 
 		const auto material = scene.mMaterials[mesh.mMaterialIndex];
@@ -174,7 +181,7 @@ namespace libgraphics
 			const auto& [m_type, m_path] = texture_pairs[idx];
 			const auto& current_loaded_texture = LoadMaterialTextures(scene, *material, m_type, m_path, model_path);
 			std::ranges::copy(current_loaded_texture, std::back_inserter(out_textures));
-			});
+		});
 	};
 
 	auto ExtractVertices(const aiMesh& mesh, std::vector<Vertex>& out_vertices)
@@ -221,23 +228,37 @@ namespace libgraphics
 		});
 	}
 
-#pragma endregion
-
-
-	Model::Model(const std::string_view path)
+	auto ProcessMesh(const aiMesh& mesh, const aiScene& scene, const std::string_view model_path) -> GLMesh
 	{
-		LoadModel(path);
+		auto vertices = std::vector<Vertex>{};
+		ExtractVertices(mesh, vertices);
+
+		auto indices = std::vector<uint32_t>{};
+		ExtractIndices(mesh, indices);
+
+		auto textures = std::vector<Texture>{};
+		ExtractTextures(mesh, scene, model_path, textures);
+
+		return { vertices, indices, textures };
 	}
 
-	auto Model::Draw(const std::shared_ptr<IShader>& shader) const -> void
+	auto ProcessNode(const aiNode& node, const aiScene& scene, const std::string_view model_path, std::vector<GLMesh>& out_meshes) -> void
 	{
-		for (auto mesh : m_meshes)
+		// process all the node's meshes (if any)
+		for (auto i = 0ul; i != node.mNumMeshes; ++i)
 		{
-			mesh.Draw(shader);
+			const auto mesh = scene.mMeshes[node.mMeshes[i]];
+			out_meshes.push_back(ProcessMesh(*mesh, scene, model_path));
+		}
+
+		// then do the same for each of its children
+		for (auto i = 0ul; i != node.mNumChildren; ++i)
+		{
+			ProcessNode(*node.mChildren[i], scene, model_path, out_meshes);
 		}
 	}
 
-	auto Model::LoadModel(const std::string_view path) -> void
+	auto LoadModel(const std::string_view path, std::vector<GLMesh>& out_meshes) -> void
 	{
 		auto import = Assimp::Importer{};
 		const auto scene = import.ReadFile(path.data(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -248,36 +269,21 @@ namespace libgraphics
 			return;
 		}
 
-		ProcessNode(scene->mRootNode, scene, path);
+		ProcessNode(*scene->mRootNode, *scene, path, out_meshes);
 	}
 
-	auto Model::ProcessNode(const aiNode* node, const aiScene* scene, const std::string_view model_path) -> void
-	{
-		// process all the node's meshes (if any)
-		for (auto i = 0ul; i != node->mNumMeshes; ++i)
-		{
-			const auto mesh = scene->mMeshes[node->mMeshes[i]];
-			m_meshes.push_back(ProcessMesh(mesh, scene, model_path));
-		}
+#pragma endregion
 
-		// then do the same for each of its children
-		for (auto i = 0ul; i != node->mNumChildren; ++i)
-		{
-			ProcessNode(node->mChildren[i], scene, model_path);
-		}
+	Model::Model(const std::string_view path)
+	{
+		LoadModel(path, m_meshes);
 	}
 
-	auto Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene, const std::string_view model_path) -> GLMesh
+	auto Model::Render(const std::shared_ptr<IShader>& shader) const -> void
 	{
-		auto vertices = std::vector<Vertex>{};
-		ExtractVertices(*mesh, vertices);
-
-		auto indices = std::vector<uint32_t>{};
-		ExtractIndices(*mesh, indices);
-
-		auto textures = std::vector<Texture>{};
-		ExtractTextures(*mesh, *scene, model_path, textures);
-
-		return { vertices, indices, textures };
+		for (auto mesh : m_meshes)
+		{
+			mesh.Draw(shader);
+		}
 	}
 }

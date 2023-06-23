@@ -46,6 +46,9 @@
     <Filter Include="Source Files\GUI\Windows">
       <UniqueIdentifier>{e2fa3d9d-7c7b-4d78-a5de-b558cc51d636}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{b9e69def-5c36-4d26-9236-bb9006375190}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\framework.h">
@@ -122,6 +125,12 @@
     </ClInclude>
     <ClInclude Include="inc\gui\windows\gui_window_stats.h">
       <Filter>Header Files\GUI\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\rendering\directional_light.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\rendering\material.h">
+      <Filter>Header Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

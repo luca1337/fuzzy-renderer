@@ -16,6 +16,7 @@ namespace libgraphics
         virtual auto SetVec3(const std::string_view name, const glm::vec3& value) -> void = 0;
         virtual auto SetInt(const std::string_view name, const int value) -> void = 0;
         virtual auto SetUint(const std::string_view name, const uint32_t value) -> void = 0;
+        virtual auto SetBool(const std::string_view name, const bool value) -> void = 0;
         virtual auto GetID() const -> unsigned int = 0;
     };
 }

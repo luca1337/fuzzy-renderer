@@ -3,9 +3,6 @@
 #include <memory>
 #include <vector>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-
 #include <opengl/gl_mesh.h>
 
 namespace libgraphics
@@ -17,12 +14,11 @@ namespace libgraphics
 	{
 	public:
 		explicit Model(const std::string_view path);
-		auto Draw(const std::shared_ptr<IShader>& shader) const -> void;
+		auto Render(const std::shared_ptr<IShader>& shader) const -> void;
+
+		auto& GetMeshes() const { return m_meshes; }
 
 	private:
 		std::vector<GLMesh> m_meshes = {};
-		auto LoadModel(const std::string_view path) -> void;
-		auto ProcessNode(const aiNode* node, const aiScene* scene, const std::string_view model_path) -> void;
-		static auto ProcessMesh(const aiMesh* mesh, const aiScene* scene, const std::string_view model_path) -> GLMesh;
 	};
 }

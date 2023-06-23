@@ -10,6 +10,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
+#include "rendering/material.h"
+
 namespace libgraphics
 {
 	/**
@@ -28,31 +30,34 @@ namespace libgraphics
 	{
 		shader->Bind();
 
-		auto texture_map = std::map<std::string, uint32_t>
-		{
-			{"texture_diffuse", 0},
-			{"texture_specular", 0},
-			{"texture_normal", 0},
-			{"texture_height", 0},
-		};
+		auto material = libgraphics::lighting::Material{};
+		material.m_shininess = 32.0f;
+		material.m_roughness = 0.44f;
 
 		std::ranges::for_each(std::views::iota(0ul) | std::views::take(m_textures.size()), [&](const auto texture_idx) {
 			glActiveTexture(GL_TEXTURE0 + texture_idx);
 
 			const auto& [m_id, m_type, m_path] = m_textures[texture_idx];
 
-			auto number_to_str = std::string{};
-			if (texture_map.contains(m_type))
-			{
-				auto& idx = texture_map[m_type];
-				number_to_str = std::to_string(idx++);
-			}
-
-			const auto& uniform_name = (m_type + number_to_str);
-			shader->SetInt(uniform_name, texture_idx);
+			if (m_type == "texture_diffuse") { material.m_diffuse_map = texture_idx; }
+			else if (m_type == "texture_specular") { material.m_specular_map = texture_idx; }
+			else if (m_type == "texture_normal") { material.m_normal_map = texture_idx; }
+			else if (m_type == "texture_height") { material.m_height_map = texture_idx; }
+			else if (m_type == "texture_ambient") { material.m_ambient_map = texture_idx; }
+			else if (m_type == "texture_emissive") { material.m_emissive_map = texture_idx; }
+			else if (m_type == "texture_opacity") { material.m_opacity_map = texture_idx; }
+			else if (m_type == "texture_displacement") { material.m_displacement_map = texture_idx; }
+			else if (m_type == "texture_reflection") { material.m_reflection_map = texture_idx; }
 
 			glBindTexture(GL_TEXTURE_2D, m_id);
 		});
+
+		shader->SetInt("material.diffuse", material.m_diffuse_map);
+		shader->SetInt("material.specular", material.m_specular_map);
+		shader->SetInt("material.normal", material.m_normal_map);
+
+		shader->SetFloat("material.shininess", material.m_shininess);
+		shader->SetFloat("material.roughness", material.m_roughness);
 
 		glBindVertexArray(m_vao);
 
