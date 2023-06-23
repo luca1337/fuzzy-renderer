@@ -84,7 +84,7 @@ namespace libgraphics
 		int width, height, nr_components;
 		if (const auto data = stbi_load(path.data(), &width, &height, &nr_components, 0))
 		{
-			auto format = GLenum{};
+			auto format = GLint{};
 			if (nr_components == 1)
 				format = GL_RED;
 			else if (nr_components == 3)

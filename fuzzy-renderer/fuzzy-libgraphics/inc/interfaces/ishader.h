@@ -1,7 +1,7 @@
 #pragma once
 
 #include <framework.h>
-
+#include <interfaces/iresource.h>
 #include <glm/glm.hpp>
 
 namespace libgraphics

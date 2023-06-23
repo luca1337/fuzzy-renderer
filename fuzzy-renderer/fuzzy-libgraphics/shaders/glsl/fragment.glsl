@@ -36,7 +36,7 @@ uniform vec3 eye;
 uniform Material material;
 uniform DirectionalLight dir_light;
 
-vec3 calculateDirectionalLight(vec3 normal, vec3 viewDirection, DirectionalLight light, Material material)
+vec3 CalculateDirectionalLight(vec3 normal, vec3 viewDirection, DirectionalLight light, Material material)
 {
     // Check if textures are used
     if (material.useTextures)
@@ -83,7 +83,7 @@ void main()
     vec3 normalized_world_normal = normalize(world_normal);
     vec3 light_direction = normalize(eye - world_vertex);
 
-    vec3 final_color = calculateDirectionalLight(normalized_world_normal, light_direction, dir_light, material);
+    vec3 final_color = CalculateDirectionalLight(normalized_world_normal, light_direction, dir_light, material);
 
     FragColor = vec4(final_color, 1.0);
 }

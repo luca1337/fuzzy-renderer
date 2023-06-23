@@ -10,6 +10,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
+#include "rendering/directional_light.h"
 #include "rendering/material.h"
 
 namespace libgraphics
@@ -30,9 +31,14 @@ namespace libgraphics
 	{
 		shader->Bind();
 
+		// qui devo prendere il buffer delle luci disponibili e caricarle nello shader che la mesh sta utilizzando in modo tale da avere ogni mesh
+		// disegnata con le luci che vengono create in scena, altrimenti se non lo faccio qua non ho modo di far reagire le mesh al sistema di luci
+		// qui sono sicuro che ogni mesh viene presa in considerazione ai calcoli della luce.
+
 		auto material = libgraphics::lighting::Material{};
 		material.m_shininess = 32.0f;
 		material.m_roughness = 0.44f;
+		material.m_use_textures = true;
 
 		std::ranges::for_each(std::views::iota(0ul) | std::views::take(m_textures.size()), [&](const auto texture_idx) {
 			glActiveTexture(GL_TEXTURE0 + texture_idx);
@@ -58,6 +64,20 @@ namespace libgraphics
 
 		shader->SetFloat("material.shininess", material.m_shininess);
 		shader->SetFloat("material.roughness", material.m_roughness);
+		shader->SetBool("material.useTextures", material.m_use_textures);
+
+		const auto& lights = Core::GetInstance().GetLights();
+
+		for (const auto& light : lights)
+		{
+			if (const auto& dir_light = std::static_pointer_cast<DirectionalLight>(light))
+			{
+				shader->SetVec3("dir_light.direction", dir_light->m_direction);
+				shader->SetVec3("dir_light.ambient", dir_light->m_ambient);
+				shader->SetVec3("dir_light.diffuse", dir_light->m_diffuse);
+				shader->SetVec3("dir_light.specular", dir_light->m_specular);
+			}
+		}
 
 		glBindVertexArray(m_vao);
 

@@ -6,31 +6,11 @@
 #include <optional>
 #include <ranges>
 
+#include <enums.h>
+
 namespace libgraphics
 {
 	class IShader;
-
-	enum class ResourceType
-	{
-		shaders,
-		textures,
-		materials,
-
-		max_enum
-	};
-
-	inline auto ResourceTypeToString(const ResourceType type) -> std::string
-	{
-		switch (type)
-		{
-		case ResourceType::shaders: return "Shaders";
-		case ResourceType::textures: return "Textures";
-		case ResourceType::materials: return "Materials";
-		case ResourceType::max_enum: return "Invalid";
-		default: break;
-		}
-		return {};
-	}
 
 	template <std::derived_from<IShader> Resource>
 	struct ResourceParams

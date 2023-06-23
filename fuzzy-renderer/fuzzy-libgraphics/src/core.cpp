@@ -19,6 +19,7 @@
 #include <GLFW/glfw3.h>
 
 #include "gui/windows/gui_window_stats.h"
+#include "rendering/directional_light.h"
 
 namespace libgraphics
 {
@@ -32,7 +33,7 @@ namespace libgraphics
 
 		switch (api_type)
 		{
-		case GraphicsAPI::OpenGL:
+		case GraphicsAPI::opengl:
 		{
 			m_p_impl->m_graphics_window = std::make_shared<GLWindow>();
 			m_p_impl->m_graphics_window->Create(context_width, context_height, context_title);
@@ -46,10 +47,18 @@ namespace libgraphics
 
 			m_p_impl->m_main_camera = {};
 
+			const auto directional_light = std::make_shared<DirectionalLight>();
+			directional_light->m_direction = GetMainCamera().GetWorldPosition();
+			directional_light->m_ambient = glm::vec3{ 0.3f };
+			directional_light->m_diffuse = glm::vec3{ 0.5f };
+			directional_light->m_specular = glm::vec3{ 0.0f };
+
+			AddLight(directional_light);
+
 			m_test_cube = std::make_shared<Model>("../resources/rock_fountain.glb");
 		}
 		break;
-		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)
+		case GraphicsAPI::directx: break;  // NOLINT(bugprone-branch-clone)
 		default: break;  // NOLINT(clang-diagnostic-covered-switch-default)
 		}
 	}
@@ -112,5 +121,15 @@ namespace libgraphics
 	{
 		static auto core = Core();
 		return core;
+	}
+
+	auto Core::AddLight(const std::shared_ptr<ILight>& light) -> void
+	{
+		m_lights.push_back(light);
+	}
+
+	auto Core::GetLights() const -> std::vector<std::shared_ptr<ILight>>
+	{
+		return m_lights;
 	}
 }
