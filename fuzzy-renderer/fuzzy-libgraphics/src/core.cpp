@@ -18,7 +18,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include "gui/gui_object.h"
+#include "gui/windows/gui_window_stats.h"
+#include "rendering/directional_light.h"
 
 namespace libgraphics
 {
@@ -32,26 +33,32 @@ namespace libgraphics
 
 		switch (api_type)
 		{
-		case GraphicsAPI::OpenGL:
+		case GraphicsAPI::opengl:
 		{
 			m_p_impl->m_graphics_window = std::make_shared<GLWindow>();
 			m_p_impl->m_graphics_window->Create(context_width, context_height, context_title);
 			m_p_impl->m_graphics_window->SetClearColor({ 0.3f, 0.4f, 0.5f });
 
 			// register and compile shaders
-			libgraphics::resources::ResourceManager::RegisterResource(resources::ResourceParams{ libgraphics::resources::ResourceType::shader, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl") });
-			libgraphics::resources::ResourceManager::RegisterResource(resources::ResourceParams{ libgraphics::resources::ResourceType::shader, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl") });
-
-			auto def_shad = resources::ResourceManager::GetFromCache<GLShader>({ resources::ResourceType::shader, "default_shader" });
+			libgraphics::ResourceManager::RegisterResource(ResourceParams{ libgraphics::ResourceType::shaders, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl") });
+			libgraphics::ResourceManager::RegisterResource(ResourceParams{ libgraphics::ResourceType::shaders, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl") });
 
 			m_sky_box = std::make_shared<GLSkybox>();
 
 			m_p_impl->m_main_camera = {};
 
-			m_test_cube = std::make_shared<Model>("../resources/astronaut_pose.glb");
+			const auto directional_light = std::make_shared<DirectionalLight>();
+			directional_light->m_direction = GetMainCamera().GetWorldPosition();
+			directional_light->m_ambient = glm::vec3{ 0.3f };
+			directional_light->m_diffuse = glm::vec3{ 0.5f };
+			directional_light->m_specular = glm::vec3{ 0.0f };
+
+			AddLight(directional_light);
+
+			m_test_cube = std::make_shared<Model>("../resources/rock_fountain.glb");
 		}
 		break;
-		case GraphicsAPI::DirectX: break;  // NOLINT(bugprone-branch-clone)
+		case GraphicsAPI::directx: break;  // NOLINT(bugprone-branch-clone)
 		default: break;  // NOLINT(clang-diagnostic-covered-switch-default)
 		}
 	}
@@ -62,10 +69,10 @@ namespace libgraphics
 
 		auto previous_time = glfwGetTime();
 
-		const auto& default_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "default_shader" });
-		const auto& skybox_shader = libgraphics::resources::ResourceManager::GetFromCache<GLShader>({ libgraphics::resources::ResourceType::shader, "skybox_shader" });
+		const auto& default_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "default_shader" });
+		const auto& skybox_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "skybox_shader" });
 
-		auto test_win = libgraphics::gui::GUIStats{};
+		auto test_win = libgraphics::gui::GUIWindowStats{};
 
 		while (!glfwWindowShouldClose(glfw_window))
 		{
@@ -94,7 +101,7 @@ namespace libgraphics
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
 
 			m_sky_box->Render(skybox_shader.value());
-			m_test_cube->Draw(default_shader.value());
+			m_test_cube->Render(default_shader.value());
 
 			if (render_function)
 			{
@@ -114,5 +121,15 @@ namespace libgraphics
 	{
 		static auto core = Core();
 		return core;
+	}
+
+	auto Core::AddLight(const std::shared_ptr<ILight>& light) -> void
+	{
+		m_lights.push_back(light);
+	}
+
+	auto Core::GetLights() const -> std::vector<std::shared_ptr<ILight>>
+	{
+		return m_lights;
 	}
 }

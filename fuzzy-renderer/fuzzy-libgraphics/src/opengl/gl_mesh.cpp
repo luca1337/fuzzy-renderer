@@ -10,6 +10,9 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
+#include "rendering/directional_light.h"
+#include "rendering/material.h"
+
 namespace libgraphics
 {
 	/**
@@ -28,31 +31,53 @@ namespace libgraphics
 	{
 		shader->Bind();
 
-		auto texture_map = std::map<std::string, uint32_t>
-		{
-			{"texture_diffuse", 0},
-			{"texture_specular", 0},
-			{"texture_normal", 0},
-			{"texture_height", 0},
-		};
+		// qui devo prendere il buffer delle luci disponibili e caricarle nello shader che la mesh sta utilizzando in modo tale da avere ogni mesh
+		// disegnata con le luci che vengono create in scena, altrimenti se non lo faccio qua non ho modo di far reagire le mesh al sistema di luci
+		// qui sono sicuro che ogni mesh viene presa in considerazione ai calcoli della luce.
+
+		auto material = libgraphics::lighting::Material{};
+		material.m_shininess = 32.0f;
+		material.m_roughness = 0.44f;
+		material.m_use_textures = true;
 
 		std::ranges::for_each(std::views::iota(0ul) | std::views::take(m_textures.size()), [&](const auto texture_idx) {
 			glActiveTexture(GL_TEXTURE0 + texture_idx);
 
 			const auto& [m_id, m_type, m_path] = m_textures[texture_idx];
 
-			auto number_to_str = std::string{};
-			if (texture_map.contains(m_type))
-			{
-				auto& idx = texture_map[m_type];
-				number_to_str = std::to_string(idx++);
-			}
-
-			const auto& uniform_name = (m_type + number_to_str);
-			shader->SetInt(uniform_name, texture_idx);
+			if (m_type == "texture_diffuse") { material.m_diffuse_map = texture_idx; }
+			else if (m_type == "texture_specular") { material.m_specular_map = texture_idx; }
+			else if (m_type == "texture_normal") { material.m_normal_map = texture_idx; }
+			else if (m_type == "texture_height") { material.m_height_map = texture_idx; }
+			else if (m_type == "texture_ambient") { material.m_ambient_map = texture_idx; }
+			else if (m_type == "texture_emissive") { material.m_emissive_map = texture_idx; }
+			else if (m_type == "texture_opacity") { material.m_opacity_map = texture_idx; }
+			else if (m_type == "texture_displacement") { material.m_displacement_map = texture_idx; }
+			else if (m_type == "texture_reflection") { material.m_reflection_map = texture_idx; }
 
 			glBindTexture(GL_TEXTURE_2D, m_id);
 		});
+
+		shader->SetInt("material.diffuse", material.m_diffuse_map);
+		shader->SetInt("material.specular", material.m_specular_map);
+		shader->SetInt("material.normal", material.m_normal_map);
+
+		shader->SetFloat("material.shininess", material.m_shininess);
+		shader->SetFloat("material.roughness", material.m_roughness);
+		shader->SetBool("material.useTextures", material.m_use_textures);
+
+		const auto& lights = Core::GetInstance().GetLights();
+
+		for (const auto& light : lights)
+		{
+			if (const auto& dir_light = std::static_pointer_cast<DirectionalLight>(light))
+			{
+				shader->SetVec3("dir_light.direction", dir_light->m_direction);
+				shader->SetVec3("dir_light.ambient", dir_light->m_ambient);
+				shader->SetVec3("dir_light.diffuse", dir_light->m_diffuse);
+				shader->SetVec3("dir_light.specular", dir_light->m_specular);
+			}
+		}
 
 		glBindVertexArray(m_vao);
 

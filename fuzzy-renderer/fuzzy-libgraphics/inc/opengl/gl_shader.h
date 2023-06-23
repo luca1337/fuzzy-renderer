@@ -19,6 +19,7 @@ namespace libgraphics
 		auto GetID() const -> GLuint override { return m_program_id; }
 		auto SetInt(const std::string_view name, const int value) -> void override { glUniform1i(glGetUniformLocation(m_program_id, name.data()), value); }
 		auto SetUint(const std::string_view name, const uint32_t value) -> void override { glUniform1ui(glGetUniformLocation(m_program_id, name.data()), value); }
+		auto SetBool(const std::string_view name, const bool value) -> void override { glUniform1i(glGetUniformLocation(m_program_id, name.data()), value); }
 
 	private:
 		unsigned int m_program_id = {};

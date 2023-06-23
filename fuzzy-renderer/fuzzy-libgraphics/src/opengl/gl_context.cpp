@@ -92,7 +92,7 @@ namespace libgraphics
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
+		ImGui::StyleColorsClassic();
 
 		ImGui_ImplGlfw_InitForOpenGL(m_glfw_native_window_handle, true);
 		ImGui_ImplOpenGL3_Init("#version 460");

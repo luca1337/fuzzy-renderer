@@ -147,11 +147,15 @@
     <ClInclude Include="inc\core.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
-    <ClInclude Include="inc\gui\gui_object.h" />
+    <ClInclude Include="inc\gui\base\gui_object_base.h" />
+    <ClInclude Include="inc\gui\base\gui_window_base.h" />
+    <ClInclude Include="inc\gui\windows\gui_window_stats.h" />
     <ClInclude Include="inc\gui_utils.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
     <ClInclude Include="inc\interfaces\igraphics_window.h" />
+    <ClInclude Include="inc\interfaces\ilight.h" />
     <ClInclude Include="inc\interfaces\imesh.h" />
+    <ClInclude Include="inc\interfaces\iresource.h" />
     <ClInclude Include="inc\interfaces\ishader.h" />
     <ClInclude Include="inc\loaders.h" />
     <ClInclude Include="inc\logger.h" />
@@ -162,6 +166,8 @@
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
     <ClInclude Include="inc\opengl\model.h" />
+    <ClInclude Include="inc\rendering\directional_light.h" />
+    <ClInclude Include="inc\rendering\material.h" />
     <ClInclude Include="inc\render_profiler.h" />
     <ClInclude Include="inc\resource_manager.h" />
     <ClInclude Include="inc\transform.h" />
@@ -170,7 +176,9 @@
   <ItemGroup>
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
-    <ClCompile Include="src\gui\gui_object.cpp" />
+    <ClCompile Include="src\gui\base\gui_object_base.cpp" />
+    <ClCompile Include="src\gui\base\gui_window_base.cpp" />
+    <ClCompile Include="src\gui\windows\gui_window_stats.cpp" />
     <ClCompile Include="src\gui_utils.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\opengl\camera.cpp" />

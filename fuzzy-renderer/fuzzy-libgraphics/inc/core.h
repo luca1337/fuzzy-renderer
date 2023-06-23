@@ -5,6 +5,7 @@
 
 namespace libgraphics
 {
+	class ILight;
 	class GLSkybox;
 	class IGraphicsWindow;
 	class IShader;
@@ -33,6 +34,9 @@ namespace libgraphics
 		LIBGRAPHICS_API auto Update(const RenderFunction&) const -> void;
 		LIBGRAPHICS_API static auto GetInstance() -> Core&;
 
+		LIBGRAPHICS_API auto AddLight(const std::shared_ptr<ILight>&) -> void;
+		LIBGRAPHICS_API [[nodiscard]] auto GetLights() const -> std::vector<std::shared_ptr<ILight>>;
+
 		LIBGRAPHICS_API [[nodiscard]] auto GetMainCamera() const -> Camera& { return m_p_impl->m_main_camera; }
 		LIBGRAPHICS_API [[nodiscard]] auto GetGraphicsWindow() const -> std::shared_ptr<IGraphicsWindow>& { return m_p_impl->m_graphics_window; }
 
@@ -41,6 +45,8 @@ namespace libgraphics
 
 		std::shared_ptr<class Model> m_test_cube = {};
 		std::shared_ptr<GLSkybox> m_sky_box = {};
+
+		std::vector<std::shared_ptr<ILight>> m_lights = {};
 
 		CoreImpl* m_p_impl = nullptr;
 	};
