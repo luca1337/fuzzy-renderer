@@ -80,7 +80,7 @@ namespace libgraphics
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			ImGui::ShowDemoWindow();
+			//ImGui::ShowDemoWindow();
 			test_win.Render();
 
 			const auto current_time = glfwGetTime();

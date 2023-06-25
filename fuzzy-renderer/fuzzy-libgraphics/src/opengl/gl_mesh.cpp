@@ -4,7 +4,7 @@
 #include <opengl/camera.h>
 #include <opengl/gl_context.h>
 #include <loaders.h>
-#include <map>
+#include <glm/gtx/intersect.hpp>
 #include <ranges>
 
 #include <glm/gtx/transform.hpp>
@@ -99,12 +99,10 @@ namespace libgraphics
 			lights[1].m_is_active = true;
 
 			// spot
-			lights[2].m_position = glm::vec3(2.4f, 30.8f, 36.1f);
-			lights[2].m_attenuation = glm::vec3(1.0f, 0.09f, 0.032f);
 			lights[2].m_direction = glm::vec3{ 0.7f, 0.7f, 0.0 };
-			lights[2].m_intensity = 65.1f;
-			lights[2].m_color = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-			lights[2].m_type = 2;
+			lights[2].m_intensity = 2.0f;
+			lights[2].m_color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
+			lights[2].m_type = 0;
 			lights[2].m_is_active = true;
 
 			glGenBuffers(1, &lightsBuffer);
@@ -130,20 +128,18 @@ namespace libgraphics
 
 		lights[0].m_position = glm::vec3(lightX, lightHeight, lightZ);
 
-		float blinkSpeed = 5.0f;  // Velocità di lampeggiamento
-		float time = dlt * blinkSpeed;  // Tempo basato sull'orologio
+		float blinkSpeed = 2.0f;
+		float time = dlt * blinkSpeed;
 
-		// Calcolo del fattore di lampeggiamento usando una funzione sinusoidale
 		float blinkFactor = abs(sin(time));
 
-		// Colore delle sirene della polizia (rosso e blu)
-		glm::vec4 policeSirenColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);  // Rosso
-		glm::vec4 policeSirenColor2 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);  // Blu
+		glm::vec4 policeSirenColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec4 policeSirenColor2 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
-		// Combinazione dei due colori con il fattore di lampeggiamento
-		glm::vec4 finalColor = mix(policeSirenColor, policeSirenColor2, blinkFactor);
+		glm::vec4 finalColor = glm::mix(policeSirenColor, policeSirenColor2, blinkFactor);
+		glm::vec4 finalColorIntensity = finalColor * blinkFactor;
 
-		lights[0].m_color = finalColor;
+		lights[0].m_color = finalColorIntensity;
 
 		glBindBuffer(GL_UNIFORM_BUFFER, lightsBuffer);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, 3 * sizeof(Light), &lights[0]);

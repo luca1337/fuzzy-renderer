@@ -8,6 +8,11 @@ in vec2 world_uv;
 in vec3 world_tangent;
 in vec3 world_bitangent;
 
+struct LightingResult {
+    vec3 diffuseColor;
+    vec3 specularColor;
+};
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -61,7 +66,6 @@ float calculateSpecular(vec3 lightDir, vec3 viewDir, vec3 normal)
     return pow(max(dot(viewDir, reflectDir), 0.0), material.shininess) * dispersionFactor;
 }
 
-
 vec3 calculateNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, vec3 textureNormal) 
 {
     vec3 normal = textureNormal * 2.0 - 1.0;
@@ -71,10 +75,25 @@ vec3 calculateNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, v
     return normalize(TBN * normal);
 }
 
-struct LightingResult {
-    vec3 diffuseColor;
-    vec3 specularColor;
-};
+LightingResult calculateDirectionalLight(Light light, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture) 
+{
+    vec3 ambient = light.intensity * light.color.rgb;
+
+    vec3 normal = calculateNormal(world_normal, world_tangent, world_bitangent, normalTexture);
+    vec3 lightDirection = normalize(light.direction);
+
+    float diffuse = calculateDiffuse(lightDirection, normal);
+    vec3 diffuseColor = diffuse * diffuseTexture * light.color.rgb * light.intensity;
+
+    vec3 viewDir = normalize(eye - world_vertex);
+    float specular = calculateSpecular(lightDirection, viewDir, normal);
+    vec3 specularColor = specularStrength * specular * specularTexture * light.color.rgb * light.intensity;
+
+    LightingResult result;
+    result.diffuseColor = diffuseColor;
+    result.specularColor = specularColor;
+    return result;
+}
 
 LightingResult calculatePointLight(Light light, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture)
 {
@@ -121,7 +140,6 @@ LightingResult calculateSpotLight(Light light, float specularStrength, vec3 diff
     return result;
 }
 
-
 vec3 calculateLighting(float ambientStrength, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture)
 {
     vec3 ambient = ambientStrength * vec3(1);
@@ -141,7 +159,7 @@ vec3 calculateLighting(float ambientStrength, float specularStrength, vec3 diffu
 
         if (current_light.type == 0)
         {
-            // directional light
+            res = calculateDirectionalLight(current_light, specularStrength, diffuseTexture, normalTexture, specularTexture);
         }
         if (current_light.type == 1)
         {
@@ -172,23 +190,4 @@ void main()
     vec3 lighting = calculateLighting(ambientStrength, specularStrength, diffuseTexture, normalTexture, specularTexture);
 
     FragColor = vec4(lighting, 1.0);
-}
-
-
-vec3 calculateDirectionalLight(Light light, vec3 eye, float ambientStrength, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture) 
-{
-    vec3 ambient = light.intensity * light.color.rgb;
-
-    vec3 normal = calculateNormal(world_normal, world_tangent, world_bitangent, normalTexture);
-    vec3 lightDirection = normalize(light.direction);
-
-    float diffuse = calculateDiffuse(lightDirection, normal);
-    vec3 diffuseColor = diffuse * vec3(1);
-
-    vec3 viewDir = normalize(eye - world_vertex);
-    float specular = calculateSpecular(lightDirection, viewDir, normal);
-    vec3 specularColor = specularStrength * specular * specularTexture;
-
-    vec3 result = (ambient + diffuseColor + specularColor) * diffuseTexture;
-    return result;
 }

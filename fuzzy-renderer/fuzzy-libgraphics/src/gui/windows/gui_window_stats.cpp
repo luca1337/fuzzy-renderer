@@ -12,7 +12,7 @@ namespace libgraphics::gui
 	{
 		m_title = "Stats Window";
 		m_bg_alpha = 0.75f;
-		m_size = { 350.0f, 0.0f };
+		m_size = { 300.0f, 0.0f };
 		m_position = { 1.0f, 1.0f };
 		m_flags = ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_AlwaysAutoResize |
@@ -81,12 +81,6 @@ namespace libgraphics::gui
 
 			const auto& camera_position_text = std::format("Position: [X: {:.1f} | Y: {:.1f} | Z: {:.1f}]", main_camera_pos.x, main_camera_pos.y, main_camera_pos.z);
 			ImGui::Text(camera_position_text.c_str());
-			ImGui::Spacing();
-
-			const auto& main_camera_rot = Core::GetInstance().GetMainCamera().GetWorldRotation();
-
-			const auto& camera_rotation_text = std::format("Rotation (DEG): [X: {:.1f} | Y: {:.1f} | Z: {:.1f}]", main_camera_rot.x, main_camera_rot.y, main_camera_rot.z);
-			ImGui::Text(camera_rotation_text.c_str());
 			ImGui::Spacing();
 
 		});
