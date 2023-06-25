@@ -47,7 +47,8 @@ namespace libgraphics
 	class Camera
 	{
 	public:
-		auto GetWorldPosition() const -> glm::dvec3;
+		auto GetWorldPosition() const->glm::dvec3;
+		auto GetWorldRotation() const -> glm::dvec3;
 		auto RotateByMouse(const std::shared_ptr<IGraphicsWindow>& window) -> void;
 		auto Animate(const std::shared_ptr<IGraphicsWindow>& window, const double delta_time) -> void;
 		void Reset() { m_previous_position.reset(); }

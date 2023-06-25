@@ -5,7 +5,7 @@
 
 namespace libgraphics
 {
-	class ILight;
+	struct Light;
 	class GLSkybox;
 	class IGraphicsWindow;
 	class IShader;
@@ -31,11 +31,13 @@ namespace libgraphics
 		Core& operator=(Core&&) = delete;
 
 		LIBGRAPHICS_API auto Init(const GraphicsAPI api_type, const int context_width, const int context_height, const std::string_view context_title) -> void;
-		LIBGRAPHICS_API auto Update(const RenderFunction&) const -> void;
+		LIBGRAPHICS_API auto Update(const RenderFunction&) -> void;
 		LIBGRAPHICS_API static auto GetInstance() -> Core&;
 
-		LIBGRAPHICS_API auto AddLight(const std::shared_ptr<ILight>&) -> void;
-		LIBGRAPHICS_API [[nodiscard]] auto GetLights() const -> std::vector<std::shared_ptr<ILight>>;
+		LIBGRAPHICS_API auto AddLight(const std::shared_ptr<Light>&) -> void;
+		LIBGRAPHICS_API [[nodiscard]] auto GetLights() const -> std::vector<std::shared_ptr<Light>>;
+
+		LIBGRAPHICS_API auto GetDeltaTime() const -> float { return m_delta_time; }
 
 		LIBGRAPHICS_API [[nodiscard]] auto GetMainCamera() const -> Camera& { return m_p_impl->m_main_camera; }
 		LIBGRAPHICS_API [[nodiscard]] auto GetGraphicsWindow() const -> std::shared_ptr<IGraphicsWindow>& { return m_p_impl->m_graphics_window; }
@@ -43,10 +45,12 @@ namespace libgraphics
 	private:
 		Core() = default;
 
+		float m_delta_time = {};
+
 		std::shared_ptr<class Model> m_test_cube = {};
 		std::shared_ptr<GLSkybox> m_sky_box = {};
 
-		std::vector<std::shared_ptr<ILight>> m_lights = {};
+		std::vector<std::shared_ptr<Light>> m_lights = {};
 
 		CoreImpl* m_p_impl = nullptr;
 	};

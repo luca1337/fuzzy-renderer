@@ -19,7 +19,7 @@
 #include <GLFW/glfw3.h>
 
 #include "gui/windows/gui_window_stats.h"
-#include "rendering/directional_light.h"
+#include "rendering/light.h"
 
 namespace libgraphics
 {
@@ -47,23 +47,23 @@ namespace libgraphics
 
 			m_p_impl->m_main_camera = {};
 
-			const auto directional_light = std::make_shared<DirectionalLight>();
-			directional_light->m_direction = GetMainCamera().GetWorldPosition();
-			directional_light->m_ambient = glm::vec3{ 0.3f };
-			directional_light->m_diffuse = glm::vec3{ 0.5f };
-			directional_light->m_specular = glm::vec3{ 0.0f };
+			const auto directional_light = std::make_shared<Light>();
+			directional_light->m_direction = glm::vec3{-1.0f, 1.0f, 0.0f};
+			directional_light->m_type = 0;
+			directional_light->m_color = glm::vec4(1.0f);
+			directional_light->m_is_active = true;
 
 			AddLight(directional_light);
 
-			m_test_cube = std::make_shared<Model>("../resources/rock_fountain.glb");
+			m_test_cube = std::make_shared<Model>("../resources/astronaut_pose.glb");
 		}
 		break;
-		case GraphicsAPI::directx: break;  // NOLINT(bugprone-branch-clone)
-		default: break;  // NOLINT(clang-diagnostic-covered-switch-default)
+		case GraphicsAPI::directx: break;
+		default: break;
 		}
 	}
 
-	auto Core::Update(const RenderFunction& render_function) const -> void
+	auto Core::Update(const RenderFunction& render_function) -> void
 	{
 		const auto glfw_window = static_cast<GLFWwindow*>(m_p_impl->m_graphics_window->GetNativeHandle()->GetNativeHandle());
 
@@ -82,10 +82,9 @@ namespace libgraphics
 
 			ImGui::ShowDemoWindow();
 			test_win.Render();
-			//libgraphics::utils::gui::ShowEngineStatsOverlay();
 
 			const auto current_time = glfwGetTime();
-			const auto delta_time = current_time - previous_time;
+			m_delta_time = current_time - previous_time;
 			previous_time = current_time;
 
 			m_p_impl->m_graphics_window->Clear();
@@ -98,14 +97,14 @@ namespace libgraphics
 			{
 				m_p_impl->m_main_camera.Reset();
 			}
-			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, delta_time);
+			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, m_delta_time);
 
 			m_sky_box->Render(skybox_shader.value());
 			m_test_cube->Render(default_shader.value());
 
 			if (render_function)
 			{
-				render_function(delta_time);
+				render_function(m_delta_time);
 			}
 
 			ImGui::Render();
@@ -123,12 +122,12 @@ namespace libgraphics
 		return core;
 	}
 
-	auto Core::AddLight(const std::shared_ptr<ILight>& light) -> void
+	auto Core::AddLight(const std::shared_ptr<Light>& light) -> void
 	{
 		m_lights.push_back(light);
 	}
 
-	auto Core::GetLights() const -> std::vector<std::shared_ptr<ILight>>
+	auto Core::GetLights() const -> std::vector<std::shared_ptr<Light>>
 	{
 		return m_lights;
 	}

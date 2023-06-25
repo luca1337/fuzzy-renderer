@@ -153,7 +153,6 @@
     <ClInclude Include="inc\gui_utils.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
     <ClInclude Include="inc\interfaces\igraphics_window.h" />
-    <ClInclude Include="inc\interfaces\ilight.h" />
     <ClInclude Include="inc\interfaces\imesh.h" />
     <ClInclude Include="inc\interfaces\iresource.h" />
     <ClInclude Include="inc\interfaces\ishader.h" />
@@ -166,7 +165,7 @@
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
     <ClInclude Include="inc\opengl\model.h" />
-    <ClInclude Include="inc\rendering\directional_light.h" />
+    <ClInclude Include="inc\rendering\light.h" />
     <ClInclude Include="inc\rendering\material.h" />
     <ClInclude Include="inc\render_profiler.h" />
     <ClInclude Include="inc\resource_manager.h" />

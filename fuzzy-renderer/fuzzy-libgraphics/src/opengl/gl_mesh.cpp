@@ -10,22 +10,22 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-#include "rendering/directional_light.h"
+#include "rendering/light.h"
 #include "rendering/material.h"
 
 namespace libgraphics
 {
-	/**
-	 * \brief Create a raw mesh
-	 * \param vertices
-	 * \param indices
-	 * \param textures
-	 */
 	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures)
 		: m_vertices{ std::move(vertices) }, m_indices{ std::move(indices) }, m_textures{ std::move(textures) }
 	{
 		GenerateMeshDataAndSendToGPU();
 	}
+
+	Light lights[3] = {};
+	GLuint lightsBuffer;
+	float attenuation_sin_wave = {};
+	float dlt = {};
+	glm::vec3 new_pos = { };
 
 	auto GLMesh::Draw(const std::shared_ptr<IShader>& shader) -> void
 	{
@@ -35,9 +35,11 @@ namespace libgraphics
 		// disegnata con le luci che vengono create in scena, altrimenti se non lo faccio qua non ho modo di far reagire le mesh al sistema di luci
 		// qui sono sicuro che ogni mesh viene presa in considerazione ai calcoli della luce.
 
+#pragma region TEXTURES
+
 		auto material = libgraphics::lighting::Material{};
 		material.m_shininess = 32.0f;
-		material.m_roughness = 0.44f;
+		material.m_roughness = 0.0f;
 		material.m_use_textures = true;
 
 		std::ranges::for_each(std::views::iota(0ul) | std::views::take(m_textures.size()), [&](const auto texture_idx) {
@@ -66,18 +68,88 @@ namespace libgraphics
 		shader->SetFloat("material.roughness", material.m_roughness);
 		shader->SetBool("material.useTextures", material.m_use_textures);
 
-		const auto& lights = Core::GetInstance().GetLights();
+#pragma endregion
 
-		for (const auto& light : lights)
+#pragma region LIGHTS
+
+		const GLuint lights_block_index = glGetUniformBlockIndex(shader->GetID(), "LightsBlock");
+
+		GLint binding_point;
+		glGetActiveUniformBlockiv(shader->GetID(), lights_block_index, GL_UNIFORM_BLOCK_BINDING, &binding_point);
+
+		static bool first = false;
+		if (!first)
 		{
-			if (const auto& dir_light = std::static_pointer_cast<DirectionalLight>(light))
-			{
-				shader->SetVec3("dir_light.direction", dir_light->m_direction);
-				shader->SetVec3("dir_light.ambient", dir_light->m_ambient);
-				shader->SetVec3("dir_light.diffuse", dir_light->m_diffuse);
-				shader->SetVec3("dir_light.specular", dir_light->m_specular);
-			}
+			// point
+			lights[0].m_position = glm::vec3(0.0f, 0.0f, 0.0f);
+			lights[0].m_attenuation = glm::vec3(1.0f, 0.09f, 0.032f);
+			lights[0].m_direction = glm::vec3{ -0.5, 0.4, 0.0 };
+			lights[0].m_intensity = 15.1f;
+			lights[0].m_color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
+			lights[0].m_type = 1;
+			lights[0].m_is_active = true;
+
+			// spot
+			lights[1].m_position = glm::vec3(28.0f, 94.0f, 36.0f);
+			lights[1].m_attenuation = glm::vec3(1.0f, 0.09f, 0.032f);
+			lights[1].m_direction = glm::vec3{ -0.8, 0.7f, 0.0 };
+			lights[1].m_intensity = 45.1f;
+			lights[1].m_color = glm::vec4(1.0f, 0.0f, 1.0f, 0.0f);
+			lights[1].m_type = 2;
+			lights[1].m_is_active = true;
+
+			// spot
+			lights[2].m_position = glm::vec3(2.4f, 30.8f, 36.1f);
+			lights[2].m_attenuation = glm::vec3(1.0f, 0.09f, 0.032f);
+			lights[2].m_direction = glm::vec3{ 0.7f, 0.7f, 0.0 };
+			lights[2].m_intensity = 65.1f;
+			lights[2].m_color = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+			lights[2].m_type = 2;
+			lights[2].m_is_active = true;
+
+			glGenBuffers(1, &lightsBuffer);
+
+			// Carica i dati nel buffer
+			glBindBuffer(GL_UNIFORM_BUFFER, lightsBuffer);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(Light) * 3, nullptr, GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+			glBindBufferRange(GL_UNIFORM_BUFFER, 0, lightsBuffer, 0, 3 * sizeof(Light));
+
+			first = true;
 		}
+
+		dlt += Core::GetInstance().GetDeltaTime() * 0.2f;
+		//lights[0].m_intensity = glm::clamp(glm::sin(dlt) * 4.4f, 0.3f, 4.4f);
+
+		float radius = 30.0f;  // Raggio della rotazione
+		float lightHeight = 72.0f;  // Altezza della luce rispetto al centro del modello
+
+		float lightX = radius * glm::sin(dlt);
+		float lightZ = radius * glm::cos(dlt);
+
+		lights[0].m_position = glm::vec3(lightX, lightHeight, lightZ);
+
+		float blinkSpeed = 5.0f;  // Velocità di lampeggiamento
+		float time = dlt * blinkSpeed;  // Tempo basato sull'orologio
+
+		// Calcolo del fattore di lampeggiamento usando una funzione sinusoidale
+		float blinkFactor = abs(sin(time));
+
+		// Colore delle sirene della polizia (rosso e blu)
+		glm::vec4 policeSirenColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);  // Rosso
+		glm::vec4 policeSirenColor2 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);  // Blu
+
+		// Combinazione dei due colori con il fattore di lampeggiamento
+		glm::vec4 finalColor = mix(policeSirenColor, policeSirenColor2, blinkFactor);
+
+		lights[0].m_color = finalColor;
+
+		glBindBuffer(GL_UNIFORM_BUFFER, lightsBuffer);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 3 * sizeof(Light), &lights[0]);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+#pragma endregion
 
 		glBindVertexArray(m_vao);
 

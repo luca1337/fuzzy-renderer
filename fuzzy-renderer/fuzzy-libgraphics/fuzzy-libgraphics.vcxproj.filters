@@ -126,16 +126,13 @@
     <ClInclude Include="inc\gui\windows\gui_window_stats.h">
       <Filter>Header Files\GUI\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="inc\rendering\directional_light.h">
+    <ClInclude Include="inc\rendering\light.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="inc\rendering\material.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="inc\interfaces\iresource.h">
-      <Filter>Header Files\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\interfaces\ilight.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,8 +4,12 @@
 
 #include <GLFW/glfw3.h>
 
-#include <glm/gtx/transform.hpp>
+
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace libgraphics
 {
@@ -45,6 +49,21 @@ namespace libgraphics
 	auto Camera::GetWorldPosition() const -> glm::dvec3
 	{
 		return m_camera_props.m_world_position;
+	}
+
+	auto Camera::GetWorldRotation() const -> glm::dvec3
+	{
+		const auto camera_matrix = glm::inverse(m_camera_props.m_projection) * GetViewMatrix(m_camera_props);
+
+		glm::vec3 translation, scale, skew;
+		glm::vec4 perspective;
+		glm::quat rotation;
+
+		glm::decompose(camera_matrix, scale, rotation, translation, skew, perspective);
+
+		const auto euler_angles = glm::eulerAngles(rotation);
+
+		return glm::degrees(euler_angles);
 	}
 
 	bool first_mouse = true;

@@ -4,13 +4,15 @@
 #include <gui/windows/gui_window_stats.h>
 #include <opengl/gl_shader.h>
 
+#include "core.h"
+
 namespace libgraphics::gui
 {
 	GUIWindowStats::GUIWindowStats()
 	{
 		m_title = "Stats Window";
 		m_bg_alpha = 0.75f;
-		m_size = { 230.0f, 0.0f };
+		m_size = { 350.0f, 0.0f };
 		m_position = { 1.0f, 1.0f };
 		m_flags = ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_AlwaysAutoResize |
@@ -72,11 +74,21 @@ namespace libgraphics::gui
 			}
 
 			utils::gui::Separator(utils::gui::ColorRed);
-			ImGui::Text("Rendering:");
+			ImGui::Text("Camera:");
 			ImGui::Spacing();
 
-			// number of meshes in the scene
-			
+			const auto& main_camera_pos = Core::GetInstance().GetMainCamera().GetWorldPosition();
+
+			const auto& camera_position_text = std::format("Position: [X: {:.1f} | Y: {:.1f} | Z: {:.1f}]", main_camera_pos.x, main_camera_pos.y, main_camera_pos.z);
+			ImGui::Text(camera_position_text.c_str());
+			ImGui::Spacing();
+
+			const auto& main_camera_rot = Core::GetInstance().GetMainCamera().GetWorldRotation();
+
+			const auto& camera_rotation_text = std::format("Rotation (DEG): [X: {:.1f} | Y: {:.1f} | Z: {:.1f}]", main_camera_rot.x, main_camera_rot.y, main_camera_rot.z);
+			ImGui::Text(camera_rotation_text.c_str());
+			ImGui::Spacing();
+
 		});
 	}
 

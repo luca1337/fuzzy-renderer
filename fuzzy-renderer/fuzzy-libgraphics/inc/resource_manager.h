@@ -40,12 +40,6 @@ namespace libgraphics
 		static auto GetAllFromCache() { return m_resources<Resource>; }
 
 	private:
-		template <std::derived_from<IShader> Resource>
-		inline static Resources<Resource> m_resources = {};
-
-		template <std::derived_from<IShader> Resource, typename ReturnType = typename std::optional<ResourceParams<Resource>>::value_type>
-
-	private:
 		template <std::derived_from<libgraphics::IShader> Resource>
 		inline static Resources<Resource> m_resources = {};
 
