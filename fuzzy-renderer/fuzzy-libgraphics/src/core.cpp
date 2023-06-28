@@ -18,8 +18,9 @@
 
 #include <GLFW/glfw3.h>
 
-#include "gui/windows/gui_window_stats.h"
-#include "rendering/light.h"
+#include <gui/windows/gui_window_stats.h>
+#include <gui/windows/gui_window_left_panel.h>
+#include <rendering/light.h>
 
 namespace libgraphics
 {
@@ -73,6 +74,7 @@ namespace libgraphics
 		const auto& skybox_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "skybox_shader" });
 
 		auto test_win = libgraphics::gui::GUIWindowStats{};
+		auto gui_lp = libgraphics::gui::GUIWindowLeftPanel{};
 
 		while (!glfwWindowShouldClose(glfw_window))
 		{
@@ -80,8 +82,9 @@ namespace libgraphics
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			//ImGui::ShowDemoWindow();
-			test_win.Render();
+			ImGui::ShowDemoWindow();
+			//test_win.Render();
+			gui_lp.Render();
 
 			const auto current_time = glfwGetTime();
 			m_delta_time = current_time - previous_time;

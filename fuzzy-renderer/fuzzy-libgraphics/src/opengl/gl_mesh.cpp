@@ -98,7 +98,7 @@ namespace libgraphics
 			lights[1].m_type = 2;
 			lights[1].m_is_active = true;
 
-			// spot
+			// dir
 			lights[2].m_direction = glm::vec3{ 0.7f, 0.7f, 0.0 };
 			lights[2].m_intensity = 2.0f;
 			lights[2].m_color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);

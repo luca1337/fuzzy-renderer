@@ -143,8 +143,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gui_window_left_panel.h" />
     <ClInclude Include="inc\color.h" />
+    <ClInclude Include="inc\components\component.h" />
     <ClInclude Include="inc\core.h" />
+    <ClInclude Include="inc\entity\entity.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\gui\base\gui_object_base.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="inc\utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="gui_window_left_panel.cpp" />
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\gui\base\gui_object_base.cpp" />

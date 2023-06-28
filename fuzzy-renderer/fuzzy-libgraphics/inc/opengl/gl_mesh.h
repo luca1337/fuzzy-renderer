@@ -11,6 +11,11 @@ namespace libgraphics
 	public:
 
 		/**
+		 * \brief Default constructor of Mesh (use SetVertexBuffer and SetIndexBuffer)
+		 */
+		LIBGRAPHICS_API GLMesh() = default;
+
+		/**
 		 * \brief Creates raw mesh
 		 * \param vertices vertices of mesh
 		 * \param indices indices of mesh
