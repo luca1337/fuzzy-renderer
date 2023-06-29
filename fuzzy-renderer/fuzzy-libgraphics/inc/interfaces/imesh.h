@@ -7,7 +7,6 @@
 
 namespace libgraphics
 {
-    class Transform;
     class IShader;
 
     struct Vertex
@@ -38,8 +37,5 @@ namespace libgraphics
 
         virtual auto SetVertexBuffer(const std::vector<Vertex>& vertex_buffer) -> void = 0;
         virtual auto SetIndexBuffer(const std::vector<uint32_t>& index_buffer) -> void = 0;
-
-    protected:
-        virtual auto UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void = 0;
     };
 }

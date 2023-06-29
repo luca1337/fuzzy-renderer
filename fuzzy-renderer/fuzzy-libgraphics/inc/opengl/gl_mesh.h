@@ -1,14 +1,20 @@
 #pragma once
 
 #include <interfaces/imesh.h>
-#include <transform.h>
 #include <opengl/gl_shader.h>
 
 namespace libgraphics
 {
+	class Entity;
+
 	class GLMesh final : public IMesh
 	{
 	public:
+
+		/**
+		 * \brief Default constructor of Mesh (use SetVertexBuffer and SetIndexBuffer)
+		 */
+		LIBGRAPHICS_API GLMesh() = default;
 
 		/**
 		 * \brief Creates raw mesh
@@ -46,9 +52,6 @@ namespace libgraphics
 		 * \brief Set this mesh index buffer
 		 */
 		LIBGRAPHICS_API auto SetIndexBuffer(const std::vector<uint32_t>& indices) -> void override { m_indices = indices; }
-
-	protected:
-		auto UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void override;
 
 	private:
 		std::vector<Vertex> m_vertices = {};

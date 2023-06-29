@@ -8,7 +8,7 @@
 #include <opengl/gl_shader.h>
 #include <opengl/gl_skybox.h>
 #include <opengl/gl_window.h>
-#include <opengl/model.h>
+#include <entities/model.h>
 
 #include <gui_utils.h>
 
@@ -18,8 +18,9 @@
 
 #include <GLFW/glfw3.h>
 
-#include "gui/windows/gui_window_stats.h"
-#include "rendering/light.h"
+#include <gui/windows/gui_window_stats.h>
+#include <gui/windows/gui_window_left_panel.h>
+#include <rendering/light.h>
 
 namespace libgraphics
 {
@@ -69,10 +70,10 @@ namespace libgraphics
 
 		auto previous_time = glfwGetTime();
 
-		const auto& default_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "default_shader" });
 		const auto& skybox_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "skybox_shader" });
 
 		auto test_win = libgraphics::gui::GUIWindowStats{};
+		auto gui_lp = libgraphics::gui::GUIWindowLeftPanel{};
 
 		while (!glfwWindowShouldClose(glfw_window))
 		{
@@ -80,8 +81,9 @@ namespace libgraphics
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			//ImGui::ShowDemoWindow();
-			test_win.Render();
+			ImGui::ShowDemoWindow();
+			//test_win.Render();
+			gui_lp.Render();
 
 			const auto current_time = glfwGetTime();
 			m_delta_time = current_time - previous_time;
@@ -100,7 +102,7 @@ namespace libgraphics
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, m_delta_time);
 
 			m_sky_box->Render(skybox_shader.value());
-			m_test_cube->Render(default_shader.value());
+			m_test_cube->Update();
 
 			if (render_function)
 			{

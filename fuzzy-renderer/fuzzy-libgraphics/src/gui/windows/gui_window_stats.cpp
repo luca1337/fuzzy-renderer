@@ -1,10 +1,9 @@
+#include <core.h>
 #include <gui_utils.h>
 #include <logger.h>
 #include <resource_manager.h>
 #include <gui/windows/gui_window_stats.h>
 #include <opengl/gl_shader.h>
-
-#include "core.h"
 
 namespace libgraphics::gui
 {

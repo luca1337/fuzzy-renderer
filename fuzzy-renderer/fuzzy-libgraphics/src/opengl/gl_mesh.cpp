@@ -1,17 +1,19 @@
 #include <opengl/gl_mesh.h>
 
 #include <core.h>
+#include <loaders.h>
+#include <ranges>
+#include <glm/gtx/intersect.hpp>
 #include <opengl/camera.h>
 #include <opengl/gl_context.h>
-#include <loaders.h>
-#include <glm/gtx/intersect.hpp>
-#include <ranges>
 
-#include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "rendering/light.h"
 #include "rendering/material.h"
+
+#include <entities/entity.h>
 
 namespace libgraphics
 {
@@ -31,16 +33,12 @@ namespace libgraphics
 	{
 		shader->Bind();
 
-		// qui devo prendere il buffer delle luci disponibili e caricarle nello shader che la mesh sta utilizzando in modo tale da avere ogni mesh
-		// disegnata con le luci che vengono create in scena, altrimenti se non lo faccio qua non ho modo di far reagire le mesh al sistema di luci
-		// qui sono sicuro che ogni mesh viene presa in considerazione ai calcoli della luce.
-
 #pragma region TEXTURES
 
 		auto material = libgraphics::lighting::Material{};
 		material.m_shininess = 32.0f;
 		material.m_roughness = 0.0f;
-		material.m_use_textures = true;
+		material.m_use_textures = !m_textures.empty();
 
 		std::ranges::for_each(std::views::iota(0ul) | std::views::take(m_textures.size()), [&](const auto texture_idx) {
 			glActiveTexture(GL_TEXTURE0 + texture_idx);
@@ -98,7 +96,7 @@ namespace libgraphics
 			lights[1].m_type = 2;
 			lights[1].m_is_active = true;
 
-			// spot
+			// dir
 			lights[2].m_direction = glm::vec3{ 0.7f, 0.7f, 0.0 };
 			lights[2].m_intensity = 2.0f;
 			lights[2].m_color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
@@ -117,30 +115,6 @@ namespace libgraphics
 			first = true;
 		}
 
-		dlt += Core::GetInstance().GetDeltaTime() * 0.2f;
-		//lights[0].m_intensity = glm::clamp(glm::sin(dlt) * 4.4f, 0.3f, 4.4f);
-
-		float radius = 30.0f;  // Raggio della rotazione
-		float lightHeight = 72.0f;  // Altezza della luce rispetto al centro del modello
-
-		float lightX = radius * glm::sin(dlt);
-		float lightZ = radius * glm::cos(dlt);
-
-		lights[0].m_position = glm::vec3(lightX, lightHeight, lightZ);
-
-		float blinkSpeed = 2.0f;
-		float time = dlt * blinkSpeed;
-
-		float blinkFactor = abs(sin(time));
-
-		glm::vec4 policeSirenColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		glm::vec4 policeSirenColor2 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-
-		glm::vec4 finalColor = glm::mix(policeSirenColor, policeSirenColor2, blinkFactor);
-		glm::vec4 finalColorIntensity = finalColor * blinkFactor;
-
-		lights[0].m_color = finalColorIntensity;
-
 		glBindBuffer(GL_UNIFORM_BUFFER, lightsBuffer);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, 3 * sizeof(Light), &lights[0]);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -153,11 +127,6 @@ namespace libgraphics
 
 		glBindVertexArray(0);
 		glActiveTexture(GL_TEXTURE0);
-
-		auto transform = Transform{};
-		transform.m_scale = { 0.5, 0.5, 0.5 };
-
-		UpdateMatrix(shader, transform);
 	}
 
 	auto GLMesh::SendGPUData(const unsigned slot, const int slot_size, const unsigned attrib_array_index, const void* ptr) -> void
@@ -195,25 +164,5 @@ namespace libgraphics
 		SendGPUData(2, 2, 2, reinterpret_cast<void*>(offsetof(Vertex, m_tex_coords)));
 		SendGPUData(3, 3, 3, reinterpret_cast<void*>(offsetof(Vertex, m_tangent)));
 		SendGPUData(4, 3, 4, reinterpret_cast<void*>(offsetof(Vertex, m_bitangent)));
-	}
-
-	auto GLMesh::UpdateMatrix(const std::shared_ptr<IShader>& shader, const Transform& transform) -> void
-	{
-		const auto& core = Core::GetInstance();
-		const auto gl_context = ::std::static_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
-
-		const auto& translation_mat = glm::translate(transform.m_translation);
-		const auto& scale_mat = glm::scale(transform.m_scale);
-		const auto& rotation_mat = glm::mat4_cast(transform.m_rotation);
-
-		const auto& model = translation_mat * rotation_mat * scale_mat;
-		const auto& view = GetViewMatrix(core.GetMainCamera().m_camera_props);
-		const auto& projection = ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0);
-		const auto& eye = core.GetMainCamera().GetWorldPosition();
-
-		shader->SetMatrix4x4("model", model);
-		shader->SetMatrix4x4("view", view);
-		shader->SetMatrix4x4("projection", projection);
-		shader->SetVec3("eye", eye);
 	}
 }
