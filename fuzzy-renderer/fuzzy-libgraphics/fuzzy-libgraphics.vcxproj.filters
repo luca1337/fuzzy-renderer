@@ -49,17 +49,17 @@
     <Filter Include="Header Files\Rendering">
       <UniqueIdentifier>{b9e69def-5c36-4d26-9236-bb9006375190}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Entity">
-      <UniqueIdentifier>{f5eb1a5d-e0d2-42ac-a09d-77f28a2d4476}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Components">
-      <UniqueIdentifier>{264aa8eb-f01c-4cbb-a53f-a35205cd69ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Entity">
-      <UniqueIdentifier>{3b3291ec-3f20-4fe7-a2ac-f2f0762d99ef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{ed1ab2b3-0b64-40a0-a3b2-c02816dfc6a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{7b421a64-e9f9-4172-acac-ce7278c77b18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{f153bec5-81ae-4d92-9450-2df6333704a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{3b3291ec-3f20-4fe7-a2ac-f2f0762d99ef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +76,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\opengl\camera.h">
@@ -110,9 +107,6 @@
     </ClInclude>
     <ClInclude Include="inc\loaders.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\opengl\model.h">
-      <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="inc\utils.h">
       <Filter>Header Files</Filter>
@@ -150,11 +144,23 @@
     <ClInclude Include="gui_window_left_panel.h">
       <Filter>Header Files\GUI\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="inc\entities\entity.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
     <ClInclude Include="inc\components\component.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="inc\entity\entity.h">
-      <Filter>Header Files\Entity</Filter>
+    <ClInclude Include="inc\components\transform.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\components\mesh_renderer.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\entities\mesh_entity.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\entities\model.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,8 +215,17 @@
     <ClCompile Include="src\gui\windows\gui_window_stats.cpp">
       <Filter>Source Files\GUI\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="gui_window_left_panel.cpp">
+    <ClCompile Include="src\gui\windows\gui_window_left_panel.cpp">
       <Filter>Source Files\GUI\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\mesh_renderer.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entities\entity.cpp">
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

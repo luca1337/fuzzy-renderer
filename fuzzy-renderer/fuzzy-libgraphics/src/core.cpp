@@ -8,7 +8,7 @@
 #include <opengl/gl_shader.h>
 #include <opengl/gl_skybox.h>
 #include <opengl/gl_window.h>
-#include <opengl/model.h>
+#include <entities/model.h>
 
 #include <gui_utils.h>
 
@@ -70,7 +70,6 @@ namespace libgraphics
 
 		auto previous_time = glfwGetTime();
 
-		const auto& default_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "default_shader" });
 		const auto& skybox_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "skybox_shader" });
 
 		auto test_win = libgraphics::gui::GUIWindowStats{};
@@ -103,7 +102,7 @@ namespace libgraphics
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, m_delta_time);
 
 			m_sky_box->Render(skybox_shader.value());
-			m_test_cube->Render(default_shader.value());
+			m_test_cube->Update();
 
 			if (render_function)
 			{

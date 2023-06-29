@@ -146,8 +146,12 @@
     <ClInclude Include="gui_window_left_panel.h" />
     <ClInclude Include="inc\color.h" />
     <ClInclude Include="inc\components\component.h" />
+    <ClInclude Include="inc\components\mesh_renderer.h" />
+    <ClInclude Include="inc\components\transform.h" />
     <ClInclude Include="inc\core.h" />
-    <ClInclude Include="inc\entity\entity.h" />
+    <ClInclude Include="inc\entities\entity.h" />
+    <ClInclude Include="inc\entities\mesh_entity.h" />
+    <ClInclude Include="inc\entities\model.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\gui\base\gui_object_base.h" />
@@ -167,20 +171,21 @@
     <ClInclude Include="inc\opengl\gl_shader.h" />
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
-    <ClInclude Include="inc\opengl\model.h" />
     <ClInclude Include="inc\rendering\light.h" />
     <ClInclude Include="inc\rendering\material.h" />
     <ClInclude Include="inc\render_profiler.h" />
     <ClInclude Include="inc\resource_manager.h" />
-    <ClInclude Include="inc\transform.h" />
     <ClInclude Include="inc\utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gui_window_left_panel.cpp" />
+    <ClCompile Include="src\components\component.cpp" />
+    <ClCompile Include="src\components\mesh_renderer.cpp" />
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\entities\entity.cpp" />
     <ClCompile Include="src\gui\base\gui_object_base.cpp" />
     <ClCompile Include="src\gui\base\gui_window_base.cpp" />
+    <ClCompile Include="src\gui\windows\gui_window_left_panel.cpp" />
     <ClCompile Include="src\gui\windows\gui_window_stats.cpp" />
     <ClCompile Include="src\gui_utils.cpp" />
     <ClCompile Include="src\logger.cpp" />

@@ -1,23 +1,25 @@
 #pragma once
 
-#include <entity/entity.h>
-
 namespace libgraphics
 {
-	class Component
-	{
-	public:
-		virtual ~Component() = default;
-		Component() = default;
+    class Entity;
 
-		virtual void Start() {}
-		virtual void Update(float delta_time) {}
-		virtual void Render() {}
+    class Component
+    {
+    public:
+        Component() = default;
+        virtual ~Component() = default;
 
-		[[nodiscard]] auto& GetEntity() const -> Entity { return entity; }
-		auto SetEntity(const Entity& entity) { this->entity = entity; }
+        virtual auto Initialize() -> void {}
+        virtual auto Update(float delta_time) -> void {}
+        virtual auto Render() -> void {}
 
-	private:
-			Entity m_entity = {};
-	};
+        [[nodiscard]] auto GetEntity() const -> Entity&;
+        auto SetEntity(Entity* entity) -> void;
+
+        bool m_active = {};
+
+    protected:
+        Entity* m_entity = {};
+    };
 }

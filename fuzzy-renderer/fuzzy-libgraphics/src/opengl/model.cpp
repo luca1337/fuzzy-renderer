@@ -1,4 +1,4 @@
-#include <opengl/model.h>
+#include <entities/model.h>
 
 #include <logger.h>
 #include <ranges>
@@ -9,6 +9,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <filesystem>
+
+#include "components/mesh_renderer.h"
 
 namespace libgraphics
 {
@@ -276,14 +278,27 @@ namespace libgraphics
 
 	Model::Model(const std::string_view path)
 	{
-		LoadModel(path, m_meshes);
+		auto meshes = std::vector<GLMesh>{};
+
+		LoadModel(path, meshes);
+
+		for (const auto& mesh : meshes)
+		{
+			auto mesh_renderer = std::make_shared<MeshRenderer>(mesh);
+
+			auto mesh_entity = std::make_shared<Entity>();
+			mesh_entity->AddComponent(mesh_renderer);
+
+			m_entities.push_back(mesh_entity);
+		}
 	}
 
-	auto Model::Render(const std::shared_ptr<IShader>& shader) const -> void
+	auto Model::Update() const -> void
 	{
-		for (auto mesh : m_meshes)
+		for (const auto& entity : m_entities)
 		{
-			mesh.Draw(shader);
+			entity->Render();
+			entity->Update(0.0f);
 		}
 	}
 }
