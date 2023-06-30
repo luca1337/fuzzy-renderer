@@ -1,19 +1,19 @@
 #pragma once
 
-#include <components/component.h>
-#include <components/transform.h>
-#include <unordered_map>
-#include <typeindex>
+#include <exception>
 #include <memory>
 #include <string>
-#include <exception>
-#include <ranges>
+#include <typeindex>
+#include <unordered_map>
+#include <components/component.h>
+#include <components/transform.h>
 
 namespace libgraphics
 {
 	class Entity
 	{
 	public:
+		virtual ~Entity() = default;
 		Entity() { AddComponent<Transform>(); }
 
 		template <std::derived_from<Component> Component>
@@ -77,13 +77,12 @@ namespace libgraphics
 			m_components.erase(component_type);
 		}
 
-		auto Update(float delta_time) const -> void;
-
-		auto Render() const -> void;
+		virtual auto Update(float delta_time) -> void;
+		virtual auto Render() -> void;
 
 		[[nodiscard]] auto& GetTransformComponent() const { return GetComponent<Transform>(); }
 
 	private:
-		std::unordered_map<std::type_index, std::shared_ptr<Component>> m_components;
+		std::unordered_map<std::type_index, std::shared_ptr<Component>> m_components = {};
 	};
 }

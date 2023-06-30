@@ -34,7 +34,7 @@ uniform vec3 eye;
 uniform Material material;
 uniform vec3 global_ambient_color;
 
-#define MAX_LIGHTS 3
+#define MAX_LIGHTS 256
 
 struct Light {
     vec3 position;
@@ -183,9 +183,9 @@ void main()
     float ambientStrength = 0.1;
     float specularStrength = 0.9;
 
-    vec3 normalTexture = texture(material.normal, world_uv).rgb;
     vec3 diffuseTexture = texture(material.diffuse, world_uv).rgb;
     vec3 specularTexture = texture(material.specular, world_uv).rgb;
+    vec3 normalTexture = texture(material.normal, world_uv).rgb;
 
     vec3 lighting = calculateLighting(ambientStrength, specularStrength, diffuseTexture, normalTexture, specularTexture);
 

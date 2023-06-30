@@ -9,6 +9,8 @@
 
 #include <glad/gl.h>
 
+#include <rendering/light.h>
+
 namespace libgraphics
 {
 	auto read_shader(const std::string& path) -> std::string
@@ -82,5 +84,17 @@ namespace libgraphics
 		glDeleteShader(fragment_id);
 
 		CX_CORE_INFO("GLSL Shaders successfully compiled!");
+	}
+
+	auto GLShader::AllocateLightsBuffer(const std::string& uniform_block_name) -> void
+	{
+		GLint binding_point = {};
+		glGetActiveUniformBlockiv(m_program_id, glGetUniformBlockIndex(m_program_id, uniform_block_name.c_str()), GL_UNIFORM_BLOCK_BINDING, &binding_point);
+
+		glGenBuffers(1, &m_lights_buffer);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_lights_buffer);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(Light) * MAX_LIGHTS, nullptr, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glBindBufferRange(GL_UNIFORM_BUFFER, binding_point, m_lights_buffer, 0, MAX_LIGHTS * sizeof(Light));
 	}
 }

@@ -7,8 +7,8 @@
 #include <assimp/scene.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 #include <filesystem>
+#include <stb_image.h>
 
 #include "components/mesh_renderer.h"
 
@@ -287,18 +287,30 @@ namespace libgraphics
 			auto mesh_renderer = std::make_shared<MeshRenderer>(mesh);
 
 			auto mesh_entity = std::make_shared<Entity>();
+			mesh_entity->GetTransformComponent().SetScale(glm::vec3{ 0.3f });
 			mesh_entity->AddComponent(mesh_renderer);
 
 			m_entities.push_back(mesh_entity);
 		}
 	}
 
-	auto Model::Update() const -> void
+	auto Model::Render() -> void
 	{
+		Entity::Render();
+
 		for (const auto& entity : m_entities)
 		{
 			entity->Render();
-			entity->Update(0.0f);
+		}
+	}
+
+	auto Model::Update(const float delta_time) -> void
+	{
+		Entity::Update(delta_time);
+
+		for (const auto& entity : m_entities)
+		{
+			entity->Update(delta_time);
 		}
 	}
 }

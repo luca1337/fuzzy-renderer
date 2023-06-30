@@ -4,11 +4,11 @@
 
 #include <logger.h>
 #include <resource_manager.h>
+#include <entities/model.h>
 #include <opengl/gl_context.h>
 #include <opengl/gl_shader.h>
 #include <opengl/gl_skybox.h>
 #include <opengl/gl_window.h>
-#include <entities/model.h>
 
 #include <gui_utils.h>
 
@@ -18,8 +18,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include <gui/windows/gui_window_stats.h>
 #include <gui/windows/gui_window_left_panel.h>
+#include <gui/windows/gui_window_stats.h>
 #include <rendering/light.h>
 
 namespace libgraphics
@@ -36,25 +36,31 @@ namespace libgraphics
 		{
 		case GraphicsAPI::opengl:
 		{
+			// Create window
 			m_p_impl->m_graphics_window = std::make_shared<GLWindow>();
 			m_p_impl->m_graphics_window->Create(context_width, context_height, context_title);
 			m_p_impl->m_graphics_window->SetClearColor({ 0.3f, 0.4f, 0.5f });
 
-			// register and compile shaders
+			// Register default resources shaders
 			libgraphics::ResourceManager::RegisterResource(ResourceParams{ libgraphics::ResourceType::shaders, "default_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/vertex.glsl", "../fuzzy-libgraphics/shaders/glsl/fragment.glsl") });
 			libgraphics::ResourceManager::RegisterResource(ResourceParams{ libgraphics::ResourceType::shaders, "skybox_shader", std::make_shared<GLShader>("../fuzzy-libgraphics/shaders/glsl/skybox_vert.glsl", "../fuzzy-libgraphics/shaders/glsl/skybox_frag.glsl") });
 
-			m_sky_box = std::make_shared<GLSkybox>();
+			const auto& default_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "default_shader" });
 
-			m_p_impl->m_main_camera = {};
+			default_shader.value()->AllocateLightsBuffer("LightsBlock");
 
 			const auto directional_light = std::make_shared<Light>();
-			directional_light->m_direction = glm::vec3{-1.0f, 1.0f, 0.0f};
+			directional_light->m_direction = glm::vec3{ 0.7f, 0.7f, 0.0 };
 			directional_light->m_type = 0;
+			directional_light->m_intensity = 1.0f;
 			directional_light->m_color = glm::vec4(1.0f);
 			directional_light->m_is_active = true;
 
 			AddLight(directional_light);
+
+			m_sky_box = std::make_shared<GLSkybox>();
+
+			m_p_impl->m_main_camera = {};
 
 			m_test_cube = std::make_shared<Model>("../resources/astronaut_pose.glb");
 		}
@@ -86,7 +92,7 @@ namespace libgraphics
 			gui_lp.Render();
 
 			const auto current_time = glfwGetTime();
-			m_delta_time = current_time - previous_time;
+			m_delta_time = static_cast<float>(current_time - previous_time);
 			previous_time = current_time;
 
 			m_p_impl->m_graphics_window->Clear();
@@ -102,7 +108,8 @@ namespace libgraphics
 			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, m_delta_time);
 
 			m_sky_box->Render(skybox_shader.value());
-			m_test_cube->Update();
+			m_test_cube->Render();
+			m_test_cube->Update(m_delta_time);
 
 			if (render_function)
 			{

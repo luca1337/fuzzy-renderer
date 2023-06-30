@@ -53,6 +53,12 @@ namespace libgraphics
 		 */
 		LIBGRAPHICS_API auto SetIndexBuffer(const std::vector<uint32_t>& indices) -> void override { m_indices = indices; }
 
+		/**
+		 * \brief Get this mesh texture buffer
+		 * \return Value reference vector containing all mesh textures (if any)
+		 */
+		LIBGRAPHICS_API [[nodiscard]] auto GetTextures() -> std::vector<Texture> { return m_textures; }
+
 	private:
 		std::vector<Vertex> m_vertices = {};
 		std::vector<uint32_t> m_indices = {};
