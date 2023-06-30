@@ -143,7 +143,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="gui_window_left_panel.h" />
     <ClInclude Include="inc\color.h" />
     <ClInclude Include="inc\components\component.h" />
     <ClInclude Include="inc\components\mesh_renderer.h" />
@@ -156,6 +155,8 @@
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\gui\base\gui_object_base.h" />
     <ClInclude Include="inc\gui\base\gui_window_base.h" />
+    <ClInclude Include="inc\gui\windows\gui_menu_bar.h" />
+    <ClInclude Include="inc\gui\windows\gui_window_left_panel.h" />
     <ClInclude Include="inc\gui\windows\gui_window_stats.h" />
     <ClInclude Include="inc\gui_utils.h" />
     <ClInclude Include="inc\interfaces\igraphics_context.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="src\entities\entity.cpp" />
     <ClCompile Include="src\gui\base\gui_object_base.cpp" />
     <ClCompile Include="src\gui\base\gui_window_base.cpp" />
+    <ClCompile Include="src\gui\windows\gui_menu_bar.cpp" />
     <ClCompile Include="src\gui\windows\gui_window_left_panel.cpp" />
     <ClCompile Include="src\gui\windows\gui_window_stats.cpp" />
     <ClCompile Include="src\gui_utils.cpp" />

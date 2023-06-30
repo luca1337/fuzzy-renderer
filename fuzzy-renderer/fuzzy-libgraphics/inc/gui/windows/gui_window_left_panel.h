@@ -11,6 +11,4 @@ namespace libgraphics::gui
 
 		void Render() override;
 	};
-
-
 }

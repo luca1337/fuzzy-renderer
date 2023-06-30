@@ -141,9 +141,6 @@
     <ClInclude Include="inc\interfaces\iresource.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="gui_window_left_panel.h">
-      <Filter>Header Files\GUI\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="inc\entities\entity.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
@@ -161,6 +158,12 @@
     </ClInclude>
     <ClInclude Include="inc\entities\model.h">
       <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\gui\windows\gui_menu_bar.h">
+      <Filter>Header Files\GUI\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\gui\windows\gui_window_left_panel.h">
+      <Filter>Header Files\GUI\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="src\entities\entity.cpp">
       <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\windows\gui_menu_bar.cpp">
+      <Filter>Source Files\GUI\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
