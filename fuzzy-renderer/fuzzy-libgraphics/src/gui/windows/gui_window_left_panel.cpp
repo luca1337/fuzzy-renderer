@@ -24,12 +24,13 @@ namespace libgraphics::gui
 	{
 		utils::gui::RenderWindowContent(m_title, m_is_open, m_size, m_position, m_flags, m_bg_alpha, [&] {
 
-			ImGui::Begin("Tabs Window");
-
 			if (ImGui::BeginTabBar("TabBar"))
 			{
 				if (ImGui::BeginTabItem("Tab 1"))
 				{
+					ImGui::MenuItem("pippo");
+					ImGui::MenuItem("pluto");
+
 					ImGui::EndTabItem();
 				}
 
@@ -45,9 +46,6 @@ namespace libgraphics::gui
 
 				ImGui::EndTabBar();
 			}
-
-			ImGui::End();
-
 		});
 	}
 }
