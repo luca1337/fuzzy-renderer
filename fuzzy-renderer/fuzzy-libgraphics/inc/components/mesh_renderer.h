@@ -33,7 +33,6 @@ namespace libgraphics
         std::shared_ptr<IShader> m_shader = {};
         std::shared_ptr<lighting::Material> m_material = {};
 
-        static constexpr int MAX_LIGHTS = 100;
         GLuint lights_buffer = {};
     };
 }

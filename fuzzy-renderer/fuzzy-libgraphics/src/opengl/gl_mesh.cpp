@@ -13,6 +13,10 @@
 
 namespace libgraphics
 {
+	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
+		: m_vertices{std::move(vertices)}, m_indices{std::move(indices)}
+	{ }
+
 	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures)
 		: m_vertices{ std::move(vertices) }, m_indices{ std::move(indices) }, m_textures{ std::move(textures) }
 	{

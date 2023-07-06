@@ -27,7 +27,5 @@ namespace libgraphics
 	private:
 		GLuint m_program_id = {};
 		GLuint m_lights_buffer = {};
-
-		static constexpr int MAX_LIGHTS = 256;
 	};
 }

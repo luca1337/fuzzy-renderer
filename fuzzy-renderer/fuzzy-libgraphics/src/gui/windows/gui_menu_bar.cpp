@@ -13,7 +13,7 @@ namespace libgraphics::gui
                 {
                     // Gestisci l'evento di apertura del file
                 }
-
+ 
                 if (ImGui::MenuItem("Salva", nullptr))
                 {
                     // Gestisci l'evento di salvataggio del file

@@ -10,6 +10,8 @@ namespace utils::gl
 	 * \return id of the texture which will be drawn
 	 */
 	auto LoadCubemap(const std::string_view folder_path) -> uint32_t;
+
+	auto LoadTextureFromFile(const std::string_view path) -> bool;
 }
 
 namespace utils::common

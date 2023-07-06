@@ -61,6 +61,9 @@
     <Filter Include="Source Files\Entities">
       <UniqueIdentifier>{3b3291ec-3f20-4fe7-a2ac-f2f0762d99ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{ea924a4f-a468-46f6-98d7-0ec89f5492c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\framework.h">
@@ -165,6 +168,12 @@
     <ClInclude Include="inc\gui\windows\gui_window_left_panel.h">
       <Filter>Header Files\GUI\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="inc\rendering\texture.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\engine_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -232,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="src\gui\windows\gui_menu_bar.cpp">
       <Filter>Source Files\GUI\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendering\texture.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

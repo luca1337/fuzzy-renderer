@@ -10,7 +10,7 @@ namespace libgraphics::gui
 		m_title = "Stats Window";
 		m_bg_alpha = 0.75f;
 		m_size = { 300.0f, 0.0f };
-		m_position = { 1.0f, 1.0f };
+		m_position = { 0.0f, 18.0f };
 		m_flags = ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_AlwaysAutoResize |
 			ImGuiWindowFlags_NoSavedSettings |
@@ -24,23 +24,13 @@ namespace libgraphics::gui
 	{
 		utils::gui::RenderWindowContent(m_title, m_is_open, m_size, m_position, m_flags, m_bg_alpha, [&] {
 
-			if (ImGui::BeginTabBar("TabBar"))
+			if (ImGui::BeginTabBar("LeftPanel"))
 			{
-				if (ImGui::BeginTabItem("Tab 1"))
+				if (ImGui::BeginTabItem("Scene"))
 				{
 					ImGui::MenuItem("pippo");
 					ImGui::MenuItem("pluto");
 
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Tab 2"))
-				{
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Tab 3"))
-				{
 					ImGui::EndTabItem();
 				}
 

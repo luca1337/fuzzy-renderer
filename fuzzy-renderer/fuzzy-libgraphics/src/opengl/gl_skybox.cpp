@@ -5,6 +5,7 @@
 #include <utils.h>
 
 #include <core.h>
+#include <iostream>
 #include <opengl/gl_context.h>
 
 #include <interfaces/ishader.h>
@@ -70,7 +71,8 @@ namespace libgraphics
 
         glDepthMask(GL_FALSE);
 		shader->Bind();
-		shader->SetMatrix4x4("view", GetViewMatrix3(core.GetMainCamera().m_camera_props));
+        shader->SetMatrix4x4("view", GetViewMatrix3(core.GetMainCamera().m_camera_props));
+        shader->SetFloat("time", core.GetDeltaTime());
 		shader->SetMatrix4x4("projection", ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0));
 
 		glBindVertexArray(m_sky_vao);

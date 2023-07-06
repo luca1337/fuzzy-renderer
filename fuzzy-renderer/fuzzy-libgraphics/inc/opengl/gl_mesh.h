@@ -2,6 +2,7 @@
 
 #include <interfaces/imesh.h>
 #include <opengl/gl_shader.h>
+#include <rendering/texture.h>
 
 namespace libgraphics
 {
@@ -15,6 +16,13 @@ namespace libgraphics
 		 * \brief Default constructor of Mesh (use SetVertexBuffer and SetIndexBuffer)
 		 */
 		LIBGRAPHICS_API GLMesh() = default;
+
+		/**
+		 * \brief Creates raw mesh
+		 * \param vertices vertices of mesh
+		 * \param indices indices of mesh
+		 */
+		LIBGRAPHICS_API GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
 
 		/**
 		 * \brief Creates raw mesh

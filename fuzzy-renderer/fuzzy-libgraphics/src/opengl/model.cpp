@@ -22,142 +22,64 @@ namespace libgraphics
 
 #pragma region FREE FUNCTIONS
 
-	auto LoadTextureFromEmbeddedData(const aiTexture& ai_texture)
+	auto AssimpTextureTypeToNative(const aiTextureType type) -> TextureType
 	{
-		// Assuming the embedded texture data is in RGB format
-		GLenum format = GL_RGB;
-		if (ai_texture.mHeight == 0)
+		switch (type)
 		{
-			// If the texture has no height, it is a 1D texture
-			format = GL_RGB;
+		case aiTextureType_DIFFUSE:return TextureType::albedo;
+		case aiTextureType_SPECULAR:return TextureType::specular;
+		case aiTextureType_NORMALS:return TextureType::normals;
+		case aiTextureType_HEIGHT:return TextureType::height;
+		case aiTextureType_AMBIENT:return TextureType::ambient;
+		case aiTextureType_EMISSIVE:return TextureType::emissive;
+		case aiTextureType_OPACITY:return TextureType::opacity;
+		case aiTextureType_DISPLACEMENT:return TextureType::displacement;
+		case aiTextureType_REFLECTION:return TextureType::reflection;
+		default:return TextureType::albedo; // Valore predefinito in caso di tipo di texture non riconosciuto
 		}
-		else if (ai_texture.mHeight > 0)
-		{
-			// If the texture has height, it is a 2D texture
-			format = GL_RGBA;
-		}
-
-		int width, height, channels;
-		stbi_uc* image_data = {};
-
-		uint32_t texture_id = 0;
-		if (ai_texture.mHeight == 0)
-		{
-			// Load and decode the compressed image data
-			image_data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(ai_texture.pcData), static_cast<int>(ai_texture.mWidth), &width, &height, &channels, STBI_rgb_alpha);
-		}
-		else
-		{
-			// Use the raw image data directly
-			width = static_cast<int>(ai_texture.mWidth);
-			height = static_cast<int>(ai_texture.mHeight);
-			image_data = reinterpret_cast<stbi_uc*>(ai_texture.pcData);
-		}
-
-		if (image_data)
-		{
-			// Create texture using the imageData (RGB or RGBA values)
-			glGenTextures(1, &texture_id);
-			glBindTexture(GL_TEXTURE_2D, texture_id);
-			glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(format), width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			// Set texture parameters and options as needed
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			// If the image_data was loaded using stbi_load_from_memory, free the decoded image data
-			if (ai_texture.mHeight == 0)
-			{
-				stbi_image_free(image_data);
-			}
-		}
-
-		return texture_id;
 	}
 
-	auto TextureFromFile(const std::string_view path)
-	{
-		auto texture_id = uint32_t{ };
-		glGenTextures(1, &texture_id);
-
-		int width, height, nr_components;
-		if (const auto data = stbi_load(path.data(), &width, &height, &nr_components, 0))
-		{
-			auto format = GLint{};
-			if (nr_components == 1)
-				format = GL_RED;
-			else if (nr_components == 3)
-				format = GL_RGB;
-			else if (nr_components == 4)
-				format = GL_RGBA;
-
-			glBindTexture(GL_TEXTURE_2D, texture_id);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			stbi_image_free(data);
-		}
-		else
-		{
-			const auto error_message = std::format("Texture failed to load at path: {}", path);
-			CX_CORE_ERROR(error_message);
-			stbi_image_free(data);
-		}
-
-		return texture_id;
-	}
 
 	auto LoadMaterialTextures(const aiScene& scene, const aiMaterial& material, const aiTextureType type, const std::string_view type_name, const std::string_view model_path) -> std::vector<Texture>
 	{
-		auto textures_loaded = std::vector<Texture>{};
+		auto textures_loaded = std::unordered_map<TextureType, Texture>{};
 		auto textures = std::vector<Texture>{};
 
 		const auto textures_count = std::views::iota(0ul) | std::views::take(material.GetTextureCount(type));
-		std::ranges::for_each(textures_count, [&](const auto texture_idx) {
 
+		std::ranges::for_each(textures_count, [&](const auto texture_idx) {
 			auto texture_assimp_path = aiString{};
 			material.GetTexture(type, texture_idx, &texture_assimp_path);
 
-			// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
+			const auto texture_type = AssimpTextureTypeToNative(type);
+
 			auto skip = false;
-			auto found_texture = std::ranges::find_if(textures_loaded, [&](const auto& j) { return j.m_path.data() == texture_assimp_path.C_Str(); });
-			if (found_texture != textures_loaded.end())
+			if (const auto it = textures_loaded.find(texture_type); it != textures_loaded.end())
 			{
-				// a texture with the same filepath has already been loaded, continue to next one. (optimization)
-				textures.push_back(*found_texture);
+				// Texture with the same type has already been loaded, continue to next one.
+				textures.push_back(it->second);
 				skip = true;
 			}
 
 			if (!skip)
 			{
-				// if texture hasn't been loaded already, load it
-				auto texture = Texture{};
 				if (const auto ai_texture = scene.GetEmbeddedTexture(texture_assimp_path.C_Str()))
 				{
-					texture.m_id = LoadTextureFromEmbeddedData(*ai_texture);
+					const auto& texture = Texture(reinterpret_cast<stbi_uc*>(ai_texture->pcData), ai_texture->mWidth, ai_texture->mHeight, texture_type);
+					textures.push_back(texture);
+					textures_loaded[texture_type] = texture;
 				}
 				else
 				{
 					auto file_path = std::filesystem::path{ model_path };
 					const auto& model_folder_path = file_path.remove_filename().string();
 					const auto& texture_from_file_path = model_folder_path + texture_assimp_path.C_Str();
-					texture.m_id = TextureFromFile(texture_from_file_path);
+					const auto& texture = Texture(texture_from_file_path, texture_type);
+					textures.push_back(texture);
+					textures_loaded[texture_type] = texture;
 				}
-
-				texture.m_type = type_name;
-				texture.m_path = texture_assimp_path.C_Str();
-				textures.push_back(texture);
-				textures_loaded.push_back(texture);  // store it as texture loaded for the entire model, to ensure we won't unnecessarily load duplicate textures.
 			}
-			});
+		});
 
 		return textures;
 	}
@@ -166,7 +88,7 @@ namespace libgraphics
 	{
 		const auto texture_pairs = std::vector<TexturePair>
 		{
-			{aiTextureType_DIFFUSE, "texture_diffuse"},
+			{aiTextureType_DIFFUSE, "texture_diffuse"}, // albedo
 			{aiTextureType_SPECULAR, "texture_specular"},
 			{aiTextureType_NORMALS, "texture_normal"},
 			{aiTextureType_HEIGHT, "texture_height"},
@@ -183,7 +105,7 @@ namespace libgraphics
 			const auto& [m_type, m_path] = texture_pairs[idx];
 			const auto& current_loaded_texture = LoadMaterialTextures(scene, *material, m_type, m_path, model_path);
 			std::ranges::copy(current_loaded_texture, std::back_inserter(out_textures));
-		});
+			});
 	};
 
 	auto ExtractVertices(const aiMesh& mesh, std::vector<Vertex>& out_vertices)
@@ -227,7 +149,7 @@ namespace libgraphics
 		std::ranges::for_each(std::views::iota(0ul, mesh.mNumFaces), [&](auto face_idx) {
 			const auto& face = mesh.mFaces[face_idx];
 			std::ranges::for_each(std::views::iota(0ul, face.mNumIndices), [&](auto indices_idx) { out_indices.push_back(face.mIndices[indices_idx]); });
-		});
+			});
 	}
 
 	auto ProcessMesh(const aiMesh& mesh, const aiScene& scene, const std::string_view model_path) -> GLMesh

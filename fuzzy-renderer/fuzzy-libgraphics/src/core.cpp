@@ -20,6 +20,7 @@
 
 #include <gui/windows/gui_window_left_panel.h>
 #include <gui/windows/gui_window_stats.h>
+#include <gui/windows/gui_menu_bar.h>
 #include <rendering/light.h>
 
 namespace libgraphics
@@ -78,6 +79,7 @@ namespace libgraphics
 
 		const auto& skybox_shader = libgraphics::ResourceManager::GetFromCache<GLShader>({ libgraphics::ResourceType::shaders, "skybox_shader" });
 
+		auto gui_menu_bar = libgraphics::gui::GUIMenuBar{};
 		auto test_win = libgraphics::gui::GUIWindowStats{};
 		auto gui_lp = libgraphics::gui::GUIWindowLeftPanel{};
 
@@ -88,7 +90,7 @@ namespace libgraphics
 			ImGui::NewFrame();
 
 			ImGui::ShowDemoWindow();
-			//test_win.Render();
+			gui_menu_bar.Render();
 			gui_lp.Render();
 
 			const auto current_time = glfwGetTime();

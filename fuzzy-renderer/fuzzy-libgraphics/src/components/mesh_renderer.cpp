@@ -6,7 +6,7 @@
 #include <entities/entity.h>
 #include <glm/gtx/transform.hpp>
 #include <opengl/gl_context.h>
-#include <rendering/light.h>
+#include <rendering/texture.h>
 
 namespace libgraphics
 {
@@ -17,41 +17,46 @@ namespace libgraphics
 
 		m_shader->Bind();
 
-		const auto& textures = m_mesh.GetTextures();
+		auto textures = m_mesh.GetTextures();
 
 		m_material = std::make_shared<lighting::Material>();
-		m_material->m_shininess = 32.0f;
-		m_material->m_roughness = 0.0f;
+		m_material->m_metallic = 32.0f;
+		m_material->m_roughness = 0.5f;
 		m_material->m_use_textures = !textures.empty();
-
-		std::ranges::for_each(std::views::iota(0ul) | std::views::take(textures.size()), [&](const auto texture_idx) {
-			glActiveTexture(GL_TEXTURE0 + texture_idx);
-
-			const auto& [m_id, m_type, m_path] = textures[texture_idx];
-
-			if (m_type == "texture_diffuse") { m_material->m_diffuse_map = texture_idx; }
-			else if (m_type == "texture_specular") { m_material->m_specular_map = texture_idx; }
-			else if (m_type == "texture_normal") { m_material->m_normal_map = texture_idx; }
-			else if (m_type == "texture_height") { m_material->m_height_map = texture_idx; }
-			else if (m_type == "texture_ambient") { m_material->m_ambient_map = texture_idx; }
-			else if (m_type == "texture_emissive") { m_material->m_emissive_map = texture_idx; }
-			else if (m_type == "texture_opacity") { m_material->m_opacity_map = texture_idx; }
-			else if (m_type == "texture_displacement") { m_material->m_displacement_map = texture_idx; }
-			else if (m_type == "texture_reflection") { m_material->m_reflection_map = texture_idx; }
-
-			glBindTexture(GL_TEXTURE_2D, m_id);
-		});
 
 		if (!textures.empty())
 		{
-			m_shader->SetInt("material.diffuse", m_material->m_diffuse_map);
-			m_shader->SetInt("material.specular", m_material->m_specular_map);
-			m_shader->SetInt("material.normal", m_material->m_normal_map);
+			std::ranges::for_each(std::views::iota(0ul) | std::views::take(textures.size()), [&](const int texture_idx) {
+				glActiveTexture(GL_TEXTURE0 + texture_idx);
 
-			m_shader->SetFloat("material.shininess", m_material->m_shininess);
-			m_shader->SetFloat("material.roughness", m_material->m_roughness);
-			m_shader->SetBool("material.useTextures", m_material->m_use_textures);
+				auto& texture = textures[texture_idx];
+				const auto texture_type = texture.GetType();
+
+				texture.SetIndex(texture_idx);
+
+				if (texture_type == TextureType::albedo) { m_material->m_albedo_map = texture.GetIndex(); }
+				else if (texture_type == TextureType::specular) { m_material->m_specular_map = texture.GetIndex(); }
+				else if (texture_type == TextureType::normals) { m_material->m_normal_map = texture.GetIndex(); }
+				else if (texture_type == TextureType::height) { m_material->m_height_map = texture.GetIndex(); }
+				else if (texture_type == TextureType::opacity) { m_material->m_opacity_map = texture.GetIndex(); }
+
+				glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
+			});
+
+			// todo: support other textures
+			m_shader->SetInt("material.albedo_map", m_material->m_albedo_map);
+			m_shader->SetInt("material.metallic_map", m_material->m_specular_map);
+			m_shader->SetInt("material.normal_map", m_material->m_normal_map);
 		}
+		else
+		{
+			m_shader->SetVec3("material.albedo_color", m_material->m_albedo_color);
+			m_shader->SetVec3("material.emission_color", m_material->m_emission_color);
+		}
+
+		m_shader->SetFloat("material.metallic", m_material->m_metallic);
+		m_shader->SetFloat("material.roughness", m_material->m_roughness);
+		m_shader->SetBool("material.use_textures", m_material->m_use_textures);
 	}
 
 	auto MeshRenderer::Render() -> void

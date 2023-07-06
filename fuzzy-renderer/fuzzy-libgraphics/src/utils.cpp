@@ -96,4 +96,9 @@ namespace utils::gl
 
 		return texture_id;
 	}
+
+	auto LoadTextureFromFile(const std::string_view path) -> bool
+	{
+		return true;
+	}
 }
