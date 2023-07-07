@@ -53,7 +53,7 @@ namespace libgraphics
 		}
 
 		int out_width, out_height, out_channels;
-		stbi_uc* image_data = {};
+		stbi_uc* image_data;
 
 		if (height == 0)
 		{

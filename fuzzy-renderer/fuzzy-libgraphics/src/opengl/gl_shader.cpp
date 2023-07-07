@@ -64,7 +64,7 @@ namespace libgraphics
 		glAttachShader(m_program_id, fragment_id);
 		glLinkProgram(m_program_id);
 
-		GLint success = {};
+		auto success = GLint{};
 		glGetProgramiv(m_program_id, GL_LINK_STATUS, &success);
 		if (!success) 
 		{
