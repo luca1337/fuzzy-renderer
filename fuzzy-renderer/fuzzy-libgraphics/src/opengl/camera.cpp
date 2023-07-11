@@ -1,28 +1,30 @@
 #include <opengl/camera.h>
-#include <opengl/gl_window.h>
 #include <opengl/gl_context.h>
+#include <opengl/gl_window.h>
 
 #include <GLFW/glfw3.h>
 
-
-#include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+
+#include "core.h"
 
 namespace libgraphics
 {
 	auto CalculateDirectionVectors(const CameraProps& camera_props) -> std::tuple<glm::dvec3, glm::dvec3, glm::dvec3>
 	{
-		glm::dvec3 direction = {};
-		direction.x = cos(glm::radians(camera_props.m_yaw)) * cos(glm::radians(camera_props.m_pitch));
-		direction.y = -sin(glm::radians(camera_props.m_pitch));
-		direction.z = sin(glm::radians(camera_props.m_yaw)) * cos(glm::radians(camera_props.m_pitch));
-		const auto front = glm::normalize(direction);
+		const auto yaw_rad = glm::radians(camera_props.m_yaw);
+		const auto pitch_rad = glm::radians(camera_props.m_pitch);
 
-		constexpr glm::dvec3 world_up = { 0.0, 1.0, 0.0 };
+		const glm::dvec3 front(
+			cos(pitch_rad) * -sin(yaw_rad),  // Inversione della X
+			-sin(pitch_rad),
+			cos(pitch_rad) * cos(yaw_rad)   // Inversione della Z
+		);
 
+		constexpr glm::dvec3 world_up(0.0, 1.0, 0.0);
 		const auto right = glm::normalize(glm::cross(front, world_up));
 		const auto up = glm::normalize(glm::cross(right, front));
 
@@ -93,31 +95,54 @@ namespace libgraphics
 
 		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_W))
 		{
-			Translate(CameraDirection::front, delta_time);
+			InternalTranslate(CameraDirection::front, delta_time);
 		}
 		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_S))
 		{
-			Translate(CameraDirection::back, delta_time);
+			InternalTranslate(CameraDirection::back, delta_time);
 		}
 		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_A))
 		{
-			Translate(CameraDirection::left, delta_time);
+			InternalTranslate(CameraDirection::left, delta_time);
 		}
 		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_D))
 		{
-			Translate(CameraDirection::right, delta_time);
+			InternalTranslate(CameraDirection::right, delta_time);
 		}
 		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_E))
 		{
-			Translate(CameraDirection::up, delta_time);
+			InternalTranslate(CameraDirection::up, delta_time);
 		}
 		if (glfwGetKey(glfw_native_window_handle, GLFW_KEY_Q))
 		{
-			Translate(CameraDirection::down, delta_time);
+			InternalTranslate(CameraDirection::down, delta_time);
 		}
 	}
 
-	auto Camera::Translate(const CameraDirection direction, const double delta_time) -> void
+	auto Camera::ScreenPointToRay3D(const glm::vec2& screen_coords) const -> Ray
+	{
+		const auto& core = libgraphics::Core::GetInstance();
+		const auto gl_context = std::static_pointer_cast<libgraphics::GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
+
+		const auto mouse_screen_ndc_coords = glm::vec2{
+			2.0f * screen_coords.x / static_cast<float>(gl_context->Data().m_width) - 1.0f,
+			2.0f * screen_coords.y / static_cast<float>(gl_context->Data().m_height) - 1.0f,
+		};
+
+		const auto& view = GetViewMatrix(core.GetMainCamera().m_camera_props);
+		const auto& proj = libgraphics::ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0);
+
+		const auto inverse_view_projection = glm::inverse(proj * view);
+		const auto screen_pos = glm::vec4{ mouse_screen_ndc_coords.x, -mouse_screen_ndc_coords.y, 1.0f, 1.0f };
+		const auto world_pos = inverse_view_projection * screen_pos;
+
+		const auto ray_origin = GetWorldPosition();
+		const auto ray_direction = glm::normalize(glm::vec3{ world_pos });
+
+		return { ray_origin, ray_direction };
+	}
+
+	auto Camera::InternalTranslate(const CameraDirection direction, const double delta_time) -> void
 	{
 		const auto [front, right, up] = CalculateDirectionVectors(m_camera_props);
 		switch (direction)

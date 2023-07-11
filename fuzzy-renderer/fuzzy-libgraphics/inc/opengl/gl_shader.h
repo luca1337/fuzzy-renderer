@@ -12,6 +12,7 @@ namespace libgraphics
 		GLShader(const std::string_view vertex, const std::string_view fragment);
 
 		auto Bind() const -> void override { glUseProgram(m_program_id); }
+		auto Unbind() const -> void override { glUseProgram(0); }
 		auto AllocateLightsBuffer(const std::string& uniform_block_name) -> void;
 
 		auto SetMatrix4x4(const std::string_view name, const glm::mat4& m) -> void override { glUniformMatrix4fv(glGetUniformLocation(m_program_id, name.data()), 1, false, &m[0][0]); }

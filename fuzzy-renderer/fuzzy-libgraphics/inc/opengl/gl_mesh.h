@@ -29,9 +29,10 @@ namespace libgraphics
 		 * \param vertices vertices of mesh
 		 * \param indices indices of mesh
 		 * \param textures textures of mesh (albedo, metallic, roughness etc..)
+		 * \param name name of mesh (optional)
 		 */
 		LIBGRAPHICS_API GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices,
-		                       std::vector<Texture> textures);
+		                       std::vector<Texture> textures, std::string name);
 
 		/**
 		 * \brief Standard Draw for a mesh 
@@ -67,10 +68,18 @@ namespace libgraphics
 		 */
 		LIBGRAPHICS_API [[nodiscard]] auto GetTextures() -> std::vector<Texture> { return m_textures; }
 
+		/**
+		 * \brief Get this mesh name
+		 * \return String representing low-level mesh name
+		 */
+		LIBGRAPHICS_API [[nodiscard]] auto GetName() const -> const std::string& { return m_name; }
+
 	private:
 		std::vector<Vertex> m_vertices = {};
 		std::vector<uint32_t> m_indices = {};
 		std::vector<Texture> m_textures = {};
+
+		std::string m_name = { };
 
 		unsigned int m_vao = {};
 		unsigned int m_vbo = {};

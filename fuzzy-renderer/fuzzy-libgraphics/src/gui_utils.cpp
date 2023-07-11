@@ -55,4 +55,11 @@ namespace libgraphics::utils::gui
         ImGui::Separator();
         ImGui::PopStyleColor();
     }
+
+    auto ColoredText(const std::string& text, const ImVec4& color) -> void
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, color);
+        ImGui::Text(text.data());
+        ImGui::PopStyleColor();
+    }
 }

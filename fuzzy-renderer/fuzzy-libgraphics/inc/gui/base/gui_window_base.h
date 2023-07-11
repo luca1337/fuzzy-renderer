@@ -17,10 +17,10 @@ namespace libgraphics::gui
 
 	protected:
 		auto SetPosition(const ImVec2& position) -> void { m_position = position; }
-		auto GetPosition() const -> ImVec2 { return m_position; }
+		[[nodiscard]] auto GetPosition() const -> ImVec2 { return m_position; }
 
 		auto SetSize(const ImVec2& size) -> void { m_size = size; }
-		auto GetSize() const -> ImVec2 { return m_size; }
+		[[nodiscard]] auto GetSize() const -> ImVec2 { return m_size; }
 
 		bool m_is_open = {};
 		ImVec2 m_size = {};

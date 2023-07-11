@@ -60,4 +60,7 @@ namespace libgraphics::utils::gui
 	 * \param color color of the separator
 	 */
 	auto Separator(const ImVec4& color) -> void;
+
+	auto ColoredText(const std::string& text, const ImVec4& color) -> void;
+
 }

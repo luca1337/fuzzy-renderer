@@ -15,14 +15,8 @@ struct LightingResult {
 
 struct Material {
     sampler2D albedo_map;
-    sampler2D normal_map;
     sampler2D metallic_map;
-    sampler2D roughness_map;
-    sampler2D occlusion_map;
-    sampler2D emission_map;
-    sampler2D height_map;
-    sampler2D opacity_map;
-    sampler2D specular_map;
+    sampler2D normal_map;
 
     float metallic;
     float roughness;
@@ -65,8 +59,13 @@ float calculateSpecular(vec3 lightDir, vec3 viewDir, vec3 normal)
 {
     vec3 reflectDir = reflect(-lightDir, normal);
     float dispersionFactor = 1.0 - material.roughness;
-    return pow(max(dot(viewDir, reflectDir), 0.0), material.metallic) * dispersionFactor;
+
+    float metallic = max(material.metallic, 0.01f);
+    float intensity = 1.0 - material.roughness;  // Intensità della riflessione speculare
+
+    return pow(max(dot(viewDir, reflectDir), 0.0), (metallic * 256)) * dispersionFactor * intensity;
 }
+
 
 vec3 calculateNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, vec3 textureNormal) 
 {
@@ -84,7 +83,7 @@ void calculateNormalAndTextures(inout vec3 normal, inout vec3 diffuseTexture, in
         vec3 normal_tex = texture(material.normal_map, world_uv).rgb;
         normal = calculateNormal(world_normal, world_tangent, world_bitangent, normal_tex);
         diffuseTexture = texture(material.albedo_map, world_uv).rgb;
-        specularTexture = texture(material.specular_map, world_uv).rgb;
+        specularTexture = texture(material.metallic_map, world_uv).rgb;
     } 
     else 
     {
@@ -161,7 +160,7 @@ LightingResult calculateSpotLight(Light light, float specularStrength, vec3 diff
 
 vec3 calculateLighting(float ambientStrength, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture)
 {
-    vec3 ambient = ambientStrength * vec3(1);
+    vec3 ambient = ambientStrength * diffuseTexture;
 
     LightingResult totalRes;
     totalRes.diffuseColor = vec3(0.0);
@@ -199,7 +198,7 @@ vec3 calculateLighting(float ambientStrength, float specularStrength, vec3 diffu
 
 void main()
 {
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.25;
     float specularStrength = 0.9;
 
     vec3 normalTexture;
