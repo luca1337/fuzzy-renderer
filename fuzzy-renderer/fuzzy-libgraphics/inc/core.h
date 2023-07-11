@@ -5,6 +5,7 @@
 
 namespace libgraphics
 {
+	class EntityManager;
 	struct Light;
 	class GLSkybox;
 	class IGraphicsWindow;
@@ -42,12 +43,17 @@ namespace libgraphics
 		LIBGRAPHICS_API [[nodiscard]] auto GetMainCamera() const -> Camera& { return m_p_impl->m_main_camera; }
 		LIBGRAPHICS_API [[nodiscard]] auto GetGraphicsWindow() const -> std::shared_ptr<IGraphicsWindow>& { return m_p_impl->m_graphics_window; }
 
+		LIBGRAPHICS_API [[nodiscard]] auto GetEntityManager () const -> std::shared_ptr<EntityManager> { return m_entity_manager; }
+
 	private:
 		Core() = default;
 
+		std::shared_ptr<EntityManager> m_entity_manager = {};
+
 		float m_delta_time = {};
 
-		std::shared_ptr<class Model> m_test_cube = {};
+		std::shared_ptr<class Model> m_entity_model = {};
+		std::shared_ptr<class Model> m_entity_model2 = {};
 		std::shared_ptr<GLSkybox> m_sky_box = {};
 
 		std::vector<std::shared_ptr<Light>> m_lights = {};

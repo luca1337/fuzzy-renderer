@@ -12,9 +12,9 @@ namespace libgraphics
 {
 	auto framebuffer_size_callback(GLFWwindow* window, const int width, const int height) -> void
 	{
-		auto& windowPtr = *static_cast<GLContext*>(glfwGetWindowUserPointer(window));
-		windowPtr.Data().m_width = width;
-		windowPtr.Data().m_height = height;
+		auto& window_ptr = *static_cast<GLContext*>(glfwGetWindowUserPointer(window));
+		window_ptr.Data().m_width = width;
+		window_ptr.Data().m_height = height;
 		glViewport(0, 0, width, height);
 	}
 
@@ -92,7 +92,7 @@ namespace libgraphics
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 		// Setup Dear ImGui style
-		ImGui::StyleColorsClassic();
+		ImGui::StyleColorsDark();
 
 		ImGui_ImplGlfw_InitForOpenGL(m_glfw_native_window_handle, true);
 		ImGui_ImplOpenGL3_Init("#version 460");

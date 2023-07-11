@@ -148,9 +148,11 @@
     <ClInclude Include="inc\components\mesh_renderer.h" />
     <ClInclude Include="inc\components\transform.h" />
     <ClInclude Include="inc\core.h" />
+    <ClInclude Include="inc\engine_constants.h" />
     <ClInclude Include="inc\entities\entity.h" />
     <ClInclude Include="inc\entities\mesh_entity.h" />
     <ClInclude Include="inc\entities\model.h" />
+    <ClInclude Include="inc\entity_manager.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\gui\base\gui_object_base.h" />
@@ -172,18 +174,25 @@
     <ClInclude Include="inc\opengl\gl_shader.h" />
     <ClInclude Include="inc\opengl\gl_skybox.h" />
     <ClInclude Include="inc\opengl\gl_window.h" />
+    <ClInclude Include="inc\ray.h" />
+    <ClInclude Include="inc\ray_hit.h" />
     <ClInclude Include="inc\rendering\light.h" />
     <ClInclude Include="inc\rendering\material.h" />
+    <ClInclude Include="inc\rendering\texture.h" />
     <ClInclude Include="inc\render_profiler.h" />
     <ClInclude Include="inc\resource_manager.h" />
+    <ClInclude Include="inc\svg_icon.h" />
     <ClInclude Include="inc\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\components\component.cpp" />
     <ClCompile Include="src\components\mesh_renderer.cpp" />
+    <ClCompile Include="src\components\transform.cpp" />
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\entities\entity.cpp" />
+    <ClCompile Include="src\entities\model.cpp" />
+    <ClCompile Include="src\entity_manager.cpp" />
     <ClCompile Include="src\gui\base\gui_object_base.cpp" />
     <ClCompile Include="src\gui\base\gui_window_base.cpp" />
     <ClCompile Include="src\gui\windows\gui_menu_bar.cpp" />
@@ -197,8 +206,9 @@
     <ClCompile Include="src\opengl\gl_shader.cpp" />
     <ClCompile Include="src\opengl\gl_skybox.cpp" />
     <ClCompile Include="src\opengl\gl_window.cpp" />
-    <ClCompile Include="src\opengl\model.cpp" />
+    <ClCompile Include="src\rendering\texture.cpp" />
     <ClCompile Include="src\render_profiler.cpp" />
+    <ClCompile Include="src\svg_icon.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="vendor\glad\src\gl.c" />
   </ItemGroup>

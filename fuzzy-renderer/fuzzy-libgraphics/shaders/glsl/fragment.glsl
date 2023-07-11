@@ -14,21 +14,21 @@ struct LightingResult {
 };
 
 struct Material {
-    sampler2D diffuse;
-    sampler2D specular;
-    sampler2D normal;
-    sampler2D height;
-    sampler2D ambient;
-    sampler2D emissive;
-    sampler2D opacity;
-    sampler2D displacement;
-    sampler2D reflection;
+    sampler2D albedo_map;
+    sampler2D metallic_map;
+    sampler2D normal_map;
 
-    float shininess;
+    float metallic;
     float roughness;
+    float occlusion_strength;
+    float emission_strength;
 
-    bool useTextures;
+    vec3 albedo_color;
+    vec3 emission_color;
+
+    bool use_textures;
 };
+
 
 uniform vec3 eye;
 uniform Material material;
@@ -43,7 +43,7 @@ struct Light {
     vec3 attenuation;
     vec4 color;
     int type;
-    int is_active;
+    int isActive;
 };
 
 layout(std140) uniform LightsBlock {
@@ -58,13 +58,14 @@ float calculateDiffuse(vec3 lightDir, vec3 normal)
 float calculateSpecular(vec3 lightDir, vec3 viewDir, vec3 normal) 
 {
     vec3 reflectDir = reflect(-lightDir, normal);
-    
-    // Calcolo del fattore di dispersione basato sulla rugosità
     float dispersionFactor = 1.0 - material.roughness;
-    
-    // Modifica del calcolo del colore speculare con il fattore di dispersione
-    return pow(max(dot(viewDir, reflectDir), 0.0), material.shininess) * dispersionFactor;
+
+    float metallic = max(material.metallic, 0.01f);
+    float intensity = 1.0 - material.roughness;  // Intensità della riflessione speculare
+
+    return pow(max(dot(viewDir, reflectDir), 0.0), (metallic * 256)) * dispersionFactor * intensity;
 }
+
 
 vec3 calculateNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, vec3 textureNormal) 
 {
@@ -75,11 +76,28 @@ vec3 calculateNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, v
     return normalize(TBN * normal);
 }
 
+void calculateNormalAndTextures(inout vec3 normal, inout vec3 diffuseTexture, inout vec3 specularTexture)
+{
+    if (material.use_textures) 
+    {
+        vec3 normal_tex = texture(material.normal_map, world_uv).rgb;
+        normal = calculateNormal(world_normal, world_tangent, world_bitangent, normal_tex);
+        diffuseTexture = texture(material.albedo_map, world_uv).rgb;
+        specularTexture = texture(material.metallic_map, world_uv).rgb;
+    } 
+    else 
+    {
+        normal = normalize(world_normal);
+        diffuseTexture = material.albedo_color;
+        specularTexture = material.albedo_color;
+    }
+}
+
 LightingResult calculateDirectionalLight(Light light, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture) 
 {
     vec3 ambient = light.intensity * light.color.rgb;
 
-    vec3 normal = calculateNormal(world_normal, world_tangent, world_bitangent, normalTexture);
+    vec3 normal = normalTexture;
     vec3 lightDirection = normalize(light.direction);
 
     float diffuse = calculateDiffuse(lightDirection, normal);
@@ -100,7 +118,7 @@ LightingResult calculatePointLight(Light light, float specularStrength, vec3 dif
     vec3 lightDir = normalize(light.position - world_vertex);
     float dist = length(light.position - world_vertex);
     float attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * dist + light.attenuation.z * dist * dist);
-    vec3 adjustedNormal = calculateNormal(world_normal, world_tangent, world_bitangent, normalTexture);
+    vec3 adjustedNormal = normalTexture;
     float diffuse = calculateDiffuse(lightDir, adjustedNormal);
     vec3 diffuseColor = diffuse * diffuseTexture * light.color.rgb * light.intensity * attenuation;
     vec3 reflectDir = reflect(-lightDir, adjustedNormal);
@@ -121,7 +139,7 @@ LightingResult calculateSpotLight(Light light, float specularStrength, vec3 diff
     float attenuation = 1.0 / (light.attenuation.x + light.attenuation.y * dist + light.attenuation.z * (dist * dist));
     
     vec3 viewDirection = normalize(eye - world_vertex);
-    vec3 surfaceNormal = calculateNormal(world_normal, world_tangent, world_bitangent, normalTexture);
+    vec3 surfaceNormal = normalTexture;
     
     float diff = calculateDiffuse(lightDirection, surfaceNormal);
     vec3 diffuse = diff * diffuseTexture * light.color.rgb * light.intensity * attenuation;
@@ -142,32 +160,32 @@ LightingResult calculateSpotLight(Light light, float specularStrength, vec3 diff
 
 vec3 calculateLighting(float ambientStrength, float specularStrength, vec3 diffuseTexture, vec3 normalTexture, vec3 specularTexture)
 {
-    vec3 ambient = ambientStrength * vec3(1);
+    vec3 ambient = ambientStrength * diffuseTexture;
 
     LightingResult totalRes;
     totalRes.diffuseColor = vec3(0.0);
     totalRes.specularColor = vec3(0.0);
 
-    for (int light_idx = 0; light_idx != MAX_LIGHTS; light_idx++)
+    for (int lightIdx = 0; lightIdx < MAX_LIGHTS; lightIdx++)
     {
         LightingResult res;
 
-        Light current_light = lights[light_idx];
+        Light currentLight = lights[lightIdx];
 
-        if (current_light.is_active == 0)
+        if (currentLight.isActive == 0)
             continue;
 
-        if (current_light.type == 0)
+        if (currentLight.type == 0)
         {
-            res = calculateDirectionalLight(current_light, specularStrength, diffuseTexture, normalTexture, specularTexture);
+            res = calculateDirectionalLight(currentLight, specularStrength, diffuseTexture, normalTexture, specularTexture);
         }
-        if (current_light.type == 1)
+        else if (currentLight.type == 1)
         {
-            res = calculatePointLight(current_light, specularStrength, diffuseTexture, normalTexture, specularTexture);
+            res = calculatePointLight(currentLight, specularStrength, diffuseTexture, normalTexture, specularTexture);
         }
-        if (current_light.type == 2)
+        else if (currentLight.type == 2)
         {
-            res = calculateSpotLight(current_light, specularStrength, diffuseTexture, normalTexture, specularTexture, 50.2, 73.4);
+            res = calculateSpotLight(currentLight, specularStrength, diffuseTexture, normalTexture, specularTexture, 50.2, 73.4);
         }
 
         totalRes.diffuseColor += res.diffuseColor;
@@ -180,12 +198,14 @@ vec3 calculateLighting(float ambientStrength, float specularStrength, vec3 diffu
 
 void main()
 {
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.25;
     float specularStrength = 0.9;
 
-    vec3 diffuseTexture = texture(material.diffuse, world_uv).rgb;
-    vec3 specularTexture = texture(material.specular, world_uv).rgb;
-    vec3 normalTexture = texture(material.normal, world_uv).rgb;
+    vec3 normalTexture;
+    vec3 diffuseTexture;
+    vec3 specularTexture;
+
+    calculateNormalAndTextures(normalTexture, diffuseTexture, specularTexture);
 
     vec3 lighting = calculateLighting(ambientStrength, specularStrength, diffuseTexture, normalTexture, specularTexture);
 

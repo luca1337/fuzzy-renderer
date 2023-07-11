@@ -11,10 +11,18 @@
 
 #include <core.h>
 
+#include <utils.h>
+
 namespace libgraphics
 {
-	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures)
-		: m_vertices{ std::move(vertices) }, m_indices{ std::move(indices) }, m_textures{ std::move(textures) }
+	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
+		: m_vertices{ std::move(vertices) }, m_indices{ std::move(indices) }
+	{ }
+
+	GLMesh::GLMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures, std::string name = "")
+		: m_vertices{ std::move(vertices) }, m_indices{ std::move(indices) }, m_textures{ std::move(textures) }, m_name{
+			  std::move(name)
+		  }
 	{
 		GenerateMeshDataAndSendToGPU();
 	}
@@ -30,11 +38,15 @@ namespace libgraphics
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		glBindVertexArray(m_vao);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
 
 		glBindVertexArray(0);
-		glActiveTexture(GL_TEXTURE0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	auto GLMesh::SendGPUData(const unsigned slot, const int slot_size, const unsigned attrib_array_index, const void* ptr) -> void

@@ -16,6 +16,9 @@ namespace libgraphics
 		virtual ~Entity() = default;
 		Entity() { AddComponent<Transform>(); }
 
+		auto AddChild(const std::shared_ptr<Entity>& child) -> void;
+		[[nodiscard]] auto& GetChildrens() const { return m_childrens; }
+
 		template <std::derived_from<Component> Component>
 		auto& AddComponent()
 		{
@@ -60,14 +63,14 @@ namespace libgraphics
 		}
 
 		template <typename ComponentType>
-		[[nodiscard]] auto& GetComponent() const
+		[[nodiscard]] auto GetComponent() const
 		{
 			const auto& component_type = typeid(ComponentType);
 			if (const auto& it = m_components.find(component_type); it != m_components.end())
 			{
-				return *std::static_pointer_cast<ComponentType>(it->second);
+				return std::static_pointer_cast<ComponentType>(it->second);
 			}
-			throw std::exception(("Component of type " + std::string(component_type.name()) + " does not exist.").c_str());
+			return std::shared_ptr<ComponentType>();
 		}
 
 		template <std::derived_from<Component> Component>
@@ -80,9 +83,18 @@ namespace libgraphics
 		virtual auto Update(float delta_time) -> void;
 		virtual auto Render() -> void;
 
-		[[nodiscard]] auto& GetTransformComponent() const { return GetComponent<Transform>(); }
+		auto SetName(const std::string& name) { m_name = name; }
+		[[nodiscard]] auto& GetName() const { return m_name; }
+
+		[[nodiscard]] auto GetTransformComponent() const { return GetComponent<Transform>(); }
 
 	private:
+		Entity* m_parent = {};
+		std::vector<std::shared_ptr<Entity>> m_childrens = {};
 		std::unordered_map<std::type_index, std::shared_ptr<Component>> m_components = {};
+		std::string m_name = {};
+
+		auto UpdateSelfAndChild() const -> void;
+		auto ForceUpdateSelfAndChild() const -> void;
 	};
 }

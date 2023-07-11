@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace libgraphics
 {
 	enum class GraphicsAPI
@@ -24,6 +26,20 @@ namespace libgraphics
 
 		max_enum
 	};
+
+	enum class TextureType
+	{
+		albedo,
+		specular,
+		normals,
+		height,
+		opacity,
+		ambient,
+		emissive,
+		displacement,
+		reflection
+	};
+
 
 	inline auto ResourceTypeToString(const ResourceType type) -> std::string
 	{

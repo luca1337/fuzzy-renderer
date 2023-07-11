@@ -1,14 +1,11 @@
-#include <opengl/gl_shader.h>
-
-#include <logger.h>
-
+#include <engine_constants.h>
 #include <fstream>
+#include <logger.h>
 #include <source_location>
 #include <span>
 #include <sstream>
-
 #include <glad/gl.h>
-
+#include <opengl/gl_shader.h>
 #include <rendering/light.h>
 
 namespace libgraphics
@@ -67,7 +64,7 @@ namespace libgraphics
 		glAttachShader(m_program_id, fragment_id);
 		glLinkProgram(m_program_id);
 
-		GLint success = {};
+		auto success = GLint{};
 		glGetProgramiv(m_program_id, GL_LINK_STATUS, &success);
 		if (!success) 
 		{
@@ -93,8 +90,8 @@ namespace libgraphics
 
 		glGenBuffers(1, &m_lights_buffer);
 		glBindBuffer(GL_UNIFORM_BUFFER, m_lights_buffer);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Light) * MAX_LIGHTS, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(Light) * constants::MaxNumberOfLights, nullptr, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		glBindBufferRange(GL_UNIFORM_BUFFER, binding_point, m_lights_buffer, 0, MAX_LIGHTS * sizeof(Light));
+		glBindBufferRange(GL_UNIFORM_BUFFER, binding_point, m_lights_buffer, 0, constants::MaxNumberOfLights * sizeof(Light));
 	}
 }

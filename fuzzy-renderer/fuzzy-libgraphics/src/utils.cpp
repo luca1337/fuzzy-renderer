@@ -4,6 +4,16 @@
 #include <logger.h>
 #include <stb_image.h>
 #include <glad/gl.h>
+#include <GLFW/glfw3.h>
+#include <glm/vec3.hpp>
+#include <glm/gtx/intersect.hpp>
+
+#include <core.h>
+#include <interfaces/imesh.h>
+
+#include <opengl/gl_mesh.h>
+
+#include <ray_hit.h>
 
 namespace utils::gl
 {
@@ -95,5 +105,33 @@ namespace utils::gl
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 		return texture_id;
+	}
+
+	auto CheckRayMeshIntersection(const glm::vec3& ray_origin, const glm::vec3& ray_direction, const libgraphics::GLMesh& mesh) -> std::optional<libgraphics::RayHit>
+	{
+		auto closest_distance = std::numeric_limits<float>::max();
+		auto ray_hit = libgraphics::RayHit{};
+
+		const auto& index_buffer = mesh.GetIndexBuffer();
+		const auto& vertex_buffer = mesh.GetVertexBuffer();
+
+		for (auto vertex_idx = 0ul; vertex_idx < index_buffer.size(); vertex_idx += 3)
+		{
+			const auto& v0 = vertex_buffer[index_buffer[vertex_idx]];
+			const auto& v1 = vertex_buffer[index_buffer[vertex_idx + 1]];
+			const auto& v2 = vertex_buffer[index_buffer[vertex_idx + 2]];
+
+			auto barycentric_coords = glm::vec2{};
+			if (auto distance = 0.0f; glm::intersectRayTriangle(ray_origin, ray_direction, v0.m_position, v1.m_position, v2.m_position, barycentric_coords, distance))
+			{
+				const auto& intersection_point = ray_origin + ray_direction * distance;
+				if (distance < closest_distance)
+				{
+					closest_distance = distance;
+					ray_hit = { closest_distance, intersection_point };
+				}
+			}
+		}
+		return ray_hit;
 	}
 }

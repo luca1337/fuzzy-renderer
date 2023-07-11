@@ -18,13 +18,6 @@ namespace libgraphics
         glm::vec3 m_bitangent = {};
     };
 
-    struct Texture
-    {
-        uint32_t m_id = {};
-        std::string m_type = {};
-        std::string m_path = {};
-    };
-
     class LIBGRAPHICS_API IMesh
     {
     public:

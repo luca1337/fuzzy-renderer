@@ -1,6 +1,14 @@
 #pragma once
 
 #include <logger.h>
+#include <glm/vec3.hpp>
+
+namespace libgraphics
+{
+	class GLMesh;
+	struct RayHit;
+	struct Vertex;
+}
 
 namespace utils::gl
 {
@@ -10,6 +18,8 @@ namespace utils::gl
 	 * \return id of the texture which will be drawn
 	 */
 	auto LoadCubemap(const std::string_view folder_path) -> uint32_t;
+
+	auto CheckRayMeshIntersection(const glm::vec3& ray_origin, const glm::vec3& ray_direction, const libgraphics::GLMesh& mesh) -> std::optional<libgraphics::RayHit>;
 }
 
 namespace utils::common
