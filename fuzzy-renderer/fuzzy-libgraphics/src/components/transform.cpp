@@ -12,6 +12,12 @@ namespace libgraphics
 		m_local_rotation = {};
 	}
 
+	auto Transform::Translate(const glm::vec3& delta) -> void
+	{
+		m_local_translation += delta;
+		m_is_dirty = true;
+	}
+
 	auto Transform::SetLocalTranslation(const glm::vec3& translation) -> void
 	{
 		m_local_translation = translation;

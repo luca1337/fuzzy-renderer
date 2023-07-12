@@ -115,14 +115,14 @@ namespace utils::gl
 		const auto& index_buffer = mesh.GetIndexBuffer();
 		const auto& vertex_buffer = mesh.GetVertexBuffer();
 
-		for (auto vertex_idx = 0ul; vertex_idx < index_buffer.size(); vertex_idx += 3)
+		for (auto vertex_idx = 0ul; vertex_idx != index_buffer.size(); vertex_idx += 3)
 		{
-			const auto& v0 = vertex_buffer[index_buffer[vertex_idx]];
-			const auto& v1 = vertex_buffer[index_buffer[vertex_idx + 1]];
-			const auto& v2 = vertex_buffer[index_buffer[vertex_idx + 2]];
+			const auto& vertex_0 = vertex_buffer[index_buffer[vertex_idx]];
+			const auto& vertex_1 = vertex_buffer[index_buffer[vertex_idx + 1]];
+			const auto& vertex_2 = vertex_buffer[index_buffer[vertex_idx + 2]];
 
 			auto barycentric_coords = glm::vec2{};
-			if (auto distance = 0.0f; glm::intersectRayTriangle(ray_origin, ray_direction, v0.m_position, v1.m_position, v2.m_position, barycentric_coords, distance))
+			if (auto distance = 0.0f; glm::intersectRayTriangle(ray_origin, ray_direction, vertex_0.m_position, vertex_1.m_position, vertex_2.m_position, barycentric_coords, distance))
 			{
 				const auto& intersection_point = ray_origin + ray_direction * distance;
 				if (distance < closest_distance)

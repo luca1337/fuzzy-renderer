@@ -65,15 +65,13 @@ namespace libgraphics
 
 			m_sky_box = std::make_shared<GLSkybox>();
 
-			m_p_impl->m_main_camera = {};
+			m_p_impl->m_main_camera = std::make_shared<GameCamera>();
+			m_p_impl->m_main_camera->SetName("Main Camera");
+			m_entity_manager->AddEntity(m_p_impl->m_main_camera);
 
-			m_entity_model = std::make_shared<Model>("../resources/Cube.glb");
-			m_entity_model->SetName("Cube");
+			m_entity_model = std::make_shared<Model>("../resources/rock_fountain.glb");
+			m_entity_model->SetName("rock_fountain_entity");
 			m_entity_manager->AddEntity(m_entity_model);
-
-			/*m_entity_model2 = std::make_shared<Model>("../resources/rock_fountain.glb");
-			m_entity_model2->SetName("rock_fountain");
-			m_entity_manager->AddEntity(m_entity_model2);*/
 		}
 		break;
 		case GraphicsAPI::directx: break;
@@ -109,16 +107,6 @@ namespace libgraphics
 
 			m_p_impl->m_graphics_window->Clear();
 
-			if (glfwGetMouseButton(glfw_window, GLFW_MOUSE_BUTTON_2))
-			{
-				m_p_impl->m_main_camera.RotateByMouse(m_p_impl->m_graphics_window);
-			}
-			else
-			{
-				m_p_impl->m_main_camera.Reset();
-			}
-			m_p_impl->m_main_camera.Animate(m_p_impl->m_graphics_window, m_delta_time);
-
 			m_sky_box->Render(skybox_shader.value());
 
 			m_entity_manager->Render();
@@ -135,6 +123,7 @@ namespace libgraphics
 			m_p_impl->m_graphics_window->SwapBuffers();
 		}
 
+		delete m_p_impl;
 		m_p_impl->m_graphics_window->Destroy();
 	}
 

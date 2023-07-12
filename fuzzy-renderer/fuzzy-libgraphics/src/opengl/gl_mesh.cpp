@@ -73,6 +73,10 @@ namespace libgraphics
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizei>(m_indices.size() * sizeof(uint32_t)), m_indices.data(), GL_STATIC_DRAW);
 	}
 
+	auto GLMesh::RecomputeNormals(glm::vec3 scaled_vertex) -> void
+	{
+	}
+
 	auto GLMesh::GenerateMeshDataAndSendToGPU() -> void
 	{
 		GenerateVaoVboEbo();

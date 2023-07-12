@@ -75,13 +75,6 @@ namespace libgraphics::gui
 			utils::gui::Separator(utils::gui::ColorRed);
 			ImGui::Text("Camera:");
 			ImGui::Spacing();
-
-			const auto& main_camera_pos = Core::GetInstance().GetMainCamera().GetWorldPosition();
-
-			const auto& camera_position_text = std::format("Position: [X: {:.1f} | Y: {:.1f} | Z: {:.1f}]", main_camera_pos.x, main_camera_pos.y, main_camera_pos.z);
-			ImGui::Text(camera_position_text.c_str());
-			ImGui::Spacing();
-
 		});
 	}
 

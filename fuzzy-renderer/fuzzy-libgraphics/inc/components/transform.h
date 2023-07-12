@@ -15,6 +15,7 @@ namespace libgraphics
 
 		void Initialize() override;
 
+		auto Translate(const glm::vec3& delta) -> void;
 		auto SetLocalTranslation(const glm::vec3& translation) -> void;
 		auto SetLocalScale(const glm::vec3& scale) { m_local_scale = scale; m_is_dirty = true; }
 		auto SetLocalRotation(const glm::vec3& rotation) -> void;

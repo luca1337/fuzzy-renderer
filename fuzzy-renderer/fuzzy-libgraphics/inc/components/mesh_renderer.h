@@ -31,7 +31,5 @@ namespace libgraphics
         GLMesh m_mesh;
         std::shared_ptr<IShader> m_shader = {};
         std::shared_ptr<lighting::Material> m_default_material = {};
-
-        GLuint lights_buffer = {};
     };
 }

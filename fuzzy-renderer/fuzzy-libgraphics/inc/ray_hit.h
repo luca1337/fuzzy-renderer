@@ -5,7 +5,7 @@ namespace libgraphics
 {
 	struct RayHit
 	{
-		float distance = {};
-		glm::vec3 hit_point = {};
+		float m_distance = {};
+		glm::vec3 m_hit_point = {};
 	};
 }

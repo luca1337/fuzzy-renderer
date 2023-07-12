@@ -30,5 +30,7 @@ namespace libgraphics
 
         virtual auto SetVertexBuffer(const std::vector<Vertex>& vertex_buffer) -> void = 0;
         virtual auto SetIndexBuffer(const std::vector<uint32_t>& index_buffer) -> void = 0;
+
+        virtual auto RecomputeNormals(glm::vec3 scaled_vertex = {}) -> void = 0;
     };
 }

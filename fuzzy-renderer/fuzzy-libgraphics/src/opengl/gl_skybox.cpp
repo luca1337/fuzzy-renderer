@@ -1,14 +1,9 @@
-#include <opengl/gl_skybox.h>
-
-#include <glad/gl.h>
-
-#include <utils.h>
-
 #include <core.h>
-#include <iostream>
-#include <opengl/gl_context.h>
-
+#include <utils.h>
+#include <glad/gl.h>
 #include <interfaces/ishader.h>
+#include <opengl/gl_context.h>
+#include <opengl/gl_skybox.h>
 
 namespace libgraphics
 {
@@ -69,11 +64,13 @@ namespace libgraphics
 		const auto& core = Core::GetInstance();
 		const auto gl_context = ::std::static_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
 
+        const auto& native_camera = core.GetMainCamera()->GetNativeCamera();
+
         glDepthMask(GL_FALSE);
 		shader->Bind();
-        shader->SetMatrix4x4("view", GetViewMatrix3(core.GetMainCamera().m_camera_props));
+        shader->SetMatrix4x4("view", native_camera->GetViewMatrix3());
         shader->SetFloat("time", core.GetDeltaTime());
-		shader->SetMatrix4x4("projection", ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0));
+		shader->SetMatrix4x4("projection", ComputeCameraProjection(native_camera->Props().m_fov, gl_context->Data().m_width, gl_context->Data().m_height, native_camera->Props().m_z_near, native_camera->Props().m_z_far));
 
 		glBindVertexArray(m_sky_vao);
 		glActiveTexture(GL_TEXTURE0);

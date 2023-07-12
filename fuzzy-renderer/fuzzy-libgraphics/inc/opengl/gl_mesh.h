@@ -89,5 +89,8 @@ namespace libgraphics
 		auto GenerateVaoVboEbo() -> void;
 		auto GenerateMeshDataAndSendToGPU() -> void;
 		auto GenerateIndexBuffer() const -> void;
+
+	public:
+		auto RecomputeNormals(glm::vec3 scaled_vertex = {}) -> void override;
 	};
 }

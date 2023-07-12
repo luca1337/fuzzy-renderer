@@ -58,6 +58,7 @@ namespace libgraphics
 		}
 
 		glViewport(0, 0, width, height);
+		glViewport(width / 2, 0, width / 2, height);
 
 		// Enable depth testing and pixel discard function
 		glEnable(GL_DEPTH_TEST);

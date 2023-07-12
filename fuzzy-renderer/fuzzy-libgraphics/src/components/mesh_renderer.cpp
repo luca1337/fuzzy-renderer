@@ -1,15 +1,14 @@
 #include <core.h>
 #include <enums.h>
 #include <resource_manager.h>
+#include <utils.h>
 #include <components/mesh_renderer.h>
 #include <components/transform.h>
 #include <entities/entity.h>
 #include <opengl/gl_context.h>
 #include <rendering/texture.h>
-#include <utils.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <ray_hit.h>
+
+#include "components/camera.h"
 
 namespace libgraphics
 {
@@ -21,8 +20,8 @@ namespace libgraphics
 		m_shader->Bind();
 
 		m_default_material = std::make_shared<lighting::Material>();
-		m_default_material->SetMetallic(0.5f);
-		m_default_material->SetRoughness(0.5f);
+		m_default_material->SetMetallic(0.3f);
+		m_default_material->SetRoughness(0.2f);
 	}
 
 	auto MeshRenderer::Render() -> void
@@ -64,20 +63,20 @@ namespace libgraphics
 
 		UpdateMatrix();
 
-		const auto& core = Core::GetInstance();
+		/*const auto& core = Core::GetInstance();
 		const auto gl_context = ::std::static_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
 
 		double mouseX, mouseY;
 		glfwGetCursorPos(static_cast<GLFWwindow*>(gl_context->GetNativeHandle()), &mouseX, &mouseY);
 
-		/*const auto ray = core.GetMainCamera().ScreenPointToRay3D(glm::vec2(mouseX, mouseY));
+		const auto ray = core.GetMainCamera().ScreenPointToRay3D(glm::vec2(mouseX, mouseY));
 		if (const auto ray_hit = utils::gl::CheckRayMeshIntersection(core.GetMainCamera().GetWorldPosition(), ray.m_direction, m_mesh))
 		{
 			if (ray_hit.has_value())
 			{
 				const auto& hit_point = ray_hit.value();
 
-				const std::string output = std::format("Ray hit at distance: {} and hit point: ({}, {}, {})", hit_point.distance, hit_point.hit_point.x, hit_point.hit_point.y, hit_point.hit_point.z);
+				const std::string output = std::format("Ray hit at distance: {} and hit point: ({}, {}, {})", hit_point.m_distance, hit_point.m_hit_point.x, hit_point.m_hit_point.y, hit_point.m_hit_point.z);
 				CX_CORE_DEBUG(output);
 			}
 		}*/
@@ -92,9 +91,12 @@ namespace libgraphics
 		const auto& core = Core::GetInstance();
 		const auto gl_context = ::std::static_pointer_cast<GLContext>(core.GetGraphicsWindow()->GetNativeHandle());
 
-		const auto& view = GetViewMatrix(core.GetMainCamera().m_camera_props);
-		const auto& projection = ComputeCameraProjection(60.0, gl_context->Data().m_width, gl_context->Data().m_height, 0.01, 1000.0);
-		const auto& eye = core.GetMainCamera().GetWorldPosition();
+		// Get camera
+		const auto& native_camera = core.GetMainCamera()->GetNativeCamera();
+
+		const auto& view = native_camera->GetViewMatrix();
+		const auto& projection = ComputeCameraProjection(native_camera->Props().m_fov, gl_context->Data().m_width, gl_context->Data().m_height, native_camera->Props().m_z_near, native_camera->Props().m_z_far);
+		const auto& eye = native_camera->GetEntity().GetTransformComponent()->GetLocalTranslation();
 
 		m_shader->SetMatrix4x4("model", transform_component->GetWorldModelMatrix());
 		m_shader->SetMatrix4x4("view", view);

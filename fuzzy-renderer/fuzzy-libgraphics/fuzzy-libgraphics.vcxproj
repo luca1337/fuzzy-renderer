@@ -144,13 +144,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="inc\color.h" />
+    <ClInclude Include="inc\components\camera.h" />
     <ClInclude Include="inc\components\component.h" />
     <ClInclude Include="inc\components\mesh_renderer.h" />
     <ClInclude Include="inc\components\transform.h" />
     <ClInclude Include="inc\core.h" />
     <ClInclude Include="inc\engine_constants.h" />
     <ClInclude Include="inc\entities\entity.h" />
-    <ClInclude Include="inc\entities\mesh_entity.h" />
+    <ClInclude Include="inc\entities\free_camera.h" />
+    <ClInclude Include="inc\entities\game_camera.h" />
     <ClInclude Include="inc\entities\model.h" />
     <ClInclude Include="inc\entity_manager.h" />
     <ClInclude Include="inc\enums.h" />
@@ -168,7 +170,6 @@
     <ClInclude Include="inc\interfaces\ishader.h" />
     <ClInclude Include="inc\loaders.h" />
     <ClInclude Include="inc\logger.h" />
-    <ClInclude Include="inc\opengl\camera.h" />
     <ClInclude Include="inc\opengl\gl_context.h" />
     <ClInclude Include="inc\opengl\gl_mesh.h" />
     <ClInclude Include="inc\opengl\gl_shader.h" />
@@ -185,12 +186,15 @@
     <ClInclude Include="inc\utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\components\camera.cpp" />
     <ClCompile Include="src\components\component.cpp" />
     <ClCompile Include="src\components\mesh_renderer.cpp" />
     <ClCompile Include="src\components\transform.cpp" />
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\entities\entity.cpp" />
+    <ClCompile Include="src\entities\free_camera.cpp" />
+    <ClCompile Include="src\entities\game_camera.cpp" />
     <ClCompile Include="src\entities\model.cpp" />
     <ClCompile Include="src\entity_manager.cpp" />
     <ClCompile Include="src\gui\base\gui_object_base.cpp" />
@@ -200,7 +204,6 @@
     <ClCompile Include="src\gui\windows\gui_window_stats.cpp" />
     <ClCompile Include="src\gui_utils.cpp" />
     <ClCompile Include="src\logger.cpp" />
-    <ClCompile Include="src\opengl\camera.cpp" />
     <ClCompile Include="src\opengl\gl_context.cpp" />
     <ClCompile Include="src\opengl\gl_mesh.cpp" />
     <ClCompile Include="src\opengl\gl_shader.cpp" />

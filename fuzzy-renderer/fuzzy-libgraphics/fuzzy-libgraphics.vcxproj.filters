@@ -81,9 +81,6 @@
     <ClInclude Include="inc\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\opengl\camera.h">
-      <Filter>Header Files\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="inc\opengl\gl_context.h">
       <Filter>Header Files\OpenGL</Filter>
     </ClInclude>
@@ -156,9 +153,6 @@
     <ClInclude Include="inc\components\mesh_renderer.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="inc\entities\mesh_entity.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="inc\entities\model.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
@@ -186,6 +180,15 @@
     <ClInclude Include="inc\ray_hit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\components\camera.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\entities\game_camera.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\entities\free_camera.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp">
@@ -207,9 +210,6 @@
       <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\opengl\gl_window.cpp">
-      <Filter>Source Files\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\opengl\camera.cpp">
       <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="vendor\glad\src\gl.c">
@@ -265,6 +265,15 @@
     </ClCompile>
     <ClCompile Include="src\components\transform.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\camera.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entities\game_camera.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entities\free_camera.cpp">
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
